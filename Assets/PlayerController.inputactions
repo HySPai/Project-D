@@ -1,5 +1,4 @@
 {
-    "version": 1,
     "name": "PlayerController",
     "maps": [
         {
@@ -30,6 +29,17 @@
                     "name": "",
                     "id": "7e5ef494-d942-4215-94e8-bed8a9d57f3c",
                     "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29ca7d9e-12a4-4760-b899-8a15e42af3d1",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
