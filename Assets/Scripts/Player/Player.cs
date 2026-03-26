@@ -1,97 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    public Rigidbody rb;
-    public Transform cameraTransform;
-    public Animator animator;
-    public float moveSpeed = 5f;
-    public float rotateSpeed = 12f;
-    public float animSmooth = 8f;
+    private PlayerInputHandler input;
+    private PlayerMovement movement;
+    private PlayerAnimation animationController;
+    private PlayerCombat combat;
 
-    public InputActionReference moveAction;
-    public InputActionReference fire;
-
-    Vector2 inputCache;
-    float animMoveValue;
-
-    void Start()
+    private void Awake()
     {
-        if (rb == null) rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        input = GetComponent<PlayerInputHandler>();
+        movement = GetComponent<PlayerMovement>();
+        animationController = GetComponent<PlayerAnimation>();
+        combat = GetComponent<PlayerCombat>();
     }
 
-    void OnEnable()
+    private void Update()
     {
-        moveAction.action.Enable();
-        fire.action.Enable();
-        fire.action.performed += OnFire;
-    }
+        Vector2 moveInput = input.GetMoveInput();
 
-    void OnDisable()
-    {
-        fire.action.performed -= OnFire;
-        fire.action.Disable();
-        moveAction.action.Disable();
-    }
+        movement.SetInput(moveInput);
+        animationController.UpdateAnimation(moveInput);
 
-    void Update()
-    {
-        inputCache = moveAction.action.ReadValue<Vector2>();
-
-        float inputMagnitude = Mathf.Clamp01(inputCache.magnitude);
-
-        float deadZone = 0.05f;
-        float midThreshold = 0.2f;
-
-        float target;
-        if (inputMagnitude <= deadZone)
+        if (input.IsFire())
         {
-            target = 0f;
-        }
-        else if (inputMagnitude < midThreshold)
-        {
-            target = Mathf.Lerp(0f, 0.5f, (inputMagnitude - deadZone) / (midThreshold - deadZone));
-        }
-        else
-        {
-            target = Mathf.Lerp(0.5f, 1f, (inputMagnitude - midThreshold) / (1f - midThreshold));
-        }
-
-        animMoveValue = Mathf.Lerp(animMoveValue, target, animSmooth * Time.deltaTime);
-        animator.SetFloat("Move", animMoveValue);
-    }
-
-    void FixedUpdate()
-    {
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0f;
-        camRight.y = 0f;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 move = camRight * inputCache.x + camForward * inputCache.y;
-
-        Vector3 delta = move * moveSpeed * Time.fixedDeltaTime;
-        Vector3 target = rb.position + delta;
-        rb.MovePosition(new Vector3(target.x, rb.position.y, target.z));
-
-        if (move.sqrMagnitude > 0.0001f)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(move);
-            Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
-            rb.MoveRotation(smoothRot);
+            combat.Attack();
         }
     }
 
-    void OnFire(InputAction.CallbackContext ctx)
+    private void FixedUpdate()
     {
-        Debug.Log("Pew Pew!");
+        movement.Move();
     }
 }
