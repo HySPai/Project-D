@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class CharacterMovementBase : MonoBehaviour
+public abstract class CharacterMovementBase : MonoBehaviour, IMovable
 {
     public abstract void SetInput(Vector2 input);
 

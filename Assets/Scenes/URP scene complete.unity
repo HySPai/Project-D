@@ -3829,7 +3829,7 @@ GameObject:
   - component: {fileID: 560797598}
   - component: {fileID: 560797597}
   - component: {fileID: 560797596}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6652,7 +6652,7 @@ GameObject:
   - component: {fileID: 1160459575}
   - component: {fileID: 1160459574}
   - component: {fileID: 1160459573}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7052,7 +7052,7 @@ GameObject:
   - component: {fileID: 1191165674}
   - component: {fileID: 1191165673}
   - component: {fileID: 1191165672}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9024,7 +9024,7 @@ GameObject:
   - component: {fileID: 1474039705}
   - component: {fileID: 1474039704}
   - component: {fileID: 1474039703}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11544,7 +11544,7 @@ GameObject:
   - component: {fileID: 2023207325}
   - component: {fileID: 2023207324}
   - component: {fileID: 2023207323}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}

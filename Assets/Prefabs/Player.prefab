@@ -1303,6 +1303,12 @@ MonoBehaviour:
   maxHp: 100
   moveSpeed: 5
   rotateSpeed: 12
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  groundCheckDistance: 5
+  edgeCheckForwardDistance: 0.5
+  maxStepDownHeight: 1
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
