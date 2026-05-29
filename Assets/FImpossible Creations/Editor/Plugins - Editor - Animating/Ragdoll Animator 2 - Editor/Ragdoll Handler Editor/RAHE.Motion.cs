@@ -337,7 +337,7 @@ namespace FIMSpace.FProceduralAnimation
             if (handler.Mecanim)
             {
                 GUI.enabled = false;
-                EditorGUILayout.Toggle(new GUIContent("Animate Physics:", sp.tooltip), handler.Mecanim.updateMode == AnimatorUpdateMode.AnimatePhysics);
+                EditorGUILayout.Toggle(new GUIContent("Animate Physics:", sp.tooltip), handler.Mecanim.updateMode == AnimatorUpdateMode.Fixed);
                 GUI.enabled = preGuiE;
             }
             else EditorGUILayout.PropertyField(sp, true);

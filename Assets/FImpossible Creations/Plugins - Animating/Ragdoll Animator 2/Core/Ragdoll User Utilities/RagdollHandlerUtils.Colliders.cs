@@ -116,7 +116,7 @@ namespace FIMSpace.FProceduralAnimation
         /// <summary>
         /// Setting target physical material to all dummy bones (will be overwritten if using physical materials in the handler setup)
         /// </summary>
-        public static void User_ChangeAllCollidersPhysicMaterial( this IRagdollAnimator2HandlerOwner iHandler, PhysicMaterial targetMaterial )
+        public static void User_ChangeAllCollidersPhysicMaterial( this IRagdollAnimator2HandlerOwner iHandler, PhysicsMaterial targetMaterial )
         {
             RagdollHandler handler = iHandler.GetRagdollHandler;
 

@@ -116,7 +116,7 @@ namespace FIMSpace.FProceduralAnimation
         {
             if( Mecanim )
             {
-                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.AnimatePhysics;
+                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.Fixed;
             }
             else
             {

@@ -133,7 +133,7 @@ namespace FIMSpace.FProceduralAnimation
             // Checking distance to ground below
             Physics.Raycast( ParentRagdollHandler.User_GetPosition_AnchorCenter() + safeUpRaycastOffset, Vector3.down, out lastHit, 100f, groundMaskV.GetInt(), QueryTriggerInteraction.Ignore );
 
-            Vector3 pelvisVelo = anchor.GameRigidbody.velocity;
+            Vector3 pelvisVelo = anchor.GameRigidbody.linearVelocity;
             Quaternion refRotation = ragdoll.User_GetRotation_Mapped( Vector3.up );
 
             // Computing local velocity vector

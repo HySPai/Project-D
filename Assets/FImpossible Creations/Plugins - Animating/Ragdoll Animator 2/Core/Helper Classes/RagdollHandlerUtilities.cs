@@ -152,7 +152,7 @@ namespace FIMSpace.FProceduralAnimation
 
             if( rigidbody.useGravity ) targetStableVelo -= Physics.gravity * Time.fixedDeltaTime;
 
-            rigidbody.velocity = Vector3.Lerp( rigidbody.velocity, targetStableVelo, targetPower );
+            rigidbody.linearVelocity = Vector3.Lerp( rigidbody.linearVelocity, targetStableVelo, targetPower );
         }
 
         /// <summary> Calculating angular velocity for the rigidbody to rotate it towards target </summary>
@@ -187,7 +187,7 @@ namespace FIMSpace.FProceduralAnimation
 
             if( rigidbody.useGravity ) targetVelocity -= Physics.gravity * Time.fixedDeltaTime;
             targetVelocity *= forceMultiply;
-            targetVelocity -= rigidbody.velocity;
+            targetVelocity -= rigidbody.linearVelocity;
 
             return targetVelocity;
         }
@@ -211,7 +211,7 @@ namespace FIMSpace.FProceduralAnimation
             float factor = ( rigidbody.mass * ( 0.05f + 0.85f * power ) ) / ( fixedDelta * fixedDelta );
             float damper = ( 0.55f + 0.325f * power ) * ( 2 * Mathf.Sqrt( factor * rigidbody.mass ) );
 
-            Vector3 veloDiff = rigidbody.velocity - lastestPositionDelta;
+            Vector3 veloDiff = rigidbody.linearVelocity - lastestPositionDelta;
 
             return ( factor / rigidbody.mass * positionDifference ) - ( damper / rigidbody.mass * veloDiff );
         }

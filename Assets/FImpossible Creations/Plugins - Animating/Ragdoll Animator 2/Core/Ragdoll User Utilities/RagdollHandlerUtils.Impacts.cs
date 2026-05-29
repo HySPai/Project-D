@@ -158,7 +158,7 @@ namespace FIMSpace.FProceduralAnimation
         /// </summary>
         public static void User_ChangeAllRigidbodiesDrag( this IRagdollAnimator2HandlerOwner iHandler, float drag = 0f )
         {
-            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.drag = drag );
+            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.linearDamping = drag );
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace FIMSpace.FProceduralAnimation
         /// </summary>
         public static void User_ChangeAllRigidbodiesAngularDrag( this IRagdollAnimator2HandlerOwner iHandler, float drag = 0f )
         {
-            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.angularDrag = drag );
+            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.angularDamping = drag );
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace FIMSpace.FProceduralAnimation
         /// </summary>
         public static void User_SetAllVelocity( this IRagdollAnimator2HandlerOwner iHandler, Vector3 worldVelocity )
         {
-            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.velocity = worldVelocity );
+            iHandler.GetRagdollHandler.CallOnAllRagdollBones( ( RagdollChainBone bone ) => bone.GameRigidbody.linearVelocity = worldVelocity );
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace FIMSpace.FProceduralAnimation
             {
                 foreach( var bone in chain.BoneSetups )
                 {
-                    if( bone.GameRigidbody.velocity.sqrMagnitude > velo.sqrMagnitude ) velo = bone.GameRigidbody.velocity;
+                    if( bone.GameRigidbody.linearVelocity.sqrMagnitude > velo.sqrMagnitude ) velo = bone.GameRigidbody.linearVelocity;
                 }
             }
 
@@ -331,7 +331,7 @@ namespace FIMSpace.FProceduralAnimation
             if( chain == null ) return Vector3.zero;
 
             Vector3 velo = Vector3.zero;
-            foreach( var bone in chain.BoneSetups ) velo += bone.GameRigidbody.velocity;
+            foreach( var bone in chain.BoneSetups ) velo += bone.GameRigidbody.linearVelocity;
 
             return average ? velo / (float)chain.BoneSetups.Count : velo;
         }

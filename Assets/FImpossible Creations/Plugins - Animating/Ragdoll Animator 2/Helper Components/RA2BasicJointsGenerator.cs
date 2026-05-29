@@ -26,7 +26,7 @@ namespace FIMSpace.FProceduralAnimation
         public RigidbodyInterpolation Interpolation = RigidbodyInterpolation.Interpolate;
 
         [Space( 4 )]
-        public PhysicMaterial CollidersMaterial;
+        public PhysicsMaterial CollidersMaterial;
 
         [Tooltip( "Applying alternative tensor forces for joints, in some cases it can make motion more stable" )]
         public bool LimitTensors = false;
@@ -163,8 +163,8 @@ namespace FIMSpace.FProceduralAnimation
                 if( rig == null ) { bone = bone.parent; continue; }
 
                 rig.mass = Mass;
-                rig.drag = RigidbodyDrag;
-                rig.angularDrag = AngularDrag;
+                rig.linearDamping = RigidbodyDrag;
+                rig.angularDamping = AngularDrag;
                 rig.interpolation = Interpolation;
 
                 Joint joint = bone.GetComponent<Joint>();

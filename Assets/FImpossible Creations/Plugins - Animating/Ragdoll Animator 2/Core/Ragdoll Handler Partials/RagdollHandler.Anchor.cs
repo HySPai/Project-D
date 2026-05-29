@@ -56,7 +56,7 @@ namespace FIMSpace.FProceduralAnimation
                         {
                             if (Vector3.Distance(anchor.PhysicalDummyBone.position, anchor.SourceBone.position) < anchor.BaseColliderSetup.CalculateSize().magnitude * 0.05f)
                             {
-                                anchor.GameRigidbody.velocity = _providedAnchorVelocity.Value;
+                                anchor.GameRigidbody.linearVelocity = _providedAnchorVelocity.Value;
                                 _providedAnchorVelocity = null;
 
                                 return; // Don't apply rigidbody forces calculated below
@@ -176,7 +176,7 @@ namespace FIMSpace.FProceduralAnimation
                 {
                     // Maintaining kinematic rigidbody velocity
                     Vector3 velo = anchor.BoneProcessor.AverageTranslationDataRequestRaw() / Time.fixedDeltaTime;
-                    anchor.GameRigidbody.velocity = velo;
+                    anchor.GameRigidbody.linearVelocity = velo;
                     //if (Caller) Caller.StartCoroutine(_IE_CallForFixedFrames(() => { anchor.GameRigidbody.velocity = velo; }, 3)); // Was generatic GC alloc even if line was not called?
                     if (Caller) Caller.StartCoroutine(_IE_FreezeRigidbodyVelocityFor(anchor.GameRigidbody, velo, 3));
                 }

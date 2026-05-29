@@ -205,7 +205,7 @@ namespace FIMSpace.FProceduralAnimation
                 Collider collider = null;
                 Transform subTransform = null;
 
-                PhysicMaterial colliderMaterial = bone.OverrideMaterial; // By default null
+                PhysicsMaterial colliderMaterial = bone.OverrideMaterial; // By default null
                 if( colliderMaterial == null ) if( chain.ParentHandler != null ) if( chain.ParentHandler.CollidersPhysicMaterial )
                         {
                             if( chain.ParentHandler.PhysicMaterialOnFall && fallMode )
@@ -567,7 +567,7 @@ namespace FIMSpace.FProceduralAnimation
         public float GetThirdAxisAngleLimit( RagdollBonesChain chain )
         { return ThirdAxisAngleLimit * chain.AxisLimitRange; }
 
-        public PhysicMaterial OverrideMaterial = null;
+        public PhysicsMaterial OverrideMaterial = null;
 
         public bool UseIndividualParameters = false;
 
@@ -710,8 +710,8 @@ namespace FIMSpace.FProceduralAnimation
                 rigid.interpolation = OverrideInterpolation;
                 rigid.collisionDetectionMode = OverrideDetectionMode;
 
-                rigid.drag = OverrideDragValue;
-                rigid.angularDrag = OverrideAngularDrag;
+                rigid.linearDamping = OverrideDragValue;
+                rigid.angularDamping = OverrideAngularDrag;
 
                 RefreshSolversCount( handler );
             }
@@ -719,8 +719,8 @@ namespace FIMSpace.FProceduralAnimation
             {
                 RefreshRigidbodyOptimizationParameters( handler );
 
-                rigid.drag = GetRigidbodyDrag( chain );
-                rigid.angularDrag = GetRigidbodyAngularDrag( chain );
+                rigid.linearDamping = GetRigidbodyDrag( chain );
+                rigid.angularDamping = GetRigidbodyAngularDrag( chain );
             }
 
             return rigid;
@@ -762,7 +762,7 @@ namespace FIMSpace.FProceduralAnimation
             }
         }
 
-        public void ApplyPhysicMaterial( PhysicMaterial pMaterial )
+        public void ApplyPhysicMaterial( PhysicsMaterial pMaterial )
         {
             ApplyToAllColliders( ( Collider c ) => c.sharedMaterial = pMaterial );
         }
@@ -1414,7 +1414,7 @@ namespace FIMSpace.FProceduralAnimation
             {
                 if( GameRigidbody.isKinematic == false )
                 {
-                    GameRigidbody.velocity = Vector3.zero;
+                    GameRigidbody.linearVelocity = Vector3.zero;
                     GameRigidbody.angularVelocity = Vector3.zero;
                 }
 

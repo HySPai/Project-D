@@ -131,7 +131,7 @@ namespace FIMSpace.FProceduralAnimation
         {
             if (lastRigidbody)
             {
-                unwearVelocity = lastRigidbody.velocity;
+                unwearVelocity = lastRigidbody.linearVelocity;
                 unwearAngularVelocity = lastRigidbody.angularVelocity;
             }
 
@@ -151,7 +151,7 @@ namespace FIMSpace.FProceduralAnimation
                 {
                     StartCoroutine(IECallAfterFixedFrame(() =>
                     {
-                        OptionalRigidbody.velocity = unwearVelocity;
+                        OptionalRigidbody.linearVelocity = unwearVelocity;
                         OptionalRigidbody.angularVelocity = unwearAngularVelocity;
                     }));
                 }

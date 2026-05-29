@@ -325,7 +325,7 @@ namespace FIMSpace.FProceduralAnimation
                         bone.GameRigidbody.position = bone.PhysicalDummyBone.position;
                         bone.GameRigidbody.rotation = bone.PhysicalDummyBone.rotation;
 
-                        if (bone.GameRigidbody.isKinematic == false) bone.GameRigidbody.velocity = Vector3.zero;
+                        if (bone.GameRigidbody.isKinematic == false) bone.GameRigidbody.linearVelocity = Vector3.zero;
                         if (bone.GameRigidbody.isKinematic == false) bone.GameRigidbody.angularVelocity = Vector3.zero;
                     }
                 }
@@ -338,7 +338,7 @@ namespace FIMSpace.FProceduralAnimation
                     if (item.rigidbody)
                     {
                         item.rigidbody.position = item.DummyBone.position;
-                        item.rigidbody.velocity = Vector3.zero;
+                        item.rigidbody.linearVelocity = Vector3.zero;
                         item.rigidbody.rotation = item.DummyBone.rotation;
                         item.rigidbody.angularVelocity = Vector3.zero;
                     }

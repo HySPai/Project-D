@@ -63,7 +63,7 @@ namespace FIMSpace.FProceduralAnimation
         [FPD_FixedCurveWindow] public AnimationCurve RadiusOverChain = AnimationCurve.EaseInOut( 0f, 1f, 1f, 1f );
 
         [Space( 3 )]
-        public PhysicMaterial CollidersMaterial;
+        public PhysicsMaterial CollidersMaterial;
 
         public bool HideGeneratedDummy = false;
 
@@ -97,7 +97,7 @@ namespace FIMSpace.FProceduralAnimation
         {
             if( Mecanim )
             {
-                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.AnimatePhysics;
+                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.Fixed;
                 unscaledTime = Mecanim.updateMode == AnimatorUpdateMode.UnscaledTime;
             }
         }
@@ -198,8 +198,8 @@ namespace FIMSpace.FProceduralAnimation
                 jointControllers[j].joint.massScale = MassScale;
 
                 jointControllers[j].rigidbody.mass = RigidbodiesMass;
-                jointControllers[j].rigidbody.drag = RigidbodyDrag;
-                jointControllers[j].rigidbody.angularDrag = AngularDrag;
+                jointControllers[j].rigidbody.linearDamping = RigidbodyDrag;
+                jointControllers[j].rigidbody.angularDamping = AngularDrag;
 
                 jointControllers[j].collider.sharedMaterial = CollidersMaterial;
             }
@@ -212,7 +212,7 @@ namespace FIMSpace.FProceduralAnimation
         {
             if( Mecanim )
             {
-                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.AnimatePhysics;
+                animatePhysics = Mecanim.updateMode == AnimatorUpdateMode.Fixed;
             }
 
             if( animatePhysics ) return;
