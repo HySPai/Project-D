@@ -1137,6 +1137,7 @@ GameObject:
   - component: {fileID: 375398382370659543}
   - component: {fileID: 3676460191051749661}
   - component: {fileID: 1074759447180211755}
+  - component: {fileID: 6237013157365418999}
   - component: {fileID: 4935462881444096308}
   - component: {fileID: 3904609994375877722}
   - component: {fileID: 230835159006547521}
@@ -1283,9 +1284,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: {fileID: 4935462881444096308}
+  state: {fileID: 6237013157365418999}
   movement: {fileID: 3904609994375877722}
   animationController: {fileID: 230835159006547521}
   combat: {fileID: 8004906126929870345}
+--- !u!114 &6237013157365418999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6101746182165348096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4fcb82ccbc2444689413866d5df4a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerState
+  maxHp: 100
+  moveSpeed: 5
+  rotateSpeed: 12
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1314,8 +1331,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 8108633679974709002}
   cameraTransform: {fileID: 0}
-  moveSpeed: 5
-  rotateSpeed: 12
 --- !u!114 &230835159006547521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1329,7 +1344,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
-  animSmooth: 8
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0

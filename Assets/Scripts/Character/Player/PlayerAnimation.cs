@@ -1,61 +1,30 @@
 ﻿using UnityEngine;
 
-public class PlayerAnimation : MonoBehaviour
+public class PlayerAnimation : CharacterAnimationBase
 {
-    public Animator animator;
-    public float animSmooth = 8f;
+    [SerializeField] private Animator animator;
 
-    private float animMoveValue;
+    private PlayerState state;
 
-    private PlayerCombat combat;
-
-    private void Awake()
+    public void Initialize(PlayerState state)
     {
-        combat = GetComponent<PlayerCombat>();
+        this.state = state;
     }
 
-    public void UpdateAnimation(Vector2 input)
+    public override void UpdateAnimation(Vector2 moveInput)
     {
-        HandleMovementAnimation(input);
-        HandleAttackAnimation();
-    }
+        float moveValue = moveInput.magnitude;
 
-    private void HandleMovementAnimation(Vector2 input)
-    {
-        float inputMagnitude = Mathf.Clamp01(input.magnitude);
-
-        float deadZone = 0.05f;
-        float midThreshold = 0.2f;
-
-        float target;
-
-        if (inputMagnitude <= deadZone)
+        if (state != null)
         {
-            target = 0f;
-        }
-        else if (inputMagnitude < midThreshold)
-        {
-            target = Mathf.Lerp(0f, 0.5f, (inputMagnitude - deadZone) / (midThreshold - deadZone));
-        }
-        else
-        {
-            target = Mathf.Lerp(0.5f, 1f, (inputMagnitude - midThreshold) / (1f - midThreshold));
+            if (state.IsAttacking)
+            {
+                moveValue = 0;
+            }
+
+            animator.SetBool("Attack", state.IsAttacking);
         }
 
-        // ❌ nếu đang attack thì đứng im animation
-        if (combat != null && combat.IsAttacking())
-        {
-            target = 0f;
-        }
-
-        animMoveValue = Mathf.Lerp(animMoveValue, target, animSmooth * Time.deltaTime);
-        animator.SetFloat("Move", animMoveValue);
-    }
-
-    private void HandleAttackAnimation()
-    {
-        if (combat == null) return;
-
-        animator.SetBool("Attack", combat.IsAttacking());
+        animator.SetFloat("Move", moveValue);
     }
 }

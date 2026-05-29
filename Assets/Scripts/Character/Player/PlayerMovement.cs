@@ -1,58 +1,55 @@
 ﻿using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : CharacterMovementBase
 {
-    public Rigidbody rb;
-    public Transform cameraTransform;
-
-    public float moveSpeed = 5f;
-    public float rotateSpeed = 12f;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Transform cameraTransform;
 
     private Vector2 input;
+    private PlayerState state;
 
-    private PlayerCombat combat;
-
-    private void Awake()
+    public void Initialize(PlayerState state)
     {
-        combat = GetComponent<PlayerCombat>();
+        this.state = state;
     }
 
-    private void Start()
-    {
-        if (rb == null) rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
-    }
-
-    public void SetInput(Vector2 input)
+    public override void SetInput(Vector2 input)
     {
         this.input = input;
     }
 
-    public void Move()
+    public override void Move()
     {
-        // ❌ Không cho di chuyển khi đang attack
-        if (combat != null && combat.IsAttacking()) return;
+        if (state == null) return;
+
+        if (state.IsDead) return;
+        if (state.IsAttacking) return;
 
         Vector3 camForward = cameraTransform.forward;
         Vector3 camRight = cameraTransform.right;
 
-        camForward.y = 0f;
-        camRight.y = 0f;
+        camForward.y = 0;
+        camRight.y = 0;
 
         camForward.Normalize();
         camRight.Normalize();
 
         Vector3 move = camRight * input.x + camForward * input.y;
 
-        Vector3 delta = move * moveSpeed * Time.fixedDeltaTime;
+        Vector3 delta = move * state.MoveSpeed * Time.fixedDeltaTime;
         Vector3 target = rb.position + delta;
 
         rb.MovePosition(new Vector3(target.x, rb.position.y, target.z));
 
-        if (move.sqrMagnitude > 0.0001f)
+        if (move.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(move);
-            Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
+
+            Quaternion smoothRot = Quaternion.Slerp(
+                transform.rotation,
+                targetRot,
+                state.RotateSpeed * Time.fixedDeltaTime);
+
             rb.MoveRotation(smoothRot);
         }
     }

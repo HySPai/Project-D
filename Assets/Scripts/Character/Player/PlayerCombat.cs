@@ -1,24 +1,14 @@
 ﻿using UnityEngine;
 
-public class PlayerCombat : MonoBehaviour
+public class PlayerCombat : CharacterCombatBase
 {
-    private bool isAttacking;
-
-    public bool IsAttacking()
+    public override void Attack()
     {
-        return isAttacking;
-    }
+        if (state == null) return;
 
-    public void Attack()
-    {
-        if (isAttacking) return;
+        if (state.IsDead) return;
+        if (state.IsAttacking) return;
 
-        isAttacking = true;
-    }
-
-    // gọi từ Animation Event
-    public void EndAttack()
-    {
-        isAttacking = false;
+        state.SetAttacking(true);
     }
 }
