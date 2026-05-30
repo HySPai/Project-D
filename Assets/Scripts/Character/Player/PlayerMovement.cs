@@ -35,14 +35,15 @@ public class PlayerMovement : CharacterMovementBase
 
         Vector3 move = camRight * input.x + camForward * input.y;
 
-        float currentMoveSpeed = state.MoveSpeed;
-
-        if (state.IsRunning)
+        if (state.IsWalking && move.sqrMagnitude > 0.001f)
         {
-            currentMoveSpeed *= state.RunMultiplier;
+            move = move.normalized;
         }
 
-        Vector3 delta = move * currentMoveSpeed * Time.fixedDeltaTime;
+        UpdateMoveSpeed(move);
+
+        Vector3 delta = move * state.CurrentMoveSpeed * Time.fixedDeltaTime;
+
         Vector3 currentPos = rb.position;
 
         Vector3 xTarget = currentPos + new Vector3(delta.x, 0f, 0f);
@@ -68,12 +69,45 @@ public class PlayerMovement : CharacterMovementBase
         if (move.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(move);
-            Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, state.RotateSpeed * Time.fixedDeltaTime);
+
+            Quaternion smoothRot = Quaternion.Slerp(
+                transform.rotation,
+                targetRot,
+                state.RotateSpeed * Time.fixedDeltaTime);
 
             rb.MoveRotation(smoothRot);
         }
     }
+    private void UpdateMoveSpeed(Vector3 move)
+    {
+        float targetSpeed = 0f;
 
+        if (move.sqrMagnitude > 0.001f)
+        {
+            if (state.IsRunning)
+            {
+                targetSpeed = state.RunSpeed;
+            }
+            else if (state.IsWalking)
+            {
+                targetSpeed = state.WalkSpeed;
+            }
+            else
+            {
+                targetSpeed = state.MoveSpeed;
+            }
+        }
+
+        state.SetTargetMoveSpeed(targetSpeed);
+
+        float smoothSpeed = state.MoveSmoothSpeed * state.MoveSpeed;
+
+        state.SetCurrentMoveSpeed(
+            Mathf.MoveTowards(
+                state.CurrentMoveSpeed,
+                state.TargetMoveSpeed,
+                smoothSpeed * Time.fixedDeltaTime));
+    }
     private bool IsGroundValid(Vector3 position)
     {
         Vector3 center = position + Vector3.up * 0.2f;

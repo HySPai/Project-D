@@ -1199,7 +1199,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6101746182165348096}
   serializedVersion: 5
-  m_Mass: 15
+  m_Mass: 50
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1217,7 +1217,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &375398382370659543
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1268,7 +1268,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: KeyBoard
-  m_DefaultActionMap: GamePlay
+  m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1074759447180211755
@@ -1301,16 +1301,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
   maxHp: 100
+  walkSpeed: 2
   moveSpeed: 5
-  rotateSpeed: 12
   runSpeed: 6.5
-  runMultiplier: 1.8
+  rotateSpeed: 12
+  moveSmoothSpeed: 2
+  currentHp: 0
+  currentMoveSpeed: 0
+  targetMoveSpeed: 0
+  isDead: 0
+  isAttacking: 0
+  isRunning: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
   maxStepDownHeight: 1
+  walkInputThreshold: 0.5
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1324,8 +1332,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveAction: {fileID: -2540249642397497863, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
-  fire: {fileID: 7153550806046692233, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
-  run_Dash: {fileID: 2176339660267104937, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  fire: {fileID: -1383131979076342110, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  run_Dash: {fileID: 8202096626566041950, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  walk: {fileID: 8704586590157092557, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
 --- !u!114 &3904609994375877722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1355,7 +1364,7 @@ MonoBehaviour:
   animator: {fileID: 3494009422608787902}
   moveParameter: Move
   attackParameter: Attack
-  dashParameter: Dash
+  rollParameter: Roll
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1368,6 +1377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb4452e0c9963204cb32b17ef17643cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colAttack: {fileID: 6488258084473785165}
 --- !u!1 &6488567137440690503
 GameObject:
   m_ObjectHideFlags: 0

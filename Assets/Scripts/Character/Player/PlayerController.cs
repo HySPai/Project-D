@@ -23,12 +23,26 @@ public class PlayerController : CharacterControllerBase
     private void Update()
     {
         Vector2 moveInput = input.GetMoveInput();
+        float moveAmount = input.MoveAmount;
 
-        state.SetRunning(input.IsRunning());
+        bool isAnalogWalk = moveAmount == 0.5f;
+        bool isWalkButton = input.IsWalking();
+        bool isRunning = input.IsRunning();
+
+        if (isWalkButton)
+        {
+            state.SetRunning(isRunning);
+            state.SetWalking(!isRunning);
+        }
+        else
+        {
+            state.SetWalking(isAnalogWalk);
+            state.SetRunning(isRunning && !isAnalogWalk);
+        }
 
         movement.SetInput(moveInput);
 
-        animationController.UpdateAnimation(moveInput);
+        animationController.UpdateAnimation(moveAmount);
 
         if (input.IsFire())
         {

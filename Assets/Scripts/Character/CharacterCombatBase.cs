@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class CharacterCombatBase : MonoBehaviour
 {
     protected CharacterStateBase state;
+    [SerializeField] protected Collider colAttack;
 
     public virtual void Initialize(CharacterStateBase state)
     {

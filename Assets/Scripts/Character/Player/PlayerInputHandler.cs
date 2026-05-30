@@ -3,57 +3,114 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
+    [Header("Input Actions")]
     public InputActionReference moveAction;
     public InputActionReference fire;
     public InputActionReference run_Dash;
+    public InputActionReference walk;
 
-    private Vector2 moveInput;
-    private bool isFire;
-    private bool isRunPressed;
-    private bool isDash;
+    [Header("Movement Input")]
+    [SerializeField] private Vector2 movementInput;
+
+    [SerializeField] private float horizontalInput;
+    [SerializeField] private float verticalInput;
+    [SerializeField] private float moveAmount;
+
+    [Header("Action Input")]
+    [SerializeField] private bool isFire;
+    [SerializeField] private bool isRunPressed;
+    [SerializeField] private bool isWalkPressed;
+    [SerializeField] private bool isDash;
+
     private float runPressedTime;
+
+    public float HorizontalInput => horizontalInput;
+    public float VerticalInput => verticalInput;
+    public float MoveAmount => moveAmount;
+
+    public Vector2 GetMoveInput()
+    {
+        return movementInput;
+    }
 
     private void OnEnable()
     {
         moveAction.action.Enable();
         fire.action.Enable();
         run_Dash.action.Enable();
+        walk.action.Enable();
 
-        fire.action.performed += ctx => isFire = true;
+        moveAction.action.performed += OnMovePerformed;
+        moveAction.action.canceled += OnMoveCanceled;
+
+        fire.action.performed += OnFirePerformed;
 
         run_Dash.action.started += OnRunStarted;
         run_Dash.action.canceled += OnRunCanceled;
+
+        walk.action.started += OnWalkStarted;
+        walk.action.canceled += OnWalkCanceled;
     }
 
     private void OnDisable()
     {
-        moveAction.action.Disable();
-        fire.action.Disable();
-        run_Dash.action.Disable();
+        moveAction.action.performed -= OnMovePerformed;
+        moveAction.action.canceled -= OnMoveCanceled;
+
+        fire.action.performed -= OnFirePerformed;
 
         run_Dash.action.started -= OnRunStarted;
         run_Dash.action.canceled -= OnRunCanceled;
+
+        walk.action.started -= OnWalkStarted;
+        walk.action.canceled -= OnWalkCanceled;
+
+        moveAction.action.Disable();
+        fire.action.Disable();
+        run_Dash.action.Disable();
+        walk.action.Disable();
     }
 
     private void Update()
     {
-        moveInput = moveAction.action.ReadValue<Vector2>();
+        HandleMovementInput();
     }
 
-    public Vector2 GetMoveInput()
+    private void HandleMovementInput()
     {
-        return moveInput;
-    }
+        verticalInput = movementInput.y;
+        horizontalInput = movementInput.x;
 
-    public bool IsFire()
-    {
-        if (isFire)
+        moveAmount =
+            Mathf.Clamp01(
+                Mathf.Abs(verticalInput) +
+                Mathf.Abs(horizontalInput));
+
+        if (moveAmount <= 0.5f && moveAmount > 0f)
         {
-            isFire = false;
-            return true;
+            moveAmount = 0.5f;
         }
-        return false;
+        else if (moveAmount > 0.5f)
+        {
+            moveAmount = 1f;
+        }
     }
+
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
+    {
+        movementInput = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    {
+        movementInput = Vector2.zero;
+    }
+
+    private void OnFirePerformed(InputAction.CallbackContext ctx)
+    {
+        isFire = true;
+    }
+
     private void OnRunStarted(InputAction.CallbackContext ctx)
     {
         runPressedTime = Time.time;
@@ -71,19 +128,42 @@ public class PlayerInputHandler : MonoBehaviour
 
         isRunPressed = false;
     }
+
+    private void OnWalkStarted(InputAction.CallbackContext ctx)
+    {
+        isWalkPressed = true;
+    }
+
+    private void OnWalkCanceled(InputAction.CallbackContext ctx)
+    {
+        isWalkPressed = false;
+    }
+
     public bool IsRunning()
     {
         return isRunPressed;
     }
 
+    public bool IsWalking()
+    {
+        return isWalkPressed;
+    }
+
+    public bool IsFire()
+    {
+        if (!isFire)
+            return false;
+
+        isFire = false;
+        return true;
+    }
+
     public bool IsDash()
     {
-        if (isDash)
-        {
-            isDash = false;
-            return true;
-        }
+        if (!isDash)
+            return false;
 
-        return false;
+        isDash = false;
+        return true;
     }
 }

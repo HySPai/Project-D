@@ -7,6 +7,17 @@ public class PlayerState : CharacterStateBase
     [SerializeField] protected float groundCheckDistance = 5f;
     [SerializeField] protected float edgeCheckForwardDistance = 0.5f;
     [SerializeField] protected float maxStepDownHeight = 1f;
+    [SerializeField] protected float walkInputThreshold = 0.5f;
+
+    protected bool isWalking;
+
+    public float WalkInputThreshold => walkInputThreshold;
+    public bool IsWalking => isWalking;
+
+    public virtual void SetWalking(bool value)
+    {
+        isWalking = value;
+    }
 
     public LayerMask GroundLayer => groundLayer;
     public float GroundCheckDistance => groundCheckDistance;

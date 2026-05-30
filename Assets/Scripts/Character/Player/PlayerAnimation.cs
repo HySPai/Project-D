@@ -5,9 +5,9 @@ public class PlayerAnimation : CharacterAnimationBase
     [SerializeField] private Animator animator;
     [SerializeField] private string moveParameter = "Move";
     [SerializeField] private string attackParameter = "Attack";
-    [SerializeField] private string dashParameter = "Dash";
     [SerializeField] private string rollParameter = "Roll";
 
+    private float currentMoveValue;
     private PlayerState state;
 
     public void Initialize(PlayerState state)
@@ -15,20 +15,41 @@ public class PlayerAnimation : CharacterAnimationBase
         this.state = state;
     }
 
-    public override void UpdateAnimation(Vector2 moveInput)
+    public override void UpdateAnimation(float moveAmount)
     {
-        float moveValue = moveInput.magnitude;
+        float targetMoveValue = moveAmount;
 
         if (state != null)
         {
             if (state.IsAttacking)
             {
-                moveValue = 0;
+                targetMoveValue = 0f;
+            }
+            else if (state.IsRunning && moveAmount > 0f)
+            {
+                targetMoveValue = 1.5f;
+            }
+            else if (state.IsWalking && moveAmount > 0f)
+            {
+                targetMoveValue = 0.5f;
+            }
+            else if (moveAmount > 0f)
+            {
+                targetMoveValue = 1f;
+            }
+            else
+            {
+                targetMoveValue = 0f;
             }
 
             animator.SetBool(attackParameter, state.IsAttacking);
         }
 
-        animator.SetFloat(moveParameter, moveValue);
+        currentMoveValue = Mathf.MoveTowards(
+            currentMoveValue,
+            targetMoveValue,
+            state.MoveSmoothSpeed * Time.deltaTime);
+
+        animator.SetFloat(moveParameter, currentMoveValue);
     }
 }

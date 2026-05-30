@@ -3,41 +3,69 @@ using UnityEngine;
 public abstract class CharacterStateBase : MonoBehaviour
 {
     [Header("Health")]
-    [SerializeField] protected float maxHp = 100;
+    [SerializeField] protected float maxHp = 100f;
 
-    [Header("Movement")]
+    [Header("Movement Config")]
+    [SerializeField] protected float walkSpeed = 2f;
     [SerializeField] protected float moveSpeed = 5f;
-    [SerializeField] protected float rotateSpeed = 12f;
     [SerializeField] protected float runSpeed = 8f;
-    [Header("Run")]
-    [SerializeField] private float runMultiplier = 1.8f;
+    [SerializeField] protected float rotateSpeed = 12f;
 
-    private bool isRunning;
+    [Header("Animation Config")]
+    [SerializeField] protected float moveSmoothSpeed = 8f;
 
-    public float RunMultiplier => runMultiplier;
-    public bool IsRunning => isRunning;
+    [Header("Runtime Values")]
+    [SerializeField] protected float currentHp;
+    [SerializeField] protected float currentMoveSpeed;
+    [SerializeField] protected float targetMoveSpeed;
 
-    public void SetRunning(bool value)
-    {
-        isRunning = value;
-    }
-    protected float currentHp;
-
-    protected bool isDead;
-    protected bool isAttacking;
+    [Header("Runtime States")]
+    [SerializeField] protected bool isDead;
+    [SerializeField] protected bool isAttacking;
+    [SerializeField] protected bool isRunning;
 
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
 
+    public float WalkSpeed => walkSpeed;
     public float MoveSpeed => moveSpeed;
+    public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
+
+    public float MoveSmoothSpeed => moveSmoothSpeed;
+
+    public float CurrentMoveSpeed => currentMoveSpeed;
+    public float TargetMoveSpeed => targetMoveSpeed;
 
     public bool IsDead => isDead;
     public bool IsAttacking => isAttacking;
+    public bool IsRunning => isRunning;
 
     protected virtual void Awake()
     {
         currentHp = maxHp;
+        currentMoveSpeed = 0f;
+        targetMoveSpeed = 0f;
+    }
+
+    public virtual void SetRunning(bool value)
+    {
+        isRunning = value;
+    }
+
+    public virtual void SetAttacking(bool value)
+    {
+        isAttacking = value;
+    }
+
+    public virtual void SetCurrentMoveSpeed(float value)
+    {
+        currentMoveSpeed = value;
+    }
+
+    public virtual void SetTargetMoveSpeed(float value)
+    {
+        targetMoveSpeed = value;
     }
 
     public virtual void SetMoveSpeed(float value)
@@ -45,14 +73,19 @@ public abstract class CharacterStateBase : MonoBehaviour
         moveSpeed = value;
     }
 
+    public virtual void SetWalkSpeed(float value)
+    {
+        walkSpeed = value;
+    }
+
+    public virtual void SetRunSpeed(float value)
+    {
+        runSpeed = value;
+    }
+
     public virtual void SetRotateSpeed(float value)
     {
         rotateSpeed = value;
-    }
-
-    public virtual void SetAttacking(bool value)
-    {
-        isAttacking = value;
     }
 
     public virtual void TakeDamage(float damage)
@@ -61,9 +94,9 @@ public abstract class CharacterStateBase : MonoBehaviour
 
         currentHp -= damage;
 
-        if (currentHp <= 0)
+        if (currentHp <= 0f)
         {
-            currentHp = 0;
+            currentHp = 0f;
             Die();
         }
     }
