@@ -100,11 +100,18 @@ public class PlayerMovement : CharacterMovementBase
 
         float smoothSpeed = state.MoveSmoothSpeed * state.MoveSpeed;
 
-        state.SetCurrentMoveSpeed(
-            Mathf.MoveTowards(
-                state.CurrentMoveSpeed,
-                state.TargetMoveSpeed,
-                smoothSpeed * Time.fixedDeltaTime));
+        if (moveAmount <= 0f)
+        {
+            state.SetCurrentMoveSpeed(0f);
+        }
+        else
+        {
+            state.SetCurrentMoveSpeed(
+                Mathf.MoveTowards(
+                    state.CurrentMoveSpeed,
+                    state.TargetMoveSpeed,
+                    smoothSpeed * Time.fixedDeltaTime));
+        }
     }
     private bool IsGroundValid(Vector3 position)
     {

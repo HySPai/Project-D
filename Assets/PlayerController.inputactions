@@ -164,8 +164,8 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "94244706-180b-4e7b-b172-835c9567660e",
-                    "path": "<Mouse>/leftButton",
+                    "id": "31e27351-9792-4252-89f1-a5e33b84225e",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -175,8 +175,8 @@
                 },
                 {
                     "name": "",
-                    "id": "31e27351-9792-4252-89f1-a5e33b84225e",
-                    "path": "<Gamepad>/buttonSouth",
+                    "id": "94244706-180b-4e7b-b172-835c9567660e",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -292,7 +292,7 @@
                 {
                     "name": "2D Vector",
                     "id": "648a6996-9ddc-4b48-923d-d47186306eee",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

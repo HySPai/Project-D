@@ -5,12 +5,14 @@ public class PlayerInputHandler : MonoBehaviour
 {
     [Header("Input Actions")]
     public InputActionReference moveAction;
+    public InputActionReference cameraAction;
     public InputActionReference fire;
     public InputActionReference run_Dash;
     public InputActionReference walk;
 
     [Header("Movement Input")]
     [SerializeField] private Vector2 movementInput;
+    [SerializeField] private Vector2 cameraInput;
 
     [SerializeField] private float horizontalInput;
     [SerializeField] private float verticalInput;
@@ -34,21 +36,29 @@ public class PlayerInputHandler : MonoBehaviour
         this.state = state;
     }
 
-
     public Vector2 GetMoveInput()
     {
         return movementInput;
     }
 
+    public Vector2 GetCameraInput()
+    {
+        return cameraInput;
+    }
+
     private void OnEnable()
     {
         moveAction.action.Enable();
+        cameraAction.action.Enable();
         fire.action.Enable();
         run_Dash.action.Enable();
         walk.action.Enable();
 
         moveAction.action.performed += OnMovePerformed;
         moveAction.action.canceled += OnMoveCanceled;
+
+        cameraAction.action.performed += OnCameraPerformed;
+        cameraAction.action.canceled += OnCameraCanceled;
 
         fire.action.performed += OnFirePerformed;
 
@@ -64,6 +74,9 @@ public class PlayerInputHandler : MonoBehaviour
         moveAction.action.performed -= OnMovePerformed;
         moveAction.action.canceled -= OnMoveCanceled;
 
+        cameraAction.action.performed -= OnCameraPerformed;
+        cameraAction.action.canceled -= OnCameraCanceled;
+
         fire.action.performed -= OnFirePerformed;
 
         run_Dash.action.started -= OnRunStarted;
@@ -73,6 +86,7 @@ public class PlayerInputHandler : MonoBehaviour
         walk.action.canceled -= OnWalkCanceled;
 
         moveAction.action.Disable();
+        cameraAction.action.Disable();
         fire.action.Disable();
         run_Dash.action.Disable();
         walk.action.Disable();
@@ -81,6 +95,7 @@ public class PlayerInputHandler : MonoBehaviour
     private void Update()
     {
         HandleMovementInput();
+        HandleCameraInput();
     }
 
     private void HandleMovementInput()
@@ -97,6 +112,15 @@ public class PlayerInputHandler : MonoBehaviour
         moveAmount = Mathf.Clamp01(state.CurrentInput.magnitude);
     }
 
+    private void HandleCameraInput()
+    {
+        state.SetCurrentCameraInput(
+            Vector2.MoveTowards(
+                state.CurrentCameraInput,
+                cameraInput,
+                state.MoveSmoothSpeed * Time.deltaTime));
+    }
+
     private void OnMovePerformed(InputAction.CallbackContext ctx)
     {
         movementInput = ctx.ReadValue<Vector2>();
@@ -105,6 +129,16 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnMoveCanceled(InputAction.CallbackContext ctx)
     {
         movementInput = Vector2.zero;
+    }
+
+    private void OnCameraPerformed(InputAction.CallbackContext ctx)
+    {
+        cameraInput = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnCameraCanceled(InputAction.CallbackContext ctx)
+    {
+        cameraInput = Vector2.zero;
     }
 
     private void OnFirePerformed(InputAction.CallbackContext ctx)

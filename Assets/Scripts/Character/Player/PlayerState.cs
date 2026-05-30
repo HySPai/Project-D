@@ -11,9 +11,12 @@ public class PlayerState : CharacterStateBase
     [Header("Input Config")]
     [SerializeField] private float fullSpeedInputThreshold = 0.7f;
     [SerializeField] private Vector2 currentInput;
+    [SerializeField] private Vector2 currentCameraInput;
+
 
     public float FullSpeedInputThreshold => fullSpeedInputThreshold;
     public Vector2 CurrentInput => currentInput;
+    public Vector2 CurrentCameraInput => currentCameraInput;
 
     public LayerMask GroundLayer => groundLayer;
     public float GroundCheckDistance => groundCheckDistance;
@@ -24,10 +27,7 @@ public class PlayerState : CharacterStateBase
     {
         get
         {
-            float moveAmount =
-                Mathf.Clamp01(
-                    CurrentInput.magnitude /
-                    FullSpeedInputThreshold);
+            float moveAmount = Mathf.Clamp01(CurrentInput.magnitude / FullSpeedInputThreshold);
 
             if (IsRunning)
             {
@@ -47,5 +47,10 @@ public class PlayerState : CharacterStateBase
     public void SetCurrentInput(Vector2 value)
     {
         currentInput = value;
+    }
+
+    public void SetCurrentCameraInput(Vector2 value)
+    {
+        currentCameraInput = value;
     }
 }
