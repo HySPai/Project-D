@@ -1301,11 +1301,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
   maxHp: 100
-  walkSpeed: 2
   moveSpeed: 5
   runSpeed: 6.5
   rotateSpeed: 12
-  moveSmoothSpeed: 2
+  moveSmoothSpeed: 4
   currentHp: 0
   currentMoveSpeed: 0
   targetMoveSpeed: 0
@@ -1318,7 +1317,8 @@ MonoBehaviour:
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
   maxStepDownHeight: 1
-  walkInputThreshold: 0.5
+  fullSpeedInputThreshold: 0.7
+  currentInput: {x: 0, y: 0}
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1335,6 +1335,14 @@ MonoBehaviour:
   fire: {fileID: -1383131979076342110, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   run_Dash: {fileID: 8202096626566041950, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   walk: {fileID: 8704586590157092557, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  movementInput: {x: 0, y: 0}
+  horizontalInput: 0
+  verticalInput: 0
+  moveAmount: 0
+  isFire: 0
+  isRunPressed: 0
+  isWalkPressed: 0
+  isDash: 0
 --- !u!114 &3904609994375877722
 MonoBehaviour:
   m_ObjectHideFlags: 0

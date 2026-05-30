@@ -18,31 +18,16 @@ public class PlayerController : CharacterControllerBase
         movement.Initialize(state);
         combat.Initialize(state);
         animationController.Initialize(state);
+        input.Initialize(state);
     }
 
     private void Update()
     {
-        Vector2 moveInput = input.GetMoveInput();
-        float moveAmount = input.MoveAmount;
+        state.SetRunning(input.IsRunning());
 
-        bool isAnalogWalk = moveAmount == 0.5f;
-        bool isWalkButton = input.IsWalking();
-        bool isRunning = input.IsRunning();
+        movement.SetInput(state.CurrentInput);
 
-        if (isWalkButton)
-        {
-            state.SetRunning(isRunning);
-            state.SetWalking(!isRunning);
-        }
-        else
-        {
-            state.SetWalking(isAnalogWalk);
-            state.SetRunning(isRunning && !isAnalogWalk);
-        }
-
-        movement.SetInput(moveInput);
-
-        animationController.UpdateAnimation(moveAmount);
+        animationController.UpdateAnimation(state.AnimationMoveAmount);
 
         if (input.IsFire())
         {

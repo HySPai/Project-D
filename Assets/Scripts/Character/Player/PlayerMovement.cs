@@ -35,12 +35,14 @@ public class PlayerMovement : CharacterMovementBase
 
         Vector3 move = camRight * input.x + camForward * input.y;
 
-        if (state.IsWalking && move.sqrMagnitude > 0.001f)
+        float moveAmount = Mathf.Clamp01(input.magnitude / state.FullSpeedInputThreshold);
+
+        if (move.sqrMagnitude > 0.001f)
         {
-            move = move.normalized;
+            move.Normalize();
         }
 
-        UpdateMoveSpeed(move);
+        UpdateMoveSpeed(moveAmount);
 
         Vector3 delta = move * state.CurrentMoveSpeed * Time.fixedDeltaTime;
 
@@ -78,23 +80,19 @@ public class PlayerMovement : CharacterMovementBase
             rb.MoveRotation(smoothRot);
         }
     }
-    private void UpdateMoveSpeed(Vector3 move)
+    private void UpdateMoveSpeed(float moveAmount)
     {
         float targetSpeed = 0f;
 
-        if (move.sqrMagnitude > 0.001f)
+        if (moveAmount > 0f)
         {
             if (state.IsRunning)
             {
                 targetSpeed = state.RunSpeed;
             }
-            else if (state.IsWalking)
-            {
-                targetSpeed = state.WalkSpeed;
-            }
             else
             {
-                targetSpeed = state.MoveSpeed;
+                targetSpeed = state.MoveSpeed * moveAmount;
             }
         }
 

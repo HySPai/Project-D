@@ -22,11 +22,18 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private bool isWalkPressed;
     [SerializeField] private bool isDash;
 
+    private PlayerState state;
     private float runPressedTime;
 
     public float HorizontalInput => horizontalInput;
     public float VerticalInput => verticalInput;
     public float MoveAmount => moveAmount;
+
+    public void Initialize(PlayerState state)
+    {
+        this.state = state;
+    }
+
 
     public Vector2 GetMoveInput()
     {
@@ -78,22 +85,16 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        verticalInput = movementInput.y;
-        horizontalInput = movementInput.x;
+        state.SetCurrentInput(
+            Vector2.MoveTowards(
+                state.CurrentInput,
+                movementInput,
+                state.MoveSmoothSpeed * Time.deltaTime));
 
-        moveAmount =
-            Mathf.Clamp01(
-                Mathf.Abs(verticalInput) +
-                Mathf.Abs(horizontalInput));
+        verticalInput = state.CurrentInput.y;
+        horizontalInput = state.CurrentInput.x;
 
-        if (moveAmount <= 0.5f && moveAmount > 0f)
-        {
-            moveAmount = 0.5f;
-        }
-        else if (moveAmount > 0.5f)
-        {
-            moveAmount = 1f;
-        }
+        moveAmount = Mathf.Clamp01(state.CurrentInput.magnitude);
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)

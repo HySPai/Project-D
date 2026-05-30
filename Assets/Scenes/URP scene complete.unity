@@ -12633,8 +12633,8 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6237013157365418999, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
-      propertyPath: moveSmoothSpeed
-      value: 4
+      propertyPath: fullSpeedInputThreshold
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 7861660919349431496, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: m_LocalPosition.x

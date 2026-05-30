@@ -7,27 +7,45 @@ public class PlayerState : CharacterStateBase
     [SerializeField] protected float groundCheckDistance = 5f;
     [SerializeField] protected float edgeCheckForwardDistance = 0.5f;
     [SerializeField] protected float maxStepDownHeight = 1f;
-    [SerializeField] protected float walkInputThreshold = 0.5f;
 
-    protected bool isWalking;
+    [Header("Input Config")]
+    [SerializeField] private float fullSpeedInputThreshold = 0.7f;
+    [SerializeField] private Vector2 currentInput;
 
-    public float WalkInputThreshold => walkInputThreshold;
-    public bool IsWalking => isWalking;
-
-    public virtual void SetWalking(bool value)
-    {
-        isWalking = value;
-    }
+    public float FullSpeedInputThreshold => fullSpeedInputThreshold;
+    public Vector2 CurrentInput => currentInput;
 
     public LayerMask GroundLayer => groundLayer;
     public float GroundCheckDistance => groundCheckDistance;
     public float EdgeCheckForwardDistance => edgeCheckForwardDistance;
     public float MaxStepDownHeight => maxStepDownHeight;
 
+    public float AnimationMoveAmount
+    {
+        get
+        {
+            float moveAmount =
+                Mathf.Clamp01(
+                    CurrentInput.magnitude /
+                    FullSpeedInputThreshold);
+
+            if (IsRunning)
+            {
+                return 2f;
+            }
+
+            return moveAmount;
+        }
+    }
+
     protected override void Die()
     {
         base.Die();
 
         Debug.Log("Player Dead");
+    }
+    public void SetCurrentInput(Vector2 value)
+    {
+        currentInput = value;
     }
 }

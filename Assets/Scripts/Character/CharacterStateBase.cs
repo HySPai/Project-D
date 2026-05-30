@@ -6,7 +6,6 @@ public abstract class CharacterStateBase : MonoBehaviour
     [SerializeField] protected float maxHp = 100f;
 
     [Header("Movement Config")]
-    [SerializeField] protected float walkSpeed = 2f;
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected float runSpeed = 8f;
     [SerializeField] protected float rotateSpeed = 12f;
@@ -27,7 +26,6 @@ public abstract class CharacterStateBase : MonoBehaviour
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
 
-    public float WalkSpeed => walkSpeed;
     public float MoveSpeed => moveSpeed;
     public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
@@ -71,11 +69,6 @@ public abstract class CharacterStateBase : MonoBehaviour
     public virtual void SetMoveSpeed(float value)
     {
         moveSpeed = value;
-    }
-
-    public virtual void SetWalkSpeed(float value)
-    {
-        walkSpeed = value;
     }
 
     public virtual void SetRunSpeed(float value)
