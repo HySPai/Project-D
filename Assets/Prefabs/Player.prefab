@@ -1199,7 +1199,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6101746182165348096}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 15
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1303,6 +1303,8 @@ MonoBehaviour:
   maxHp: 100
   moveSpeed: 5
   rotateSpeed: 12
+  runSpeed: 6.5
+  runMultiplier: 1.8
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -1323,6 +1325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveAction: {fileID: -2540249642397497863, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   fire: {fileID: 7153550806046692233, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  run_Dash: {fileID: 2176339660267104937, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
 --- !u!114 &3904609994375877722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1350,6 +1353,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
+  moveParameter: Move
+  attackParameter: Attack
+  dashParameter: Dash
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0

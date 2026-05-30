@@ -8,7 +8,19 @@ public abstract class CharacterStateBase : MonoBehaviour
     [Header("Movement")]
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected float rotateSpeed = 12f;
+    [SerializeField] protected float runSpeed = 8f;
+    [Header("Run")]
+    [SerializeField] private float runMultiplier = 1.8f;
 
+    private bool isRunning;
+
+    public float RunMultiplier => runMultiplier;
+    public bool IsRunning => isRunning;
+
+    public void SetRunning(bool value)
+    {
+        isRunning = value;
+    }
     protected float currentHp;
 
     protected bool isDead;

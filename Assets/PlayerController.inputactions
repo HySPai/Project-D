@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "PlayerController",
     "maps": [
         {
@@ -9,6 +10,15 @@
                     "name": "Fire",
                     "type": "Button",
                     "id": "a75e8240-c09d-4c1a-8801-90763a945321",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Run_Dash",
+                    "type": "Button",
+                    "id": "e4ad1e2b-1d52-4d03-b904-3cc504106137",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -156,6 +166,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "867e2241-1447-4ea7-a79d-0acbe278b2ef",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run_Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f01e5e79-a5e1-43fe-83ef-284f6bc6c8f3",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run_Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

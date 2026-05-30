@@ -3,6 +3,10 @@
 public class PlayerAnimation : CharacterAnimationBase
 {
     [SerializeField] private Animator animator;
+    [SerializeField] private string moveParameter = "Move";
+    [SerializeField] private string attackParameter = "Attack";
+    [SerializeField] private string dashParameter = "Dash";
+    [SerializeField] private string rollParameter = "Roll";
 
     private PlayerState state;
 
@@ -22,9 +26,9 @@ public class PlayerAnimation : CharacterAnimationBase
                 moveValue = 0;
             }
 
-            animator.SetBool("Attack", state.IsAttacking);
+            animator.SetBool(attackParameter, state.IsAttacking);
         }
 
-        animator.SetFloat("Move", moveValue);
+        animator.SetFloat(moveParameter, moveValue);
     }
 }

@@ -35,8 +35,14 @@ public class PlayerMovement : CharacterMovementBase
 
         Vector3 move = camRight * input.x + camForward * input.y;
 
-        Vector3 delta = move * state.MoveSpeed * Time.fixedDeltaTime;
+        float currentMoveSpeed = state.MoveSpeed;
 
+        if (state.IsRunning)
+        {
+            currentMoveSpeed *= state.RunMultiplier;
+        }
+
+        Vector3 delta = move * currentMoveSpeed * Time.fixedDeltaTime;
         Vector3 currentPos = rb.position;
 
         Vector3 xTarget = currentPos + new Vector3(delta.x, 0f, 0f);
@@ -62,11 +68,7 @@ public class PlayerMovement : CharacterMovementBase
         if (move.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(move);
-
-            Quaternion smoothRot = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                state.RotateSpeed * Time.fixedDeltaTime);
+            Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, state.RotateSpeed * Time.fixedDeltaTime);
 
             rb.MoveRotation(smoothRot);
         }
@@ -87,7 +89,6 @@ public class PlayerMovement : CharacterMovementBase
         }
 
         float heightDiff = rb.position.y - hit.point.y;
-
         return heightDiff <= state.MaxStepDownHeight;
     }
 
@@ -98,12 +99,8 @@ public class PlayerMovement : CharacterMovementBase
             return;
 
         Vector3 center = rb.position + Vector3.up * 0.2f;
-
         Gizmos.color = Color.red;
-
-        Gizmos.DrawLine(
-            center,
-            center + Vector3.down * state.GroundCheckDistance);
+        Gizmos.DrawLine(center, center + Vector3.down * state.GroundCheckDistance);
     }
 #endif
 }

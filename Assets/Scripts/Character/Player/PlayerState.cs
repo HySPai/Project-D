@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class PlayerState : CharacterStateBase
 {
-
     [Header("Ground Check")]
     [SerializeField] protected LayerMask groundLayer;
     [SerializeField] protected float groundCheckDistance = 5f;

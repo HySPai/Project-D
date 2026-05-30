@@ -24,12 +24,20 @@ public class PlayerController : CharacterControllerBase
     {
         Vector2 moveInput = input.GetMoveInput();
 
+        state.SetRunning(input.IsRunning());
+
         movement.SetInput(moveInput);
+
         animationController.UpdateAnimation(moveInput);
 
         if (input.IsFire())
         {
             combat.Attack();
+        }
+
+        if (input.IsDash())
+        {
+            Debug.Log("Dash");
         }
     }
 
