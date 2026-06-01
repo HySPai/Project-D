@@ -1,0 +1,26 @@
+using UnityEngine;
+
+public class EnemyController : CharacterControllerBase
+{
+    [SerializeField] private EnemyState state;
+    [SerializeField] private EnemyMovement movement;
+    [SerializeField] private EnemyCombat combat;
+    [SerializeField] private EnemyAnimation anim;
+
+    public override CharacterStateBase GetState => state;
+    public override CharacterMovementBase GetMovement => movement;
+    public override CharacterCombatBase GetCombat => combat;
+    public override CharacterAnimationBase GetAnimation => anim;
+
+    private void Awake()
+    {
+        movement.Initialize(state);
+        combat.Initialize(state);
+        anim.Initialize(state);
+    }
+
+    private void Update()
+    {
+        anim.UpdateAnimation(0f);
+    }
+}
