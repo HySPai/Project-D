@@ -157,6 +157,23 @@ public class PlayerMovement : CharacterMovementBase
 
         animationController.PlayTargetAnimation(rollAction, true, true, false, false);
     }
+    public override Vector3 GetMoveDirection()
+    {
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
+
+        camForward.y = 0f;
+        camRight.y = 0f;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDirection =
+            camRight * input.x +
+            camForward * input.y;
+
+        return moveDirection.normalized;
+    }
     private bool IsGroundValid(Vector3 position)
     {
         Vector3 center = position + Vector3.up * 0.2f;

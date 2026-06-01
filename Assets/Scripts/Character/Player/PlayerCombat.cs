@@ -1,12 +1,13 @@
-﻿public class PlayerCombat : CharacterCombatBase
+﻿using UnityEngine;
+
+public class PlayerCombat : CharacterCombatBase
 {
     private CharacterControllerBase character;
 
-    public void Initialize(
-        CharacterStateBase state,
-        CharacterControllerBase character)
+    public void Initialize(CharacterStateBase state, CharacterControllerBase character)
     {
         base.Initialize(state);
+
         this.character = character;
     }
 
@@ -14,18 +15,62 @@
     {
         if (state == null) return;
         if (state.IsDead) return;
-        if (state.IsAttacking) return;
-        if (state.IsRolling) return;
 
-        string attackAnimation = light_Attack_01;
+        if (canPerformRollingAttack)
+        {
+            PlayAttackAnimation(currentWeapon.rollingAttackAnimation, character);
+            currentAttackType = AttackType.RollingAttack01;
+            DisableCanDoRollingAttack();
 
-        character.GetAnimation.PlayTargetAnimation(
-            attackAnimation,
-            true,
-            true,
-            false,
-            false);
+            return;
+        }
 
-        lastAttackAnimationPerformed = attackAnimation;
+        if (state.IsRunning)
+        {
+            PlayAttackAnimation(currentWeapon.runningAttackAnimation, character);
+            currentAttackType = AttackType.RunningAttack01;
+
+            return;
+        }
+
+        if (state.IsAttacking)
+        {
+            if (!canDoCombo)
+                return;
+
+            DisableCanDoCombo();
+            RotateTowardsInput();
+            AdvanceCombo();
+            PlayAttackAnimation(GetCurrentComboAnimation(), character);
+
+            return;
+        }
+
+        comboIndex = 0;
+
+        PlayAttackAnimation(GetCurrentComboAnimation(), character);
+    }
+    private void RotateTowardsInput()
+    {
+        Vector3 direction = character.GetMovement.GetMoveDirection();
+
+        if (direction.sqrMagnitude < 0.01f)
+            return;
+
+        transform.rotation = Quaternion.LookRotation(direction);
+    }
+    public virtual void DrainStaminaBasedOnAttack()
+    {
+
+    }
+
+    public override void EnableCanDoCombo()
+    {
+        canDoCombo = true;
+    }
+
+    public override void DisableCanDoCombo()
+    {
+        canDoCombo = false;
     }
 }

@@ -6,4 +6,8 @@ public abstract class CharacterMovementBase : MonoBehaviour, IMovable
 
     public abstract void Move();
     public abstract void Roll();
+    public virtual Vector3 GetMoveDirection()
+    {
+        return Vector3.zero;
+    }
 }

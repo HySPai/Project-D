@@ -103,11 +103,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        state.SetCurrentInput(
-            Vector2.MoveTowards(
-                state.CurrentInput,
-                movementInput,
-                state.MoveSmoothSpeed * Time.deltaTime));
+        state.SetCurrentInput(Vector2.MoveTowards(state.CurrentInput, movementInput, state.MoveSmoothSpeed * Time.deltaTime));
 
         verticalInput = state.CurrentInput.y;
         horizontalInput = state.CurrentInput.x;
@@ -117,11 +113,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void HandleCameraInput()
     {
-        state.SetCurrentCameraInput(
-            Vector2.MoveTowards(
-                state.CurrentCameraInput,
-                cameraInput,
-                state.MoveSmoothSpeed * Time.deltaTime));
+        state.SetCurrentCameraInput(Vector2.MoveTowards(state.CurrentCameraInput, cameraInput, state.MoveSmoothSpeed * Time.deltaTime));
     }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
