@@ -8,15 +8,15 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerAnimation animationController;
     [SerializeField] private PlayerCombat combat;
 
-    public override CharacterStateBase State => state;
-    public override CharacterMovementBase Movement => movement;
-    public override CharacterCombatBase Combat => combat;
-    public override CharacterAnimationBase Animation => animationController;
+    public override CharacterStateBase GetState => state;
+    public override CharacterMovementBase GetMovement => movement;
+    public override CharacterCombatBase GetCombat => combat;
+    public override CharacterAnimationBase GetAnimation => animationController;
 
     private void Awake()
     {
         movement.Initialize(state);
-        combat.Initialize(state);
+        combat.Initialize(state, this);
         animationController.Initialize(state);
         input.Initialize(state);
     }

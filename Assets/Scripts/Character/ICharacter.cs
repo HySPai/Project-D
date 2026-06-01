@@ -2,10 +2,10 @@ using UnityEngine;
 
 public interface ICharacter
 {
-    CharacterStateBase State { get; }
-    CharacterMovementBase Movement { get; }
-    CharacterCombatBase Combat { get; }
-    CharacterAnimationBase Animation { get; }
+    CharacterStateBase GetState { get; }
+    CharacterMovementBase GetMovement { get; }
+    CharacterCombatBase GetCombat { get; }
+    CharacterAnimationBase GetAnimation { get; }
 }
 
 public interface IDamageable

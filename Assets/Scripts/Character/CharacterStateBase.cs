@@ -23,6 +23,36 @@ public abstract class CharacterStateBase : MonoBehaviour
     [SerializeField] protected bool isAttacking;
     [SerializeField] protected bool isRunning;
 
+    [SerializeField] private bool applyRootMotion;
+    [SerializeField] private bool canRotate = true;
+    [SerializeField] private bool canMove = true;
+    [SerializeField] private bool isRolling;
+
+    public bool ApplyRootMotion => applyRootMotion;
+    public bool CanRotate => canRotate;
+    public bool CanMove => canMove;
+    public bool IsRolling => isRolling;
+
+    public void SetApplyRootMotion(bool value)
+    {
+        applyRootMotion = value;
+    }
+
+    public void SetCanRotate(bool value)
+    {
+        canRotate = value;
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
+
+    public void SetRolling(bool value)
+    {
+        isRolling = value;
+    }
+
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
 

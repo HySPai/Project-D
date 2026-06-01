@@ -2,22 +2,21 @@
 
 public class PlayerAnimation : CharacterAnimationBase
 {
-    [SerializeField] private Animator animator;
     [SerializeField] private string moveParameter = "Move";
-    [SerializeField] private string attackParameter = "Attack";
     [SerializeField] private string rollParameter = "Roll";
 
-    private PlayerState state;
     private float currentMoveValue;
     public void Initialize(PlayerState state)
     {
         this.state = state;
-    }
 
+        base.Initialize(state);
+    }
     public override void UpdateAnimation(float moveAmount)
     {
         float targetMoveValue = 0f;
 
+        animator.applyRootMotion = state.ApplyRootMotion;
         if (state != null)
         {
             if (state.IsAttacking)
@@ -28,19 +27,10 @@ public class PlayerAnimation : CharacterAnimationBase
             {
                 targetMoveValue = moveAmount;
             }
-
-            animator.SetBool(
-                attackParameter,
-                state.IsAttacking);
         }
 
-        currentMoveValue = Mathf.MoveTowards(
-            currentMoveValue,
-            targetMoveValue,
-            state.MoveSmoothSpeed * Time.deltaTime);
+        currentMoveValue = Mathf.MoveTowards(currentMoveValue, targetMoveValue, state.MoveSmoothSpeed * Time.deltaTime);
 
-        animator.SetFloat(
-            moveParameter,
-            currentMoveValue);
+        animator.SetFloat(moveParameter, currentMoveValue);
     }
 }

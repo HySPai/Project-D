@@ -22,7 +22,8 @@ public class PlayerMovement : CharacterMovementBase
     {
         if (state == null) return;
         if (state.IsDead) return;
-        if (state.IsAttacking) return;
+        if (!state.CanMove)
+            return;
 
         Vector3 camForward = cameraTransform.forward;
         Vector3 camRight = cameraTransform.right;
@@ -68,7 +69,7 @@ public class PlayerMovement : CharacterMovementBase
 
         rb.MovePosition(finalPosition);
 
-        if (move.sqrMagnitude > 0.001f)
+        if (state.CanRotate && move.sqrMagnitude > 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(move);
 
