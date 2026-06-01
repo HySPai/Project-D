@@ -3359,6 +3359,10 @@ PrefabInstance:
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 6785888771761393320, guid: fb98862fdff4e24498278f45bfc30199, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785888771761393320, guid: fb98862fdff4e24498278f45bfc30199, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -3512,6 +3516,10 @@ MonoBehaviour:
   comboResetDelay: 2
   currentWeapon: {fileID: 0}
   comboIndex: 0
+  lockOnRadius: 10
+  lockOnLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &418164580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13288,6 +13296,14 @@ PrefabInstance:
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 963194228}
+    - target: {fileID: 4935462881444096308, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+      propertyPath: run_Roll
+      value: 
+      objectReference: {fileID: 8202096626566041950, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+    - target: {fileID: 4935462881444096308, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+      propertyPath: lockTarget
+      value: 
+      objectReference: {fileID: -2039787737568666376, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
     - target: {fileID: 6101746182165348096, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: m_Name
       value: Player
@@ -13347,6 +13363,10 @@ PrefabInstance:
     - target: {fileID: 8004906126929870345, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: comboResetDelay
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8004906126929870345, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+      propertyPath: lockOnLayer.m_Bits
+      value: 256
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

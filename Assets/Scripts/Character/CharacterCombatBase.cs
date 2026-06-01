@@ -28,6 +28,12 @@ public abstract class CharacterCombatBase : MonoBehaviour
     [SerializeField] protected WeaponItem currentWeapon;
     [SerializeField] protected int comboIndex;
 
+    [Header("Lock On")]
+    [SerializeField] protected float lockOnRadius = 10f;
+    [SerializeField] protected LayerMask lockOnLayer;
+
+    public Transform LockOnTransform => lockOnTransform;
+
     public bool CanDoCombo => canDoCombo;
 
     public virtual void Initialize(CharacterStateBase state)
@@ -122,5 +128,16 @@ public abstract class CharacterCombatBase : MonoBehaviour
         character.GetAnimation.PlayTargetAnimation(
             animationName,
             true);
+    }
+
+
+    public virtual void SetLockTarget(Transform target)
+    {
+        lockOnTransform = target;
+    }
+
+    public virtual void ClearLockTarget()
+    {
+        lockOnTransform = null;
     }
 }

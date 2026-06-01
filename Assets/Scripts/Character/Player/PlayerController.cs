@@ -15,7 +15,7 @@ public class PlayerController : CharacterControllerBase
 
     private void Awake()
     {
-        movement.Initialize(state, anim);
+        movement.Initialize(state, anim, combat);
         combat.Initialize(state, this);
         anim.Initialize(state);
         input.Initialize(state);
@@ -23,17 +23,18 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
-        bool canRun =
-            input.IsRunning() &&
-            state.CurrentInput.sqrMagnitude > 0.01f;
+        bool canRun = input.IsRunning() && state.CurrentInput.sqrMagnitude > 0.01f;
 
-        state.SetRunning(
-            !state.IsRolling &&
-            canRun);
+        state.SetRunning(!state.IsRolling && canRun);
 
         movement.SetInput(state.CurrentInput);
 
         anim.UpdateAnimation(state.AnimationMoveAmount);
+
+        if (input.IsLockTarget())
+        {
+            combat.LockTarget();
+        }
 
         if (input.IsFire())
         {

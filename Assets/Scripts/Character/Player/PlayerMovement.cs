@@ -7,13 +7,16 @@ public class PlayerMovement : CharacterMovementBase
 
     private Vector2 input;
     private PlayerState state;
-    private PlayerAnimation animationController;
+    private PlayerAnimation anim;
+    private PlayerCombat combat;
+
     [SerializeField] private string rollAction = "Roll_Forward_01";
 
-    public void Initialize(PlayerState state, PlayerAnimation animation)
+    public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat)
     {
         this.state = state;
-        this.animationController = animation;
+        this.anim = animation;
+        this.combat = combat;
     }
 
     public override void SetInput(Vector2 input)
@@ -72,16 +75,31 @@ public class PlayerMovement : CharacterMovementBase
 
         rb.MovePosition(finalPosition);
 
-        if (state.CanRotate && move.sqrMagnitude > 0.001f)
+        if (state.CanRotate)
         {
-            Quaternion targetRot = Quaternion.LookRotation(move);
+            if (combat.LockOnTransform != null)
+            {
+                Vector3 direction = combat.LockOnTransform.position - transform.position;
 
-            Quaternion smoothRot = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                state.RotateSpeed * Time.fixedDeltaTime);
+                direction.y = 0f;
 
-            rb.MoveRotation(smoothRot);
+                if (direction.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(direction);
+
+                    Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, state.RotateSpeed * Time.fixedDeltaTime);
+
+                    rb.MoveRotation(smoothRot);
+                }
+            }
+            else if (move.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(move);
+
+                Quaternion smoothRot = Quaternion.Slerp(transform.rotation, targetRot, state.RotateSpeed * Time.fixedDeltaTime);
+
+                rb.MoveRotation(smoothRot);
+            }
         }
     }
     private void UpdateMoveSpeed(float moveAmount)
@@ -110,11 +128,7 @@ public class PlayerMovement : CharacterMovementBase
         }
         else
         {
-            state.SetCurrentMoveSpeed(
-                Mathf.MoveTowards(
-                    state.CurrentMoveSpeed,
-                    state.TargetMoveSpeed,
-                    smoothSpeed * Time.fixedDeltaTime));
+            state.SetCurrentMoveSpeed(Mathf.MoveTowards(state.CurrentMoveSpeed,state.TargetMoveSpeed,smoothSpeed * Time.fixedDeltaTime));
         }
     }
     public override void Roll()
@@ -155,7 +169,7 @@ public class PlayerMovement : CharacterMovementBase
 
         state.SetRolling(true);
 
-        animationController.PlayTargetAnimation(rollAction, true, true, false, false);
+        anim.PlayTargetAnimation(rollAction, true, true, false, false);
     }
     public override Vector3 GetMoveDirection()
     {

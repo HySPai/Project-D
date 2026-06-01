@@ -143,7 +143,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Run_Dash",
+                    "name": "Run_Roll",
                     "type": "Button",
                     "id": "281a2f2b-f3b4-43f7-b6a0-75605b3a3c02",
                     "expectedControlType": "",
@@ -155,6 +155,15 @@
                     "name": "Walk",
                     "type": "Button",
                     "id": "b8a9bb1d-3bb8-49fb-84ba-3ce04045c4e7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LockTarget",
+                    "type": "Button",
+                    "id": "b5bb368b-7a57-4c83-b73a-34cdef6ca87a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -191,7 +200,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Run_Dash",
+                    "action": "Run_Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -202,7 +211,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Run_Dash",
+                    "action": "Run_Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -214,6 +223,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Walk",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c8dea52e-2fa5-4e7b-b587-3d743e9df411",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1e1ed927-7e8b-4fc7-ad93-138f7a7ac336",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LockTarget",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

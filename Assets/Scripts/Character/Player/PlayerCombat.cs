@@ -73,4 +73,31 @@ public class PlayerCombat : CharacterCombatBase
     {
         canDoCombo = false;
     }
+
+    public void LockTarget()
+    {
+        if (lockOnTransform != null)
+        {
+            ClearLockTarget();
+            return;
+        }
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, lockOnRadius, lockOnLayer);
+
+        float nearestDistance = float.MaxValue;
+        Transform nearestTarget = null;
+
+        foreach (Collider hit in hits)
+        {
+            float sqrDistance = (hit.transform.position - transform.position).sqrMagnitude;
+
+            if (sqrDistance < nearestDistance)
+            {
+                nearestDistance = sqrDistance;
+                nearestTarget = hit.transform;
+            }
+        }
+
+        SetLockTarget(nearestTarget);
+    }
 }

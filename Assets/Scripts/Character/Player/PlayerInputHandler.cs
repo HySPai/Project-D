@@ -7,8 +7,9 @@ public class PlayerInputHandler : MonoBehaviour
     public InputActionReference moveAction;
     public InputActionReference cameraAction;
     public InputActionReference fire;
-    public InputActionReference run_Dash;
+    public InputActionReference run_Roll;
     public InputActionReference walk;
+    public InputActionReference lockTarget;
 
     [Header("Movement Input")]
     [SerializeField] private Vector2 movementInput;
@@ -26,9 +27,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     [SerializeField] private bool isRunHeld;
     [SerializeField] private bool rollRequested;
+    [SerializeField] private bool isLockTargetRequested;
 
     private PlayerState state;
-    private float runPressedTime;
 
     public float HorizontalInput => horizontalInput;
     public float VerticalInput => verticalInput;
@@ -54,8 +55,9 @@ public class PlayerInputHandler : MonoBehaviour
         moveAction.action.Enable();
         cameraAction.action.Enable();
         fire.action.Enable();
-        run_Dash.action.Enable();
+        run_Roll.action.Enable();
         walk.action.Enable();
+        lockTarget.action.Enable();
 
         moveAction.action.performed += OnMovePerformed;
         moveAction.action.canceled += OnMoveCanceled;
@@ -65,11 +67,13 @@ public class PlayerInputHandler : MonoBehaviour
 
         fire.action.performed += OnFirePerformed;
 
-        run_Dash.action.started += OnRunStarted;
-        run_Dash.action.canceled += OnRunCanceled;
+        run_Roll.action.started += OnRunStarted;
+        run_Roll.action.canceled += OnRunCanceled;
 
         walk.action.started += OnWalkStarted;
         walk.action.canceled += OnWalkCanceled;
+
+        lockTarget.action.started += OnLockTargetStarted;
     }
 
     private void OnDisable()
@@ -82,16 +86,19 @@ public class PlayerInputHandler : MonoBehaviour
 
         fire.action.performed -= OnFirePerformed;
 
-        run_Dash.action.started -= OnRunStarted;
-        run_Dash.action.canceled -= OnRunCanceled;
+        run_Roll.action.started -= OnRunStarted;
+        run_Roll.action.canceled -= OnRunCanceled;
 
         walk.action.started -= OnWalkStarted;
         walk.action.canceled -= OnWalkCanceled;
 
+        lockTarget.action.started -= OnLockTargetStarted;
+
+        lockTarget.action.Disable();
         moveAction.action.Disable();
         cameraAction.action.Disable();
         fire.action.Disable();
-        run_Dash.action.Disable();
+        run_Roll.action.Disable();
         walk.action.Disable();
     }
 
@@ -161,7 +168,10 @@ public class PlayerInputHandler : MonoBehaviour
     {
         isWalkPressed = false;
     }
-
+    private void OnLockTargetStarted(InputAction.CallbackContext ctx)
+    {
+        isLockTargetRequested = true;
+    }
     public bool IsRunning()
     {
         return isRunHeld;
@@ -187,6 +197,14 @@ public class PlayerInputHandler : MonoBehaviour
             return false;
 
         rollRequested = false;
+        return true;
+    }
+    public bool IsLockTarget()
+    {
+        if (!isLockTargetRequested)
+            return false;
+
+        isLockTargetRequested = false;
         return true;
     }
 }
