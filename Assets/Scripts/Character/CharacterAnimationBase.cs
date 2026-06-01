@@ -6,6 +6,8 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
     protected CharacterStateBase state;
 
+    protected bool applyRootMotion;
+
     public virtual void Initialize(CharacterStateBase state)
     {
         this.state = state;
@@ -15,7 +17,7 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
     public virtual void ApplyRootMotion(bool value)
     {
-        animator.applyRootMotion = value;
+        applyRootMotion = value;
     }
 
     public virtual void PlayTargetAnimation(
@@ -27,6 +29,8 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     {
         if (state == null)
             return;
+
+        this.applyRootMotion = applyRootMotion;
 
         animator.CrossFade(targetAnimation, 0.2f);
 

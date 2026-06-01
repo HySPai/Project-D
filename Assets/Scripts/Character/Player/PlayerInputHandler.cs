@@ -24,6 +24,9 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private bool isWalkPressed;
     [SerializeField] private bool isDash;
 
+    [SerializeField] private bool isRunHeld;
+    [SerializeField] private bool rollRequested;
+
     private PlayerState state;
     private float runPressedTime;
 
@@ -148,20 +151,13 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void OnRunStarted(InputAction.CallbackContext ctx)
     {
-        runPressedTime = Time.time;
-        isRunPressed = true;
+        isRunHeld = true;
+        rollRequested = true;
     }
 
     private void OnRunCanceled(InputAction.CallbackContext ctx)
     {
-        float holdTime = Time.time - runPressedTime;
-
-        if (holdTime < 0.2f)
-        {
-            isDash = true;
-        }
-
-        isRunPressed = false;
+        isRunHeld = false;
     }
 
     private void OnWalkStarted(InputAction.CallbackContext ctx)
@@ -176,7 +172,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     public bool IsRunning()
     {
-        return isRunPressed;
+        return isRunHeld;
     }
 
     public bool IsWalking()
@@ -193,12 +189,12 @@ public class PlayerInputHandler : MonoBehaviour
         return true;
     }
 
-    public bool IsDash()
+    public bool IsRolling()
     {
-        if (!isDash)
+        if (!rollRequested)
             return false;
 
-        isDash = false;
+        rollRequested = false;
         return true;
     }
 }

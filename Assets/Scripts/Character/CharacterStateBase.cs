@@ -2,72 +2,60 @@ using UnityEngine;
 
 public abstract class CharacterStateBase : MonoBehaviour
 {
-    [Header("Health")]
+    [Header("Stats")]
     [SerializeField] protected float maxHp = 100f;
+
+    [SerializeField] protected float currentHp;
+
+    public float MaxHp => maxHp;
+    public float CurrentHp => currentHp;
 
     [Header("Movement Config")]
     [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected float runSpeed = 8f;
     [SerializeField] protected float rotateSpeed = 12f;
 
-    [Header("Animation Config")]
-    [SerializeField] protected float moveSmoothSpeed = 8f;
-
-    [Header("Runtime Values")]
-    [SerializeField] protected float currentHp;
-    [SerializeField] protected float currentMoveSpeed;
-    [SerializeField] protected float targetMoveSpeed;
-
-    [Header("Runtime States")]
-    [SerializeField] protected bool isDead;
-    [SerializeField] protected bool isAttacking;
-    [SerializeField] protected bool isRunning;
-
-    [SerializeField] private bool applyRootMotion;
-    [SerializeField] private bool canRotate = true;
-    [SerializeField] private bool canMove = true;
-    [SerializeField] private bool isRolling;
-
-    public bool ApplyRootMotion => applyRootMotion;
-    public bool CanRotate => canRotate;
-    public bool CanMove => canMove;
-    public bool IsRolling => isRolling;
-
-    public void SetApplyRootMotion(bool value)
-    {
-        applyRootMotion = value;
-    }
-
-    public void SetCanRotate(bool value)
-    {
-        canRotate = value;
-    }
-
-    public void SetCanMove(bool value)
-    {
-        canMove = value;
-    }
-
-    public void SetRolling(bool value)
-    {
-        isRolling = value;
-    }
-
-    public float MaxHp => maxHp;
-    public float CurrentHp => currentHp;
-
     public float MoveSpeed => moveSpeed;
     public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
 
+    [Header("Animation Config")]
+    [SerializeField] protected float moveSmoothSpeed = 8f;
+
     public float MoveSmoothSpeed => moveSmoothSpeed;
+
+    [Header("Runtime Movement")]
+    [SerializeField] protected float currentMoveSpeed;
+    [SerializeField] protected float targetMoveSpeed;
 
     public float CurrentMoveSpeed => currentMoveSpeed;
     public float TargetMoveSpeed => targetMoveSpeed;
 
+    [SerializeField] protected bool isDead;
+    [SerializeField] protected bool isAttacking;
+    [SerializeField] protected bool isRunning;
+    [SerializeField] protected bool isRolling;
+    [SerializeField] protected bool isInvulnerable;
+
     public bool IsDead => isDead;
     public bool IsAttacking => isAttacking;
     public bool IsRunning => isRunning;
+    public bool IsRolling => isRolling;
+    public bool IsInvulnerable => isInvulnerable;
+
+    [Header("Character Permissions")]
+    [SerializeField] private bool applyRootMotion;
+    [SerializeField] private bool canMove = true;
+    [SerializeField] private bool canRotate = true;
+
+    public bool ApplyRootMotion => applyRootMotion;
+    public bool CanMove => canMove;
+    public bool CanRotate => canRotate;
+
+    [Header("Root Motion")]
+    [SerializeField] protected float rollDistanceMultiplier = 1f;
+
+    public float RollDistanceMultiplier => rollDistanceMultiplier;
 
     protected virtual void Awake()
     {
@@ -75,7 +63,7 @@ public abstract class CharacterStateBase : MonoBehaviour
         currentMoveSpeed = 0f;
         targetMoveSpeed = 0f;
     }
-
+    #region State Setters
     public virtual void SetRunning(bool value)
     {
         isRunning = value;
@@ -86,6 +74,33 @@ public abstract class CharacterStateBase : MonoBehaviour
         isAttacking = value;
     }
 
+    public virtual void SetRolling(bool value)
+    {
+        isRolling = value;
+    }
+    #endregion
+
+    #region Permission Setters
+
+    public void SetApplyRootMotion(bool value)
+    {
+        applyRootMotion = value;
+    }
+
+    public void SetCanMove(bool value)
+    {
+        canMove = value;
+    }
+
+    public void SetCanRotate(bool value)
+    {
+        canRotate = value;
+    }
+
+    #endregion
+
+    #region Runtime Setters
+
     public virtual void SetCurrentMoveSpeed(float value)
     {
         currentMoveSpeed = value;
@@ -95,6 +110,9 @@ public abstract class CharacterStateBase : MonoBehaviour
     {
         targetMoveSpeed = value;
     }
+    #endregion
+
+    #region Config Setters
 
     public virtual void SetMoveSpeed(float value)
     {
@@ -111,9 +129,21 @@ public abstract class CharacterStateBase : MonoBehaviour
         rotateSpeed = value;
     }
 
+    #endregion
+
+    #region Health
+
     public virtual void TakeDamage(float damage)
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            return;
+        }
+
+        if (isInvulnerable)
+        {
+            return;
+        }
 
         currentHp -= damage;
 
@@ -124,8 +154,20 @@ public abstract class CharacterStateBase : MonoBehaviour
         }
     }
 
+    public virtual void EnableIsInvulnerable()
+    {
+        isInvulnerable = true;
+    }
+
+    public virtual void DisableIsInvulnerable()
+    {
+        isInvulnerable = false;
+    }
+
     protected virtual void Die()
     {
         isDead = true;
     }
+
+    #endregion
 }

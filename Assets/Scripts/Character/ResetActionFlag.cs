@@ -20,7 +20,6 @@ public class ResetActionFlag : StateMachineBehaviour
         CharacterStateBase state = character.GetState;
 
         state.SetAttacking(false);
-
         state.SetApplyRootMotion(false);
         state.SetCanRotate(true);
         state.SetCanMove(true);

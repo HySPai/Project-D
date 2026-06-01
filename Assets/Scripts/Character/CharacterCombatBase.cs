@@ -52,6 +52,21 @@ public abstract class CharacterCombatBase : MonoBehaviour
 
     }
 
+    public virtual void DrainStaminaBasedOnAttack()
+    {
+
+    }
+
+    public virtual void OpenDamageCollider()
+    {
+        colAttack.enabled = true;
+    }
+
+    public virtual void CloseDamageCollider()
+    {
+        colAttack.enabled = false;
+    }
+
     protected void PlayAttackAnimation(
     string animationName,
     CharacterControllerBase character)

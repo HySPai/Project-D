@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class PlayerCombat : CharacterCombatBase
+﻿public class PlayerCombat : CharacterCombatBase
 {
     private CharacterControllerBase character;
 
@@ -17,6 +15,7 @@ public class PlayerCombat : CharacterCombatBase
         if (state == null) return;
         if (state.IsDead) return;
         if (state.IsAttacking) return;
+        if (state.IsRolling) return;
 
         string attackAnimation = light_Attack_01;
 

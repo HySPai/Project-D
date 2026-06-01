@@ -7,10 +7,13 @@ public class PlayerMovement : CharacterMovementBase
 
     private Vector2 input;
     private PlayerState state;
+    private PlayerAnimation animationController;
+    [SerializeField] private string rollAction = "Roll_Forward_01";
 
-    public void Initialize(PlayerState state)
+    public void Initialize(PlayerState state, PlayerAnimation animation)
     {
         this.state = state;
+        this.animationController = animation;
     }
 
     public override void SetInput(Vector2 input)
@@ -113,6 +116,46 @@ public class PlayerMovement : CharacterMovementBase
                     state.TargetMoveSpeed,
                     smoothSpeed * Time.fixedDeltaTime));
         }
+    }
+    public override void Roll()
+    {
+        if (state == null)
+            return;
+
+        if (state.IsDead)
+            return;
+
+        if (state.IsRolling)
+            return;
+
+        if (state.IsAttacking)
+            return;
+
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
+
+        camForward.y = 0f;
+        camRight.y = 0f;
+
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDirection =
+            camRight * input.x +
+            camForward * input.y;
+
+        if (moveDirection.sqrMagnitude <= 0.01f)
+        {
+            moveDirection = transform.forward;
+        }
+
+        moveDirection.Normalize();
+
+        transform.rotation = Quaternion.LookRotation(moveDirection);
+
+        state.SetRolling(true);
+
+        animationController.PlayTargetAnimation(rollAction, true, true, false, false);
     }
     private bool IsGroundValid(Vector3 position)
     {

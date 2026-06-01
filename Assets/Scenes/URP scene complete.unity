@@ -13198,17 +13198,13 @@ PrefabInstance:
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 963194228}
-    - target: {fileID: 4935462881444096308, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
-      propertyPath: cameraAction
-      value: 
-      objectReference: {fileID: -546689482326520077, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
     - target: {fileID: 6101746182165348096, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6237013157365418999, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
-      propertyPath: fullSpeedInputThreshold
-      value: 0.2
+      propertyPath: rollDelay
+      value: 1.3
       objectReference: {fileID: 0}
     - target: {fileID: 7861660919349431496, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: m_LocalPosition.x

@@ -5,38 +5,44 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerInputHandler input;
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerMovement movement;
-    [SerializeField] private PlayerAnimation animationController;
+    [SerializeField] private PlayerAnimation anim;
     [SerializeField] private PlayerCombat combat;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
     public override CharacterCombatBase GetCombat => combat;
-    public override CharacterAnimationBase GetAnimation => animationController;
+    public override CharacterAnimationBase GetAnimation => anim;
 
     private void Awake()
     {
-        movement.Initialize(state);
+        movement.Initialize(state, anim);
         combat.Initialize(state, this);
-        animationController.Initialize(state);
+        anim.Initialize(state);
         input.Initialize(state);
     }
 
     private void Update()
     {
-        state.SetRunning(input.IsRunning());
+        bool canRun =
+            input.IsRunning() &&
+            state.CurrentInput.sqrMagnitude > 0.01f;
+
+        state.SetRunning(
+            !state.IsRolling &&
+            canRun);
 
         movement.SetInput(state.CurrentInput);
 
-        animationController.UpdateAnimation(state.AnimationMoveAmount);
+        anim.UpdateAnimation(state.AnimationMoveAmount);
 
         if (input.IsFire())
         {
             combat.Attack();
         }
 
-        if (input.IsDash())
+        if (input.IsRolling())
         {
-            Debug.Log("Dash");
+            movement.Roll();
         }
     }
 
