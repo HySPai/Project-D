@@ -12926,10 +12926,6 @@ PrefabInstance:
       propertyPath: playerController
       value: 
       objectReference: {fileID: 6785888770477112297}
-    - target: {fileID: 1964401621480154754, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
-      propertyPath: zoomThresholdViewport
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 5546673301475518391, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.29129592

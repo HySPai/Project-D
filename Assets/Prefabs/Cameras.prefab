@@ -156,7 +156,7 @@ MonoBehaviour:
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
   UpdateMethod: 2
-  BlendUpdateMethod: 1
+  BlendUpdateMethod: 0
   LensModeOverride:
     Enabled: 0
     DefaultMode: 2
@@ -335,6 +335,5 @@ MonoBehaviour:
   defaultOrthographicSize: 4
   maxOrthographicSize: 8
   zoomSmoothSpeed: 3
-  zoomThresholdViewport: 1
-  screenPositionEpsilon: 0.001
+  zoomThresholdViewport: 0.5
   zoomEpsilon: 0.01
