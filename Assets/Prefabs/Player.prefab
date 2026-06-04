@@ -1267,7 +1267,7 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: KeyBoard
+  m_DefaultControlScheme: 
   m_DefaultActionMap: 
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -1283,6 +1283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5683e67f47017504e967cb645c81536a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rb: {fileID: 8108633679974709002}
+  capsule: {fileID: 375398382370659543}
   input: {fileID: 4935462881444096308}
   state: {fileID: 6237013157365418999}
   movement: {fileID: 3904609994375877722}
@@ -1305,8 +1307,12 @@ MonoBehaviour:
   moveSpeed: 5
   runSpeed: 6.5
   rotateSpeed: 12
-  rollDeylay: 1.3
-  lastRollTime: -999
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 128
   moveSmoothSpeed: 6
   currentMoveSpeed: 0
   targetMoveSpeed: 0
@@ -1319,9 +1325,6 @@ MonoBehaviour:
   canMove: 1
   canRotate: 1
   rollDistanceMultiplier: 2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
   maxStepDownHeight: 1
@@ -1343,8 +1346,9 @@ MonoBehaviour:
   moveAction: {fileID: -2540249642397497863, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   cameraAction: {fileID: -546689482326520077, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   fire: {fileID: -1383131979076342110, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
-  run_Dash: {fileID: 8202096626566041950, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  run_Roll: {fileID: 8202096626566041950, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   walk: {fileID: 8704586590157092557, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  lockTarget: {fileID: -2039787737568666376, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
   movementInput: {x: 0, y: 0}
   cameraInput: {x: 0, y: 0}
   horizontalInput: 0
@@ -1356,6 +1360,7 @@ MonoBehaviour:
   isDash: 0
   isRunHeld: 0
   rollRequested: 0
+  isLockTargetRequested: 0
 --- !u!114 &3904609994375877722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1368,7 +1373,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fcbcf3d7424ba49a37051f5bce6004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 8108633679974709002}
   cameraTransform: {fileID: 0}
   rollAction: Roll_Forward_01
 --- !u!114 &230835159006547521
@@ -1385,6 +1389,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
   moveParameter: Move
+  skinWidth: 0.02
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1404,10 +1409,14 @@ MonoBehaviour:
   canPerformRollingAttack: 0
   canPerformBackstepAttack: 0
   canBlock: 1
-  light_Attack_01: Main_Light_Attack_01
-  light_Attack_02: Main_Light_Attack_02
-  roll_Attack_01: Main_Roll_Attack_01
-  run_Attack_01: Main_Run_Attack_01
+  canDoCombo: 0
+  comboResetDelay: 1.5
+  currentWeapon: {fileID: 11400000, guid: 25db803bef8dccc4887acbc446ce44f7, type: 2}
+  comboIndex: 0
+  lockOnRadius: 10
+  lockOnLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &6488567137440690503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1992,6 +2001,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6488258084473785165}
+    - targetCorrespondingSourceObject: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1006852782392861420}
   m_SourcePrefab: {fileID: 100100000, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}
 --- !u!1 &7678343478425219907 stripped
 GameObject:
@@ -2013,12 +2025,25 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.0662967, y: 0.2858662, z: 0.93434715}
   m_Center: {x: 0.000000016959305, y: -0.0013327812, z: 0.32006148}
+--- !u!114 &1006852782392861420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7678343478425219907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8699862dcb93334892dc08b8d30dfc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
+  damage: 25
 --- !u!4 &7678343478425644899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}

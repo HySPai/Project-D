@@ -15,6 +15,8 @@ public class PlayerController : CharacterControllerBase
 
     private void Awake()
     {
+        state.Initialize(this);
+
         movement.Initialize(state, anim, combat);
         combat.Initialize(state, this);
         anim.Initialize(state);

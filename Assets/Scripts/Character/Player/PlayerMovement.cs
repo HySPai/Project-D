@@ -2,9 +2,9 @@
 
 public class PlayerMovement : CharacterMovementBase
 {
-    [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform cameraTransform;
 
+    private Rigidbody rb;
     private Vector2 input;
     private PlayerState state;
     private PlayerAnimation anim;
@@ -17,6 +17,7 @@ public class PlayerMovement : CharacterMovementBase
         this.state = state;
         this.anim = animation;
         this.combat = combat;
+        rb = state.Owner.Rigidbody;
     }
 
     public override void SetInput(Vector2 input)

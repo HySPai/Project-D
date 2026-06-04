@@ -19,6 +19,13 @@ public abstract class CharacterStateBase : MonoBehaviour
     public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
 
+    [Header("Layout")]
+    [SerializeField] protected LayerMask groundLayer;
+    [SerializeField] private LayerMask obstacleLayer;
+
+    public LayerMask GroundLayer => groundLayer;
+    public LayerMask ObstacleLayer => obstacleLayer;
+
     [Header("Animation Config")]
     [SerializeField] protected float moveSmoothSpeed = 8f;
 
@@ -56,6 +63,15 @@ public abstract class CharacterStateBase : MonoBehaviour
     [SerializeField] protected float rollDistanceMultiplier = 1f;
 
     public float RollDistanceMultiplier => rollDistanceMultiplier;
+
+    protected CharacterControllerBase owner;
+
+    public CharacterControllerBase Owner => owner;
+
+    public virtual void Initialize(CharacterControllerBase owner)
+    {
+        this.owner = owner;
+    }
 
     protected virtual void Awake()
     {
