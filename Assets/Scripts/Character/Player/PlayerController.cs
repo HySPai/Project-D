@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerController : CharacterControllerBase
 {
@@ -7,6 +7,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerAnimation anim;
     [SerializeField] private PlayerCombat combat;
+    [SerializeField] private PlayerCamera camera;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
@@ -17,8 +18,8 @@ public class PlayerController : CharacterControllerBase
     {
         state.Initialize(this);
 
-        movement.Initialize(state, anim, combat);
-        combat.Initialize(state, this);
+        movement.Initialize(state, anim, combat, camera);
+        combat.Initialize(state, this, camera);
         anim.Initialize(state);
         input.Initialize(state);
     }
@@ -26,16 +27,19 @@ public class PlayerController : CharacterControllerBase
     private void Update()
     {
         bool canRun = input.IsRunning() && state.CurrentInput.sqrMagnitude > 0.01f;
-
         state.SetRunning(!state.IsRolling && canRun);
-
         movement.SetInput(state.CurrentInput);
-
         anim.UpdateAnimation(state.AnimationMoveAmount);
 
         if (input.IsLockTarget())
         {
             combat.LockTarget();
+        }
+        else if (combat.LockOnTransform != null)
+        {
+            Vector2 switchDir = input.GetLockSwitchInput();
+            if (switchDir != Vector2.zero)
+                combat.SwitchTarget(switchDir);
         }
 
         if (input.IsFire())

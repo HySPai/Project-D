@@ -23,22 +23,21 @@ public abstract class CharacterCombatBase : MonoBehaviour
     [SerializeField] protected WeaponItem currentWeapon;
     [SerializeField] protected int comboIndex;
     [Header("Lock On")]
-    [SerializeField] protected float lockOnRadius = 10f;
-    [SerializeField] protected float unlockRadius = 15f;
     [SerializeField] protected LayerMask lockOnLayer;
 
-    // Cache state của target để check IsDead
-    private CharacterStateBase _lockedTargetState;
+    // Broadphase nội bộ chỉ để lấy candidate từ physics — KHÔNG phải lock/unlock radius.
+    // Điều kiện lock/unlock thực sự là viewport (IsInView).
+    protected const float BroadphaseRange = 50f;
 
-    // sqrMagnitude để tránh Sqrt mỗi frame
-    private float _unlockRadiusSqr;
+    private CharacterStateBase _lockedTargetState;
+    protected Camera viewCamera;
 
     public Transform LockOnTransform => lockOnTransform;
     public bool CanDoCombo => canDoCombo;
 
     protected virtual void Awake()
     {
-        _unlockRadiusSqr = unlockRadius * unlockRadius;
+        viewCamera = Camera.main;
     }
 
     protected virtual void Update()
@@ -50,19 +49,32 @@ public abstract class CharacterCombatBase : MonoBehaviour
     {
         if (lockOnTransform == null) return;
 
-        // 1. Kẻ địch chết
         if (_lockedTargetState != null && _lockedTargetState.IsDead)
         {
             ClearLockTarget();
             return;
         }
 
-        // 2. Vượt quá unlockRadius
-        float sqrDist = (lockOnTransform.position - transform.position).sqrMagnitude;
-        if (sqrDist > _unlockRadiusSqr)
+        if (!IsInView(lockOnTransform.position))
         {
             ClearLockTarget();
         }
+    }
+
+    // Kiểm tra một điểm world có nằm trong khung nhìn camera không
+    protected bool IsInView(Vector3 worldPos)
+    {
+        if (viewCamera == null)
+        {
+            viewCamera = Camera.main;
+            if (viewCamera == null) return false;
+        }
+
+        Vector3 vp = viewCamera.WorldToViewportPoint(worldPos);
+
+        return vp.z > 0f
+            && vp.x >= 0f && vp.x <= 1f
+            && vp.y >= 0f && vp.y <= 1f;
     }
 
     public virtual void Initialize(CharacterStateBase state)
@@ -114,7 +126,6 @@ public abstract class CharacterCombatBase : MonoBehaviour
     public virtual void SetLockTarget(Transform target)
     {
         lockOnTransform = target;
-
         _lockedTargetState = target != null
             ? target.GetComponentInParent<CharacterStateBase>()
             : null;

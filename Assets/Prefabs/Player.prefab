@@ -1142,6 +1142,7 @@ GameObject:
   - component: {fileID: 3904609994375877722}
   - component: {fileID: 230835159006547521}
   - component: {fileID: 8004906126929870345}
+  - component: {fileID: 7694672649410949249}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1234,7 +1235,7 @@ CapsuleCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.28
@@ -1290,6 +1291,7 @@ MonoBehaviour:
   movement: {fileID: 3904609994375877722}
   anim: {fileID: 230835159006547521}
   combat: {fileID: 8004906126929870345}
+  camera: {fileID: 7694672649410949249}
 --- !u!114 &6237013157365418999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1361,6 +1363,8 @@ MonoBehaviour:
   isRunHeld: 0
   rollRequested: 0
   isLockTargetRequested: 0
+  lockSwitchThreshold: 0.5
+  lockSwitchReleaseThreshold: 0.2
 --- !u!114 &3904609994375877722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1373,7 +1377,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fcbcf3d7424ba49a37051f5bce6004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 0}
   rollAction: Roll_Forward_01
 --- !u!114 &230835159006547521
 MonoBehaviour:
@@ -1389,7 +1392,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
   moveParameter: Move
-  skinWidth: 0.02
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1414,9 +1416,23 @@ MonoBehaviour:
   currentWeapon: {fileID: 11400000, guid: 25db803bef8dccc4887acbc446ce44f7, type: 2}
   comboIndex: 0
   lockOnRadius: 10
+  unlockRadius: 20
   lockOnLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &7694672649410949249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6101746182165348096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183fa659dba501b4faa560984a92103d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCamera
+  cameraTransform: {fileID: 0}
 --- !u!1 &6488567137440690503
 GameObject:
   m_ObjectHideFlags: 0

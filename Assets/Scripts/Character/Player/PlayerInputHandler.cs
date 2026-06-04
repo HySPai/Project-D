@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
@@ -28,6 +28,11 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private bool isRunHeld;
     [SerializeField] private bool rollRequested;
     [SerializeField] private bool isLockTargetRequested;
+
+    [Header("Lock Switch")]
+    [SerializeField] private float lockSwitchThreshold = 0.5f;
+    [SerializeField] private float lockSwitchReleaseThreshold = 0.2f;
+    private bool lockSwitchReady = true;
 
     private PlayerState state;
 
@@ -206,5 +211,21 @@ public class PlayerInputHandler : MonoBehaviour
 
         isLockTargetRequested = false;
         return true;
+    }
+    public Vector2 GetLockSwitchInput()
+    {
+        Vector2 raw = cameraInput; // raw, chưa smooth
+        float magnitude = raw.magnitude;
+
+        if (magnitude < lockSwitchReleaseThreshold)
+            lockSwitchReady = true;
+
+        if (lockSwitchReady && magnitude >= lockSwitchThreshold)
+        {
+            lockSwitchReady = false;
+            return raw / magnitude; // normalized
+        }
+
+        return Vector2.zero;
     }
 }

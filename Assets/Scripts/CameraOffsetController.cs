@@ -24,7 +24,6 @@ public class CameraOffsetController : MonoBehaviour
     [SerializeField] private float zoomThresholdViewport = 0.6f;
 
     [Header("Settle Threshold")]
-    [SerializeField] private float screenPositionEpsilon = 0.001f;
     [SerializeField] private float zoomEpsilon = 0.01f;
 
     private PlayerState _state;
@@ -33,7 +32,6 @@ public class CameraOffsetController : MonoBehaviour
     private Vector2 _currentScreenPosition;
     private Camera _cam;
 
-    private bool _screenPositionSettled;
     private bool _zoomSettled;
 
     private void Start()
@@ -48,7 +46,6 @@ public class CameraOffsetController : MonoBehaviour
         lens.OrthographicSize = defaultOrthographicSize;
         virtualCamera.Lens = lens;
 
-        _screenPositionSettled = true;
         _zoomSettled = true;
     }
 
@@ -69,8 +66,7 @@ public class CameraOffsetController : MonoBehaviour
                 ResetZoom();
         }
 
-        if (!_screenPositionSettled || isLocked)
-            ApplyScreenPosition();
+        ApplyScreenPosition();
     }
 
     private void UpdateLockOnScreenPosition()
@@ -96,8 +92,6 @@ public class CameraOffsetController : MonoBehaviour
             targetScreenPos,
             lockOnSmoothSpeed * Time.deltaTime
         );
-
-        _screenPositionSettled = false;
     }
 
     private void UpdateLockOnZoom()
@@ -134,6 +128,8 @@ public class CameraOffsetController : MonoBehaviour
         );
         virtualCamera.Lens = lens;
 
+        // Đang lock thì zoom còn động → đánh dấu chưa settle
+        // để khi unlock sẽ chạy ResetZoom
         _zoomSettled = false;
     }
 
@@ -170,12 +166,6 @@ public class CameraOffsetController : MonoBehaviour
             targetScreenPos,
             freeLookSmoothSpeed * Time.deltaTime
         );
-
-        if ((_currentScreenPosition - targetScreenPos).sqrMagnitude < screenPositionEpsilon * screenPositionEpsilon)
-        {
-            _currentScreenPosition = targetScreenPos;
-            _screenPositionSettled = true;
-        }
     }
 
     private void ApplyScreenPosition()

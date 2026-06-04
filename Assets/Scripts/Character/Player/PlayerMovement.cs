@@ -2,21 +2,21 @@
 
 public class PlayerMovement : CharacterMovementBase
 {
-    [SerializeField] private Transform cameraTransform;
-
     private Rigidbody rb;
     private Vector2 input;
     private PlayerState state;
     private PlayerAnimation anim;
     private PlayerCombat combat;
+    private PlayerCamera playerCamera;
 
     [SerializeField] private string rollAction = "Roll_Forward_01";
 
-    public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat)
+    public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat, PlayerCamera playerCamera)
     {
         this.state = state;
         this.anim = animation;
         this.combat = combat;
+        this.playerCamera = playerCamera;
         rb = state.Owner.Rigidbody;
     }
 
@@ -29,26 +29,14 @@ public class PlayerMovement : CharacterMovementBase
     {
         if (state == null) return;
         if (state.IsDead) return;
-        if (!state.CanMove)
-            return;
+        if (!state.CanMove) return;
 
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0f;
-        camRight.y = 0f;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 move = camRight * input.x + camForward * input.y;
+        Vector3 move = playerCamera.GetMoveDirection(input);
 
         float moveAmount = Mathf.Clamp01(input.magnitude / state.FullSpeedInputThreshold);
 
         if (move.sqrMagnitude > 0.001f)
-        {
             move.Normalize();
-        }
 
         UpdateMoveSpeed(moveAmount);
 
@@ -146,18 +134,12 @@ public class PlayerMovement : CharacterMovementBase
         if (state.IsAttacking)
             return;
 
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
+        Vector3 moveDirection = playerCamera.GetMoveDirection(input);
 
-        camForward.y = 0f;
-        camRight.y = 0f;
+        if (moveDirection.sqrMagnitude <= 0.01f)
+            moveDirection = transform.forward;
 
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 moveDirection =
-            camRight * input.x +
-            camForward * input.y;
+        moveDirection.Normalize();
 
         if (moveDirection.sqrMagnitude <= 0.01f)
         {
@@ -174,20 +156,7 @@ public class PlayerMovement : CharacterMovementBase
     }
     public override Vector3 GetMoveDirection()
     {
-        Vector3 camForward = cameraTransform.forward;
-        Vector3 camRight = cameraTransform.right;
-
-        camForward.y = 0f;
-        camRight.y = 0f;
-
-        camForward.Normalize();
-        camRight.Normalize();
-
-        Vector3 moveDirection =
-            camRight * input.x +
-            camForward * input.y;
-
-        return moveDirection.normalized;
+        return playerCamera.GetMoveDirection(input).normalized;
     }
     private bool IsGroundValid(Vector3 position)
     {

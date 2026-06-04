@@ -325,8 +325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraOffsetController
   virtualCamera: {fileID: 6432576243008278708}
   composer: {fileID: 4941548020375922172}
-  state: {fileID: 0}
-  combat: {fileID: 0}
+  playerController: {fileID: 0}
   maxOffsetX: 0.15
   maxOffsetY: 0.15
   freeLookSmoothSpeed: 5
@@ -336,6 +335,6 @@ MonoBehaviour:
   defaultOrthographicSize: 4
   maxOrthographicSize: 8
   zoomSmoothSpeed: 3
-  zoomThresholdViewport: 0.6
+  zoomThresholdViewport: 1
   screenPositionEpsilon: 0.001
   zoomEpsilon: 0.01
