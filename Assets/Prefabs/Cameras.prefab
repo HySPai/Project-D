@@ -286,6 +286,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5546673301475518391}
+  - component: {fileID: 1964401621480154754}
   m_Layer: 0
   m_Name: Cameras
   m_TagString: Untagged
@@ -310,3 +311,31 @@ Transform:
   - {fileID: 4372831880530447484}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1964401621480154754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9020921156362881723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 382e94707933c124f93da5c505f4cf80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraOffsetController
+  virtualCamera: {fileID: 6432576243008278708}
+  composer: {fileID: 4941548020375922172}
+  state: {fileID: 0}
+  combat: {fileID: 0}
+  maxOffsetX: 0.15
+  maxOffsetY: 0.15
+  freeLookSmoothSpeed: 5
+  lockOnSmoothSpeed: 5
+  lockOnMaxOffsetX: 0.3
+  lockOnMaxOffsetY: 0.3
+  defaultOrthographicSize: 4
+  maxOrthographicSize: 8
+  zoomSmoothSpeed: 3
+  zoomThresholdViewport: 0.6
+  screenPositionEpsilon: 0.001
+  zoomEpsilon: 0.01

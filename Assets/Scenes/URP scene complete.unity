@@ -919,28 +919,6 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
---- !u!1 &52365295 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9020921156362881723, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
-  m_PrefabInstance: {fileID: 1319027489441274568}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &52365297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 52365295}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 382e94707933c124f93da5c505f4cf80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraOffsetController
-  composer: {fileID: 1767605785}
-  state: {fileID: 6785888770477112292}
-  maxOffsetX: 0.15
-  maxOffsetY: 0.15
-  smoothSpeed: 5
 --- !u!1001 &86716412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10011,17 +9989,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5eed8b3be816664c8a6793f9311d258, type: 3}
---- !u!114 &1767605785 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4941548020375922172, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
-  m_PrefabInstance: {fileID: 1319027489441274568}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
 --- !u!1001 &1785376513
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12955,6 +12922,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1964401621480154754, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
+      propertyPath: state
+      value: 
+      objectReference: {fileID: 6785888770477112292}
+    - target: {fileID: 1964401621480154754, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
+      propertyPath: combat
+      value: 
+      objectReference: {fileID: 6785888770477112293}
+    - target: {fileID: 1964401621480154754, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
+      propertyPath: zoomThresholdViewport
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5546673301475518391, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.29129592
@@ -13006,10 +12985,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9020921156362881723, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 52365297}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1146b0816abbe34e893dbaebf12d5a5, type: 3}
 --- !u!1001 &3168409015476028876
 PrefabInstance:
@@ -13065,7 +13041,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7293906585033551241, guid: 45a79c94ea4d4854fa382b68bae3e450, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13151,6 +13127,14 @@ PrefabInstance:
     - target: {fileID: 7861660919349431496, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8004906126929870345, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+      propertyPath: lockOnRadius
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8004906126929870345, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+      propertyPath: unlockRadius
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13554,6 +13538,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4fcb82ccbc2444689413866d5df4a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
+--- !u!114 &6785888770477112293 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8004906126929870345, guid: 9a661e064f4cd9a4db84a02c16c942e4, type: 3}
+  m_PrefabInstance: {fileID: 3303447748632517357}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb4452e0c9963204cb32b17ef17643cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
