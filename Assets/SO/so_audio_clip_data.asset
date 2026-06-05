@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 080d63454507432fa41f666af2f6771f, type: 3}
+  m_Name: so_audio_clip_data
+  m_EditorClassIdentifier: 
+  m_IDLibrary:
+    m_SfxID:
+    - m_ID: sfx_btn_play_click
+    - m_ID: sfx_btn_positive
+    - m_ID: sfx_level_up
+    - m_ID: sfx_lose
+    - m_ID: sfx_appear_popup
+    m_BackgroundID: []
+  m_Sfx:
+    m_Data:
+    - m_ViewMode: 2
+      m_ID: 0
+      m_Clips:
+      - {fileID: 8300000, guid: acd72a507c0329647a9dccc723901de0, type: 3}
+    - m_ViewMode: 2
+      m_ID: 1
+      m_Clips:
+      - {fileID: 8300000, guid: 214305cd32455e84fa4f7151f0bd059c, type: 3}
+    - m_ViewMode: 2
+      m_ID: 2
+      m_Clips:
+      - {fileID: 8300000, guid: afc2761dc8a0d374aa02e9efaa37b576, type: 3}
+    - m_ViewMode: 2
+      m_ID: 3
+      m_Clips:
+      - {fileID: 8300000, guid: 6d4caabdd148a6647ac97d673be002cc, type: 3}
+    - m_ViewMode: 2
+      m_ID: 4
+      m_Clips:
+      - {fileID: 8300000, guid: d257c695a346de847be69b2af6b15753, type: 3}
+  m_Background:
+    m_Data: []
