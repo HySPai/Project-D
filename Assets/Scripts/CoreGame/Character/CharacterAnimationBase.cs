@@ -39,4 +39,13 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         state.SetCanRotate(canRotate);
         state.SetCanMove(canMove);
     }
+    public void Play(in AnimationAction action)
+    {
+        PlayTargetAnimation(
+            action.name,
+            action.isAction,
+            action.rootMotion,
+            action.canRotate,
+            action.canMove);
+    }
 }

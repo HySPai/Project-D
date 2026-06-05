@@ -14594,56 +14594,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1153192824328182759, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: BlendUpdateMethod
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1964401621480154754, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: playerController
       value: 
       objectReference: {fileID: 6785888770477112297}
-    - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.9109836
-      objectReference: {fileID: 0}
-    - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.4876728
-      objectReference: {fileID: 0}
-    - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -7.2986875
-      objectReference: {fileID: 0}
-    - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.9109836
-      objectReference: {fileID: 0}
-    - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.4876728
-      objectReference: {fileID: 0}
-    - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -7.2986875
-      objectReference: {fileID: 0}
-    - target: {fileID: 4941548020375922172, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: Composition.ScreenPosition.x
-      value: 7e-45
-      objectReference: {fileID: 0}
-    - target: {fileID: 4941548020375922172, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: Composition.ScreenPosition.y
-      value: 7e-45
-      objectReference: {fileID: 0}
     - target: {fileID: 5546673301475518391, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14696,11 +14651,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6432576243008278708, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
-      propertyPath: Lens.OrthographicSize
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6432576243008278708, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 6785888770477112287}
@@ -14708,11 +14658,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Cameras
-      objectReference: {fileID: 0}
-    - target: {fileID: 9207149252389536841, guid: b1146b0816abbe34e893dbaebf12d5a5,
-        type: 3}
-      propertyPath: orthographic size
-      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -67,6 +67,8 @@ public abstract class CharacterStateBase : MonoBehaviour
     protected CharacterControllerBase owner;
 
     public CharacterControllerBase Owner => owner;
+    protected virtual AnimationAction DeathAnimation =>
+    new AnimationAction("Dead_01", false, true, false, false);
 
     public virtual void Initialize(CharacterControllerBase owner)
     {
@@ -192,10 +194,11 @@ public abstract class CharacterStateBase : MonoBehaviour
         isInvulnerable = false;
     }
 
+
     protected virtual void Die()
     {
         isDead = true;
+        owner.GetAnimation.Play(DeathAnimation);
     }
-
     #endregion
 }
