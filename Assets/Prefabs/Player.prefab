@@ -1306,6 +1306,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
   maxHp: 100
   currentHp: 0
+  stamina: 100
+  currentStamina: 0
   moveSpeed: 5
   runSpeed: 6.5
   rotateSpeed: 12
@@ -1404,7 +1406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb4452e0c9963204cb32b17ef17643cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colAttack: {fileID: 6488258084473785165}
+  colAttack: {fileID: 1006852782392861420}
   currentAttackType: 0
   lastAttackAnimationPerformed: 
   lockOnTransform: {fileID: 0}
@@ -1415,8 +1417,6 @@ MonoBehaviour:
   comboResetDelay: 1.5
   currentWeapon: {fileID: 11400000, guid: 25db803bef8dccc4887acbc446ce44f7, type: 2}
   comboIndex: 0
-  lockOnRadius: 10
-  unlockRadius: 20
   lockOnLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -2060,6 +2060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
   damage: 25
+  damageCollider: {fileID: 0}
 --- !u!4 &7678343478425644899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}

@@ -2,26 +2,28 @@ using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
 {
-    [SerializeField] private float damage = 25f;
+    [SerializeField] private Collider damageCollider;
+    public Collider GetCollider => damageCollider;
 
     private CharacterStateBase ownerState;
+    private float currentDamage;
 
-    private void Awake()
+    public void Initialize(CharacterStateBase ownerState)
     {
-        ownerState = GetComponentInParent<CharacterStateBase>();
+        this.ownerState = ownerState;
+    }
+
+    public void SetDamage(float damage)
+    {
+        currentDamage = damage;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        CharacterStateBase targetState =
-            other.GetComponentInParent<CharacterStateBase>();
+        CharacterStateBase targetState = other.GetComponent<CharacterStateBase>();
+        if (targetState == null) return;
+        if (targetState == ownerState) return;
 
-        if (targetState == null)
-            return;
-
-        if (targetState == ownerState)
-            return;
-
-        targetState.TakeDamage(damage);
+        targetState.TakeDamage(currentDamage);
     }
 }

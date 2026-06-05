@@ -13,8 +13,20 @@ MonoBehaviour:
   m_Name: SO_WeaponItem
   m_EditorClassIdentifier: Assembly-CSharp::WeaponItem
   weaponName: Sword
-  lightAttackAnimations:
-  - Main_Light_Attack_01
-  - Main_Light_Attack_02
-  runningAttackAnimation: Main_Roll_Attack_01
-  rollingAttackAnimation: Main_Run_Attack_01
+  weaponIcon: {fileID: 0}
+  weaponClass: 0
+  lightAttacks:
+  - animationName: Main_Light_Attack_01
+    damage: 25
+    stamina: 10
+  - animationName: Main_Light_Attack_02
+    damage: 25
+    stamina: 10
+  runningAttack:
+    animationName: Main_Run_Attack_01
+    damage: 25
+    stamina: 20
+  rollingAttack:
+    animationName: Main_Roll_Attack_01
+    damage: 25
+    stamina: 20

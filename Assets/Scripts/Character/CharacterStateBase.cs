@@ -4,11 +4,15 @@ public abstract class CharacterStateBase : MonoBehaviour
 {
     [Header("Stats")]
     [SerializeField] protected float maxHp = 100f;
-
     [SerializeField] protected float currentHp;
+
+    [SerializeField] protected float stamina = 100f;
+    [SerializeField] protected float currentStamina;
 
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
+    public float Stamina => stamina;
+    public float CurrentStamina => currentStamina;
 
     [Header("Movement Config")]
     [SerializeField] protected float moveSpeed = 5f;

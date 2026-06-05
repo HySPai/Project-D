@@ -19,37 +19,32 @@ public class PlayerCombat : CharacterCombatBase
 
         if (canPerformRollingAttack)
         {
-            PlayAttackAnimation(currentWeapon.rollingAttackAnimation, character);
+            PerformAttack(currentWeapon.rollingAttack, character);
             currentAttackType = AttackType.RollingAttack01;
             DisableCanDoRollingAttack();
-
             return;
         }
 
         if (state.IsRunning)
         {
-            PlayAttackAnimation(currentWeapon.runningAttackAnimation, character);
+            PerformAttack(currentWeapon.runningAttack, character);
             currentAttackType = AttackType.RunningAttack01;
-
             return;
         }
 
         if (state.IsAttacking)
         {
-            if (!canDoCombo)
-                return;
+            if (!canDoCombo) return;
 
             DisableCanDoCombo();
             RotateTowardsInput();
             AdvanceCombo();
-            PlayAttackAnimation(GetCurrentComboAnimation(), character);
-
+            PerformAttack(GetCurrentComboAttack(), character);
             return;
         }
 
         comboIndex = 0;
-
-        PlayAttackAnimation(GetCurrentComboAnimation(), character);
+        PerformAttack(GetCurrentComboAttack(), character);
     }
     private void RotateTowardsInput()
     {

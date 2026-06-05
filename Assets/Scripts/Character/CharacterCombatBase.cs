@@ -3,7 +3,7 @@
 public abstract class CharacterCombatBase : MonoBehaviour
 {
     protected CharacterStateBase state;
-    [SerializeField] protected Collider colAttack;
+    [SerializeField] protected DamageCollider colAttack;
 
     [Header("Attack Type")]
     public AttackType currentAttackType;
@@ -44,7 +44,13 @@ public abstract class CharacterCombatBase : MonoBehaviour
     {
         CheckAutoUnlock();
     }
+    public virtual void Initialize(CharacterStateBase state)
+    {
+        this.state = state;
 
+        if (colAttack != null)
+            colAttack.Initialize(state);
+    }
     private void CheckAutoUnlock()
     {
         if (lockOnTransform == null) return;
@@ -77,11 +83,6 @@ public abstract class CharacterCombatBase : MonoBehaviour
             && vp.y >= 0f && vp.y <= 1f;
     }
 
-    public virtual void Initialize(CharacterStateBase state)
-    {
-        this.state = state;
-    }
-
     public abstract void Attack();
 
     public void EnableCanDoRollingAttack() => canPerformRollingAttack = true;
@@ -93,24 +94,30 @@ public abstract class CharacterCombatBase : MonoBehaviour
     public virtual void EnableCanRotate() => state?.SetCanRotate(true);
     public virtual void DisableCanRotate() => state?.SetCanRotate(false);
 
-    public virtual void OpenDamageCollider() => colAttack.enabled = true;
-    public virtual void CloseDamageCollider() => colAttack.enabled = false;
+    public virtual void OpenDamageCollider() => colAttack.GetCollider.enabled = true;
+    public virtual void CloseDamageCollider() => colAttack.GetCollider.enabled = false;
 
     public virtual void AdvanceCombo()
     {
-        if (currentWeapon == null) return;
+        if (currentWeapon == null || currentWeapon.lightAttacks == null) return;
         comboIndex++;
-        comboIndex = Mathf.Clamp(comboIndex, 0, currentWeapon.lightAttackAnimations.Length - 1);
+        comboIndex = Mathf.Clamp(comboIndex, 0, currentWeapon.lightAttacks.Length - 1);
     }
 
-    protected virtual string GetCurrentComboAnimation()
+    protected virtual AttackData GetCurrentComboAttack()
     {
-        if (currentWeapon == null || currentWeapon.lightAttackAnimations == null)
-            return string.Empty;
-        comboIndex = Mathf.Clamp(comboIndex, 0, currentWeapon.lightAttackAnimations.Length - 1);
-        return currentWeapon.lightAttackAnimations[comboIndex];
+        if (currentWeapon == null || currentWeapon.lightAttacks == null || currentWeapon.lightAttacks.Length == 0)
+            return null;
+        comboIndex = Mathf.Clamp(comboIndex, 0, currentWeapon.lightAttacks.Length - 1);
+        return currentWeapon.lightAttacks[comboIndex];
     }
+    protected void PerformAttack(AttackData attack, CharacterControllerBase character)
+    {
+        if (attack == null || string.IsNullOrEmpty(attack.animationName)) return;
 
+        colAttack?.SetDamage(attack.damage);
+        PlayAttackAnimation(attack.animationName, character);
+    }
     public virtual void ResetCombo() => comboIndex = 0;
 
     protected void PlayAttackAnimation(string animationName, CharacterControllerBase character)
