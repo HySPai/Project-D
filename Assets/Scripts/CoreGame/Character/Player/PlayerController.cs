@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UIGame;
+using UnityEngine;
 
 public class PlayerController : CharacterControllerBase
 {
@@ -8,6 +9,8 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerAnimation anim;
     [SerializeField] private PlayerCombat combat;
     [SerializeField] private PlayerCamera camera;
+
+    private GamePlayView gamePlayView;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
@@ -22,6 +25,19 @@ public class PlayerController : CharacterControllerBase
         combat.Initialize(state, this, camera);
         anim.Initialize(state);
         input.Initialize(state);
+    }
+
+    private void Start()
+    {
+        gamePlayView = GUIViewManager.Instance.GetGamePlayView;
+        if (gamePlayView == null) return;
+
+        state.OnHeartsChanged += gamePlayView.UpdateHearts;
+        state.OnStaminaChanged += gamePlayView.UpdateStamina;
+
+        gamePlayView.BuildHearts(state.MaxHearts);
+        gamePlayView.UpdateHearts(state.CurrentHearts, state.MaxHearts);
+        gamePlayView.UpdateStamina(state.CurrentStamina, state.Stamina);
     }
 
     private void Update()
@@ -58,5 +74,12 @@ public class PlayerController : CharacterControllerBase
     private void FixedUpdate()
     {
         movement.Move();
+    }
+
+    private void OnDestroy()
+    {
+        if (gamePlayView == null) return;
+        state.OnHeartsChanged -= gamePlayView.UpdateHearts;
+        state.OnStaminaChanged -= gamePlayView.UpdateStamina;
     }
 }

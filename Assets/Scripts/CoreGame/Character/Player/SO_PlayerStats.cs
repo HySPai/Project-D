@@ -3,6 +3,10 @@
 [CreateAssetMenu(fileName = "SO_PlayerStats", menuName = "Game/Stats/Player Stats")]
 public class SO_PlayerStats : CharacterStats
 {
+    [Header("Hearts")]
+    public int maxHearts = 4;
+    public float invulnerabilityDuration = 1f;
+
     [Header("Stamina")]
     public float maxStamina = 100f;
     public float staminaRegenRate = 25f;

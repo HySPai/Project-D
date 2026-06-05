@@ -11,7 +11,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         cancellationToken = this.GetCancellationTokenOnDestroy();
         Application.targetFrameRate = 60;
-        GameStateManager.Instance.Install(cancellationToken).Forget();
     }
    
 }

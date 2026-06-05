@@ -1,13 +1,84 @@
-﻿using UnityEngine;
+﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using Sirenix.OdinInspector;
+using System;
+using UnityEngine;
 
 public class PlayerState : CharacterStateBase
 {
+    #region Hearts
+    public event Action<int, int> OnHeartsChanged;
+
+    private int currentHearts;
+    public int CurrentHearts => currentHearts;
+    public int MaxHearts => playerStats.maxHearts;
+
+    private void RaiseHeartsChanged() => OnHeartsChanged?.Invoke(currentHearts, playerStats.maxHearts);
+
+    public override void TakeDamage(float damage)
+    {
+        int hearts = Mathf.Max(1, Mathf.RoundToInt(damage));   // tối thiểu 1 tim
+        TakeDamage(hearts);
+    }
+
+    [Button]
+    public void TakeDamage(int amount)
+    {
+        if (isDead) return;
+        if (isInvulnerable) return;
+        if (amount <= 0) return;
+
+        currentHearts = Mathf.Max(0, currentHearts - amount);
+        currentHp = currentHearts;
+        RaiseHeartsChanged();
+        RaiseHpChanged();
+
+        if (currentHearts <= 0)
+        {
+            Die();
+            return;
+        }
+
+        EnableIsInvulnerable();          // bật i-frame (trước đây thiếu)
+        InvulnerabilityAsync().Forget();
+    }
+
+    [Button]
+    public int Heal(int amount)
+    {
+        if (amount <= 0) return 0;
+        if (isDead) return 0;
+
+        int before = currentHearts;
+        currentHearts = Mathf.Min(playerStats.maxHearts, currentHearts + amount);
+        int healed = currentHearts - before;
+
+        if (healed > 0)
+        {
+            currentHp = currentHearts;
+            RaiseHeartsChanged();
+            RaiseHpChanged();
+        }
+
+        return healed;
+    }
+    private async UniTaskVoid InvulnerabilityAsync()
+    {
+        var token = this.GetCancellationTokenOnDestroy();
+        await UniTask.Delay(
+            TimeSpan.FromSeconds(playerStats.invulnerabilityDuration),
+            cancellationToken: token);
+        DisableIsInvulnerable();
+    }
+    #endregion
+
     #region Stamina
     private SO_PlayerStats playerStats;
 
     [Header("Stamina (runtime)")]
     [SerializeField] protected float currentStamina;
     protected float lastStaminaUseTime;
+    public event Action<float, float> OnStaminaChanged;
 
     public float Stamina => playerStats.maxStamina;
     public float CurrentStamina => currentStamina;
@@ -81,6 +152,9 @@ public class PlayerState : CharacterStateBase
             return;
         }
         currentStamina = playerStats.maxStamina;
+        currentHearts = playerStats.maxHearts;
+
+        maxHp = playerStats.maxHearts;
     }
 
     protected virtual void Update()
@@ -100,11 +174,14 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Stamina Logic
+    private void RaiseStaminaChanged() => OnStaminaChanged?.Invoke(currentStamina, playerStats.maxStamina);
+
     public void DrainStamina(float amount)
     {
         if (amount <= 0f) return;
         currentStamina = Mathf.Max(0f, currentStamina - amount);
         lastStaminaUseTime = Time.time;
+        RaiseStaminaChanged();
     }
 
     protected virtual void RegenerateStamina()
@@ -115,6 +192,7 @@ public class PlayerState : CharacterStateBase
 
         currentStamina = Mathf.Min(playerStats.maxStamina,
             currentStamina + playerStats.staminaRegenRate * Time.deltaTime);
+        RaiseStaminaChanged();
     }
     #endregion
 

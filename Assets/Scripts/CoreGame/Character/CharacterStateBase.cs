@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class CharacterStateBase : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public abstract class CharacterStateBase : MonoBehaviour
     protected float moveSpeed;
     protected float runSpeed;
     protected float rotateSpeed;
+    public event Action<float, float> OnHpChanged;
 
     [SerializeField] protected float currentHp;
 
@@ -162,17 +164,12 @@ public abstract class CharacterStateBase : MonoBehaviour
     #endregion
 
     #region Health
+    protected void RaiseHpChanged() => OnHpChanged?.Invoke(currentHp, maxHp);
+
     public virtual void TakeDamage(float damage)
     {
-        if (isDead)
-        {
-            return;
-        }
-
-        if (isInvulnerable)
-        {
-            return;
-        }
+        if (isDead) return;
+        if (isInvulnerable) return;
 
         currentHp -= damage;
 
@@ -181,6 +178,8 @@ public abstract class CharacterStateBase : MonoBehaviour
             currentHp = 0f;
             Die();
         }
+
+        RaiseHpChanged();
     }
 
     public virtual void EnableIsInvulnerable()
