@@ -14,6 +14,7 @@ public class EnemyController : CharacterControllerBase
 
     private void Awake()
     {
+        state.Initialize(this);
         movement.Initialize(state);
         combat.Initialize(state);
         anim.Initialize(state);

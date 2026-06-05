@@ -194,11 +194,15 @@ public abstract class CharacterStateBase : MonoBehaviour
         isInvulnerable = false;
     }
 
-
     protected virtual void Die()
     {
         isDead = true;
-        owner.GetAnimation.Play(DeathAnimation);
+
+        var animation = owner != null ? owner.GetAnimation : null;
+        if (animation != null)
+            animation.Play(DeathAnimation);
+        else
+            Debug.LogWarning($"{name}: Die() nhưng thiếu owner/Animation để play death anim", this);
     }
     #endregion
 }
