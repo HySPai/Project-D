@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Playables;
 
 public class PlayerMovement : CharacterMovementBase
 {
@@ -38,6 +39,7 @@ public class PlayerMovement : CharacterMovementBase
         if (move.sqrMagnitude > 0.001f)
             move.Normalize();
 
+        HandleRunStamina(moveAmount);
         UpdateMoveSpeed(moveAmount);
 
         Vector3 delta = move * state.CurrentMoveSpeed * Time.fixedDeltaTime;
@@ -122,36 +124,21 @@ public class PlayerMovement : CharacterMovementBase
     }
     public override void Roll()
     {
-        if (state == null)
-            return;
-
-        if (state.IsDead)
-            return;
-
-        if (state.IsRolling)
-            return;
-
-        if (state.IsAttacking)
-            return;
+        if (state == null) return;
+        if (state.IsDead) return;
+        if (state.IsRolling) return;
+        if (state.IsAttacking) return;
+        if (!state.HasStamina) return;
 
         Vector3 moveDirection = playerCamera.GetMoveDirection(input);
-
         if (moveDirection.sqrMagnitude <= 0.01f)
             moveDirection = transform.forward;
-
-        moveDirection.Normalize();
-
-        if (moveDirection.sqrMagnitude <= 0.01f)
-        {
-            moveDirection = transform.forward;
-        }
-
         moveDirection.Normalize();
 
         transform.rotation = Quaternion.LookRotation(moveDirection);
 
+        state.DrainStamina(state.RollStaminaCost);   // tốn stamina khi roll
         state.SetRolling(true);
-
         anim.PlayTargetAnimation(rollAction, true, true, false, false);
     }
     public override Vector3 GetMoveDirection()
@@ -174,6 +161,13 @@ public class PlayerMovement : CharacterMovementBase
 
         float heightDiff = rb.position.y - hit.point.y;
         return heightDiff <= state.MaxStepDownHeight;
+    }
+    private void HandleRunStamina(float moveAmount)
+    {
+        if (!state.IsRunning) return;
+        if (moveAmount <= 0f) return;
+
+        state.DrainStamina(state.RunStaminaDrainRate * Time.fixedDeltaTime);
     }
 
 #if UNITY_EDITOR

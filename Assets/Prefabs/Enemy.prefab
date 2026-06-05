@@ -1460,11 +1460,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c750358b857431b429b86fe5bc6c3f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyState
-  maxHp: 100
+  stats: {fileID: 11400000, guid: 426b604844cfa434994924503419b42f, type: 2}
   currentHp: 0
-  moveSpeed: 5
-  runSpeed: 8
-  rotateSpeed: 12
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -1519,7 +1516,6 @@ MonoBehaviour:
   comboResetDelay: 2
   currentWeapon: {fileID: 0}
   comboIndex: 0
-  lockOnRadius: 10
   lockOnLayer:
     serializedVersion: 2
     m_Bits: 64

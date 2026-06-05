@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.Playables;
 
 public class PlayerCombat : CharacterCombatBase
 {
     private CharacterControllerBase character;
     private PlayerCamera playerCamera;
+    private AttackData currentAttack;
+    private PlayerState playerState;
+
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
     {
         base.Initialize(state);
 
+        this.playerState = state as PlayerState;
         this.character = character;
         this.playerCamera = playerCamera;
     }
@@ -16,10 +21,11 @@ public class PlayerCombat : CharacterCombatBase
     {
         if (state == null) return;
         if (state.IsDead) return;
+        if (playerState != null && !playerState.HasStamina) return;
 
         if (canPerformRollingAttack)
         {
-            PerformAttack(currentWeapon.rollingAttack, character);
+            DoAttack(currentWeapon.rollingAttack);
             currentAttackType = AttackType.RollingAttack01;
             DisableCanDoRollingAttack();
             return;
@@ -27,7 +33,7 @@ public class PlayerCombat : CharacterCombatBase
 
         if (state.IsRunning)
         {
-            PerformAttack(currentWeapon.runningAttack, character);
+            DoAttack(currentWeapon.runningAttack);
             currentAttackType = AttackType.RunningAttack01;
             return;
         }
@@ -39,13 +45,29 @@ public class PlayerCombat : CharacterCombatBase
             DisableCanDoCombo();
             RotateTowardsInput();
             AdvanceCombo();
-            PerformAttack(GetCurrentComboAttack(), character);
+            DoAttack(GetCurrentComboAttack());
             return;
         }
 
         comboIndex = 0;
-        PerformAttack(GetCurrentComboAttack(), character);
+        DoAttack(GetCurrentComboAttack());
     }
+
+    private void DoAttack(AttackData attack)
+    {
+        if (attack == null) return;
+
+        currentAttack = attack;
+        PerformAttack(attack, character);
+    }
+
+    public void DrainStaminaBasedOnAttack()
+    {
+        if (playerState == null || currentAttack == null) return;
+
+        playerState.DrainStamina(currentAttack.stamina);
+    }
+
     private void RotateTowardsInput()
     {
         Vector3 direction = character.GetMovement.GetMoveDirection();
@@ -54,10 +76,6 @@ public class PlayerCombat : CharacterCombatBase
             return;
 
         transform.rotation = Quaternion.LookRotation(direction);
-    }
-    public virtual void DrainStaminaBasedOnAttack()
-    {
-
     }
 
     public override void EnableCanDoCombo()

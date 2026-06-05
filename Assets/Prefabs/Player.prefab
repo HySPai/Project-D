@@ -1304,13 +1304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd4fcb82ccbc2444689413866d5df4a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerState
-  maxHp: 100
+  stats: {fileID: 11400000, guid: 7ec6dad3a32d1e241bf73d21318852e4, type: 2}
   currentHp: 0
-  stamina: 100
-  currentStamina: 0
-  moveSpeed: 5
-  runSpeed: 6.5
-  rotateSpeed: 12
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -1329,6 +1324,7 @@ MonoBehaviour:
   canMove: 1
   canRotate: 1
   rollDistanceMultiplier: 2
+  currentStamina: 0
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
   maxStepDownHeight: 1
@@ -2059,8 +2055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8699862dcb93334892dc08b8d30dfc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
-  damage: 25
-  damageCollider: {fileID: 0}
+  damageCollider: {fileID: 6488258084473785165}
 --- !u!4 &7678343478425644899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}

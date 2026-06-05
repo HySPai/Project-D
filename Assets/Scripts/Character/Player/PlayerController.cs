@@ -26,7 +26,9 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
-        bool canRun = input.IsRunning() && state.CurrentInput.sqrMagnitude > 0.01f;
+        bool canRun = input.IsRunning()
+                      && state.CurrentInput.sqrMagnitude > 0.01f
+                      && state.CanRun;
         state.SetRunning(!state.IsRolling && canRun);
         movement.SetInput(state.CurrentInput);
         anim.UpdateAnimation(state.AnimationMoveAmount);

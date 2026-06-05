@@ -1,24 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class CharacterStateBase : MonoBehaviour
 {
     [Header("Stats")]
-    [SerializeField] protected float maxHp = 100f;
-    [SerializeField] protected float currentHp;
+    [SerializeField] protected CharacterStats stats;
+    protected float maxHp;
+    protected float moveSpeed;
+    protected float runSpeed;
+    protected float rotateSpeed;
 
-    [SerializeField] protected float stamina = 100f;
-    [SerializeField] protected float currentStamina;
+    [SerializeField] protected float currentHp;
 
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
-    public float Stamina => stamina;
-    public float CurrentStamina => currentStamina;
-
-    [Header("Movement Config")]
-    [SerializeField] protected float moveSpeed = 5f;
-    [SerializeField] protected float runSpeed = 8f;
-    [SerializeField] protected float rotateSpeed = 12f;
-
     public float MoveSpeed => moveSpeed;
     public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
@@ -79,10 +73,26 @@ public abstract class CharacterStateBase : MonoBehaviour
 
     protected virtual void Awake()
     {
+        InitializeStats();
         currentHp = maxHp;
         currentMoveSpeed = 0f;
         targetMoveSpeed = 0f;
     }
+
+    protected virtual void InitializeStats()
+    {
+        if (stats == null)
+        {
+            Debug.LogError($"{name}: chưa gán CharacterStats", this);
+            return;
+        }
+
+        maxHp = stats.maxHp;
+        moveSpeed = stats.moveSpeed;
+        runSpeed = stats.runSpeed;
+        rotateSpeed = stats.rotateSpeed;
+    }
+
     #region State Setters
     public virtual void SetRunning(bool value)
     {
@@ -152,7 +162,6 @@ public abstract class CharacterStateBase : MonoBehaviour
     #endregion
 
     #region Health
-
     public virtual void TakeDamage(float damage)
     {
         if (isDead)
