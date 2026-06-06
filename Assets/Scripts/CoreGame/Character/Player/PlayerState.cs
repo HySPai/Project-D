@@ -120,6 +120,8 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Animation
+    [SerializeField] private float maxStepUpHeight = 0.3f;
+    public float MaxStepUpHeight => maxStepUpHeight;
     public float AnimationMoveAmount
     {
         get
