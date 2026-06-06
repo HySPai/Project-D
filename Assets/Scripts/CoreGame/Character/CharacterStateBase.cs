@@ -70,6 +70,13 @@ public abstract class CharacterStateBase : MonoBehaviour
     protected virtual AnimationAction DeathAnimation =>
     new AnimationAction("Dead_01", false, true, false, false);
 
+    [Header("Step / Ground Resolve")]
+    [SerializeField] protected float maxStepUpHeight = 0.3f;
+    [SerializeField] protected float maxStepDownHeight = 1f;
+
+    public float MaxStepUpHeight => maxStepUpHeight;
+    public float MaxStepDownHeight => maxStepDownHeight;
+
     public virtual void Initialize(CharacterControllerBase owner)
     {
         this.owner = owner;

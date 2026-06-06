@@ -103,10 +103,8 @@ public class PlayerState : CharacterStateBase
     [Header("Ground Check")]
     [SerializeField] protected float groundCheckDistance = 5f;
     [SerializeField] protected float edgeCheckForwardDistance = 0.5f;
-    [SerializeField] protected float maxStepDownHeight = 1f;
     public float GroundCheckDistance => groundCheckDistance;
     public float EdgeCheckForwardDistance => edgeCheckForwardDistance;
-    public float MaxStepDownHeight => maxStepDownHeight;
     #endregion
 
     #region Input
@@ -120,8 +118,6 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Animation
-    [SerializeField] private float maxStepUpHeight = 0.3f;
-    public float MaxStepUpHeight => maxStepUpHeight;
     public float AnimationMoveAmount
     {
         get
@@ -136,7 +132,7 @@ public class PlayerState : CharacterStateBase
             }
             if (IsRunning)
             {
-                return 1.5f;
+                return 2f;
             }
             return moveAmount;
         }

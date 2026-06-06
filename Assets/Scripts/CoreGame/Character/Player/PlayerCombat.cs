@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Playables;
 
 public class PlayerCombat : CharacterCombatBase
 {
@@ -19,6 +18,7 @@ public class PlayerCombat : CharacterCombatBase
 
     public override void Attack()
     {
+        Debug.Log($"[Attack] called | weapon={currentWeapon} | isDead={state.IsDead} | stamina={(playerState != null ? playerState.HasStamina : true)}");
         if (state == null) return;
         if (state.IsDead) return;
         if (playerState != null && !playerState.HasStamina) return;
@@ -97,6 +97,9 @@ public class PlayerCombat : CharacterCombatBase
         }
 
         Collider[] hits = Physics.OverlapSphere(transform.position, BroadphaseRange, lockOnLayer);
+        Debug.Log($"[Lock] camMain={Camera.main} | hits={hits.Length}");
+        foreach (Collider hit in hits)
+            Debug.Log($"[Lock] candidate={hit.name} inView={IsInView(hit.transform.position)}");
 
         float nearestDistance = float.MaxValue;
         Transform nearestTarget = null;

@@ -1182,7 +1182,7 @@ Animator:
   m_GameObject: {fileID: 6101746182165348096}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f6605568d3cd20e4db1a0b19cfe83787, type: 3}
-  m_Controller: {fileID: 9100000, guid: 3bb24ae9e7a90cc4badcfb074957b299, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6cc700e0daf3d804ba25a3d1ee01bf9c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1334,6 +1334,7 @@ MonoBehaviour:
   fullSpeedInputThreshold: 0.2
   currentInput: {x: 0, y: 0}
   currentCameraInput: {x: 0, y: 0}
+  maxStepUpHeight: 0.3
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1396,7 +1397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
-  moveParameter: Move
+  moveParameter: Vertical
+  isMoveParameter: isMoving
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2076,7 +2078,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.0662967, y: 0.2858662, z: 0.93434715}
   m_Center: {x: 0.000000016959305, y: -0.0013327812, z: 0.32006148}

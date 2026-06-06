@@ -42,12 +42,14 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
+        if (input.IsFire()) combat.Attack();
+        if (input.IsRolling()) movement.Roll();
+
         bool canRun = input.IsRunning()
                       && state.CurrentInput.sqrMagnitude > 0.01f
                       && state.CanRun;
         state.SetRunning(!state.IsRolling && canRun);
         movement.SetInput(state.CurrentInput);
-        anim.UpdateAnimation(state.AnimationMoveAmount);
 
         if (input.IsLockTarget())
         {
@@ -60,15 +62,25 @@ public class PlayerController : CharacterControllerBase
                 combat.SwitchTarget(switchDir);
         }
 
-        if (input.IsFire())
+        float moveAmount = state.AnimationMoveAmount;
+        float horizontal;
+        float vertical;
+
+        if (combat.LockOnTransform != null)
         {
-            combat.Attack();
+            Vector3 worldMove = camera.GetMoveDirection(state.CurrentInput);
+            Vector3 localMove = transform.InverseTransformDirection(worldMove.normalized);
+            horizontal = localMove.x * moveAmount;
+            vertical = localMove.z * moveAmount;
+        }
+        else
+        {
+            horizontal = 0f;
+            vertical = moveAmount;
         }
 
-        if (input.IsRolling())
-        {
-            movement.Roll();
-        }
+        anim.UpdateAnimation(moveAmount);
+        anim.UpdateAnimatorMovementParameters(horizontal, vertical, state.IsRunning);
     }
 
     private void FixedUpdate()

@@ -39,6 +39,8 @@ public class PlayerMovement : CharacterMovementBase
         if (move.sqrMagnitude > 0.001f)
             move.Normalize();
 
+        anim.SetMoving(moveAmount > 0.01f);
+
         HandleRunStamina(moveAmount);
         UpdateMoveSpeed(moveAmount);
 
