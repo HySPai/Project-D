@@ -42,9 +42,6 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
-        if (input.IsFire()) combat.Attack();
-        if (input.IsRolling()) movement.Roll();
-
         bool canRun = input.IsRunning()
                       && state.CurrentInput.sqrMagnitude > 0.01f
                       && state.CanRun;
@@ -61,6 +58,8 @@ public class PlayerController : CharacterControllerBase
             if (switchDir != Vector2.zero)
                 combat.SwitchTarget(switchDir);
         }
+        if (input.IsFire()) combat.Attack();
+        if (input.IsRolling()) movement.Roll();
 
         float moveAmount = state.AnimationMoveAmount;
         float horizontal;

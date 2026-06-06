@@ -31,13 +31,6 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
-    "com.github.lofelt.nicevibrations": {
-      "version": "4.1.204",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
     "com.neuecc.unirx": {
       "version": "7.1.0",
       "depth": 0,
