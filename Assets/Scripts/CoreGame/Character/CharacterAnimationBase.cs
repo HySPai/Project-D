@@ -12,7 +12,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
     protected CharacterStateBase state;
     protected bool applyRootMotion;
-
     protected Rigidbody rb;
     protected CapsuleCollider capsule;
 
@@ -27,7 +26,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
-
         if (animator == null)
             Debug.LogError($"{name}: thiếu Animator reference!", this);
 
@@ -35,50 +33,53 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         verticalHash = Animator.StringToHash(verticalParameter);
     }
 
-    // Đồng bộ root motion mỗi frame. Việc lái blend tree do
-    // UpdateAnimatorMovementParameters đảm nhiệm (gọi từ controller).
+    // Cập nhật animation mỗi frame: đồng bộ root motion + lái blend tree locomotion.
+    // Controller chỉ cần gọi method này, mọi tính toán nằm ở đây.
     public virtual void UpdateAnimation(float moveAmount)
     {
         if (state == null) return;
         animator.applyRootMotion = state.ApplyRootMotion;
+        UpdateLocomotionParameters(moveAmount);
     }
 
-    public virtual void UpdateAnimatorMovementParameters(
-        float horizontalMovement,
-        float verticalMovement,
-        bool isSprinting)
+    protected virtual void UpdateLocomotionParameters(float moveAmount)
     {
-        // Đang thực hiện action (attack/roll) -> không lái locomotion, về idle.
-        if (state == null || state.IsAttacking)
+        float horizontal = 0f;
+        float vertical = moveAmount;
+
+        Transform lockTarget = GetLockOnTarget();
+        if (lockTarget != null)
         {
-            horizontalMovement = 0f;
-            verticalMovement = 0f;
-            isSprinting = false;
+            CharacterMovementBase movement = state.Owner.GetMovement;
+            Vector3 worldDir = movement != null ? movement.GetMoveDirection() : Vector3.zero;
+
+            if (worldDir.sqrMagnitude > 0.0001f)
+            {
+                Vector3 local = state.Owner.transform.InverseTransformDirection(worldDir.normalized);
+                horizontal = local.x * moveAmount;
+                vertical = local.z * moveAmount;
+            }
+            else
+            {
+                horizontal = 0f;
+                vertical = 0f;
+            }
         }
 
-        float snappedHorizontal = SnapMovementValue(Mathf.Clamp(horizontalMovement, -1f, 1f));
-        float snappedVertical = SnapMovementValue(Mathf.Clamp(verticalMovement, -1f, 1f));
+        animator.SetFloat(horizontalHash, horizontal, movementDampTime, Time.deltaTime);
+        animator.SetFloat(verticalHash, vertical, movementDampTime, Time.deltaTime);
+    }
 
-        if (isSprinting)
-            snappedVertical = 2f; // khớp motion Sprint (Pos Y = 2)
-
-        animator.SetFloat(horizontalHash, snappedHorizontal, movementDampTime, Time.deltaTime);
-        animator.SetFloat(verticalHash, snappedVertical, movementDampTime, Time.deltaTime);
+    // Mục tiêu đang lock (nếu có). Tách riêng để subclass dễ override nếu cần.
+    protected virtual Transform GetLockOnTarget()
+    {
+        CharacterCombatBase combat = state.Owner.GetCombat;
+        return combat != null ? combat.LockOnTransform : null;
     }
 
     public virtual void SetMoving(bool isMoving)
     {
         animator.SetBool(isMoveParameter, isMoving);
-    }
-
-    // Làm tròn về -1, -0.5, 0, 0.5, 1.
-    protected static float SnapMovementValue(float value)
-    {
-        if (value > 0f && value <= 0.5f) return 0.5f;
-        if (value > 0.5f && value <= 1f) return 1f;
-        if (value < 0f && value >= -0.5f) return -0.5f;
-        if (value < -0.5f && value >= -1f) return -1f;
-        return 0f;
     }
 
     public virtual void ApplyRootMotion(bool value)
@@ -94,7 +95,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         bool canMove = false)
     {
         if (state == null) return;
-
         this.applyRootMotion = applyRootMotion;
         animator.CrossFade(targetAnimation, 0.2f);
         state.SetAttacking(isPerformingAction);
@@ -120,7 +120,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
         if (!TryResolveGroundedPosition(targetPos, out Vector3 groundedPos))
             return;
-
         if (IsBlockedByObstacle(groundedPos))
             return;
 
@@ -139,7 +138,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     protected bool TryResolveGroundedPosition(Vector3 position, out Vector3 grounded)
     {
         grounded = position;
-
         float up = state.MaxStepUpHeight + 0.2f;
         Vector3 origin = position + Vector3.up * up;
         float maxDistance = up + state.MaxStepDownHeight + 0.2f;
@@ -148,7 +146,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
             return false;
 
         float heightDiff = groundHit.point.y - position.y;
-
         if (heightDiff > state.MaxStepUpHeight) return false;
         if (-heightDiff > state.MaxStepDownHeight) return false;
 
@@ -161,7 +158,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         float skin = state.MaxStepUpHeight;
         Vector3 bottom = groundedPosition + Vector3.up * (skin + capsule.radius);
         Vector3 top = groundedPosition + Vector3.up * (capsule.height - capsule.radius);
-
         if (top.y < bottom.y) top = bottom;
 
         return Physics.CheckCapsule(

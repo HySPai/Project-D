@@ -31,7 +31,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: unarmed_main_idle_01
+      name: core_oh_idle_01
       takeName: unarmed_main_idle_01
       internalID: -81773759949406527
       firstFrame: 0

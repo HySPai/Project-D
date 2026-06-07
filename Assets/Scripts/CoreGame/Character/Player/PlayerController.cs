@@ -20,7 +20,6 @@ public class PlayerController : CharacterControllerBase
     private void Awake()
     {
         state.Initialize(this);
-
         movement.Initialize(state, anim, combat, camera);
         combat.Initialize(state, this, camera);
         anim.Initialize(state);
@@ -46,6 +45,7 @@ public class PlayerController : CharacterControllerBase
                       && state.CurrentInput.sqrMagnitude > 0.01f
                       && state.CanRun;
         state.SetRunning(!state.IsRolling && canRun);
+
         movement.SetInput(state.CurrentInput);
 
         if (input.IsLockTarget())
@@ -58,28 +58,11 @@ public class PlayerController : CharacterControllerBase
             if (switchDir != Vector2.zero)
                 combat.SwitchTarget(switchDir);
         }
+
         if (input.IsFire()) combat.Attack();
         if (input.IsRolling()) movement.Roll();
 
-        float moveAmount = state.AnimationMoveAmount;
-        float horizontal;
-        float vertical;
-
-        if (combat.LockOnTransform != null)
-        {
-            Vector3 worldMove = camera.GetMoveDirection(state.CurrentInput);
-            Vector3 localMove = transform.InverseTransformDirection(worldMove.normalized);
-            horizontal = localMove.x * moveAmount;
-            vertical = localMove.z * moveAmount;
-        }
-        else
-        {
-            horizontal = 0f;
-            vertical = moveAmount;
-        }
-
-        anim.UpdateAnimation(moveAmount);
-        anim.UpdateAnimatorMovementParameters(horizontal, vertical, state.IsRunning);
+        anim.UpdateAnimation(state.AnimationMoveAmount);
     }
 
     private void FixedUpdate()
@@ -90,6 +73,7 @@ public class PlayerController : CharacterControllerBase
     private void OnDestroy()
     {
         if (gamePlayView == null) return;
+
         state.OnHeartsChanged -= gamePlayView.UpdateHearts;
         state.OnStaminaChanged -= gamePlayView.UpdateStamina;
     }
