@@ -3,11 +3,13 @@
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
-
     public Transform CameraTransform => cameraTransform;
 
     private Vector3 _cachedForward;
     private Vector3 _cachedRight;
+
+    public Vector3 Forward => _cachedForward;
+    public Vector3 Right => _cachedRight;
 
     private void Awake()
     {
@@ -16,9 +18,10 @@ public class PlayerCamera : MonoBehaviour
 
         CacheDirections();
     }
-
     private void CacheDirections()
     {
+        if (cameraTransform == null) return;
+
         Vector3 f = cameraTransform.forward;
         f.y = 0f;
         _cachedForward = f.normalized;
@@ -27,9 +30,6 @@ public class PlayerCamera : MonoBehaviour
         r.y = 0f;
         _cachedRight = r.normalized;
     }
-
-    public Vector3 Forward => _cachedForward;
-    public Vector3 Right => _cachedRight;
 
     public Vector3 GetMoveDirection(Vector2 input)
     {

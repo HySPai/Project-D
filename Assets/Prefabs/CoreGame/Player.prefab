@@ -1182,7 +1182,7 @@ Animator:
   m_GameObject: {fileID: 6101746182165348096}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f6605568d3cd20e4db1a0b19cfe83787, type: 3}
-  m_Controller: {fileID: 9100000, guid: 6cc700e0daf3d804ba25a3d1ee01bf9c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4613f7a906c6daa4bb0e208fe7b476d2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1327,14 +1327,14 @@ MonoBehaviour:
   canMove: 1
   canRotate: 1
   rollDistanceMultiplier: 2
+  maxStepUpHeight: 0.3
+  maxStepDownHeight: 1
   currentStamina: 0
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
-  maxStepDownHeight: 1
   fullSpeedInputThreshold: 0.2
   currentInput: {x: 0, y: 0}
   currentCameraInput: {x: 0, y: 0}
-  maxStepUpHeight: 0.3
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1397,8 +1397,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3494009422608787902}
-  moveParameter: Vertical
+  horizontalParameter: Horizontal
+  verticalParameter: Vertical
   isMoveParameter: isMoving
+  movementDampTime: 0.1
 --- !u!114 &8004906126929870345
 MonoBehaviour:
   m_ObjectHideFlags: 0

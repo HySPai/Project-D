@@ -24,6 +24,7 @@ public class PlayerController : CharacterControllerBase
         combat.Initialize(state, this, camera);
         anim.Initialize(state);
         input.Initialize(state);
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     private void Start()
