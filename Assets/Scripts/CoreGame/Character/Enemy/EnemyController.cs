@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyController : CharacterControllerBase
 {
@@ -22,6 +22,10 @@ public class EnemyController : CharacterControllerBase
 
     private void Update()
     {
-        anim.UpdateAnimation(0f);
+        // combat.Update() (đã override) tự quét lockOnLayer -> gán lockOnTransform
+        Transform target = combat.LockOnTransform;
+
+        movement.Tick(target);
+        anim.UpdateAnimation(movement.CurrentNormalizedSpeed); // đưa tốc độ thật vào blend tree
     }
 }
