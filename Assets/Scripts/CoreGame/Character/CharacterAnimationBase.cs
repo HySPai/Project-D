@@ -116,14 +116,34 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         if (state == null || !state.ApplyRootMotion) return;
 
         Vector3 delta = ScaledRootMotionDelta();
-        Vector3 targetPos = rb.position + delta;
+        delta.y = 0f; // bỏ trục dọc, để ground check lo độ cao
 
-        if (!TryResolveGroundedPosition(targetPos, out Vector3 groundedPos))
-            return;
-        if (IsBlockedByObstacle(groundedPos))
-            return;
+        Vector3 currentPos = rb.position;
 
-        rb.MovePosition(groundedPos);
+        // Thử từng trục riêng, giống PlayerMovement.Move()
+        float finalX = currentPos.x;
+        float finalZ = currentPos.z;
+
+        Vector3 xTarget = currentPos + new Vector3(delta.x, 0f, 0f);
+        if (TryResolveGroundedPosition(xTarget, out Vector3 xGrounded)
+            && !IsBlockedByObstacle(xGrounded))
+        {
+            finalX = xGrounded.x;
+        }
+
+        Vector3 zTarget = currentPos + new Vector3(0f, 0f, delta.z);
+        if (TryResolveGroundedPosition(zTarget, out Vector3 zGrounded)
+            && !IsBlockedByObstacle(zGrounded))
+        {
+            finalZ = zGrounded.z;
+        }
+
+        // Lấy độ cao bám đất từ vị trí cuối cùng
+        Vector3 resolvedTarget = new Vector3(finalX, currentPos.y, finalZ);
+        if (TryResolveGroundedPosition(resolvedTarget, out Vector3 finalGrounded))
+            resolvedTarget = finalGrounded;
+
+        rb.MovePosition(resolvedTarget);
         rb.MoveRotation(rb.rotation * animator.deltaRotation);
     }
 

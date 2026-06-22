@@ -49,7 +49,7 @@ public class CameraOffsetController : MonoBehaviour
         _zoomSettled = true;
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         bool isLocked = _combat.LockOnTransform != null;
 
