@@ -3,6 +3,8 @@ using UnityEngine.AI;
 
 public class EnemyMovement : CharacterMovementBase
 {
+    [SerializeField] private bool drawGizmos = true;
+
     [Header("NavMesh")]
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private float stoppingDistance = 1.8f;
@@ -74,5 +76,30 @@ public class EnemyMovement : CharacterMovementBase
         if (agent == null || agent.velocity.sqrMagnitude < 0.0001f)
             return Vector3.zero;
         return agent.velocity.normalized;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!drawGizmos) return;
+
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (agent == null) return;
+
+        // vùng dừng (xanh dương)
+        Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.9f);
+        Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+
+        if (!Application.isPlaying || !agent.hasPath) return;
+
+        // đích đến hiện tại (hồng)
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(agent.destination, 0.2f);
+
+        // đường path qua từng corner (xanh lá)
+        Vector3[] corners = agent.path.corners;
+        Gizmos.color = Color.green;
+        for (int i = 0; i < corners.Length - 1; i++)
+            Gizmos.DrawLine(corners[i] + Vector3.up * 0.1f,
+                            corners[i + 1] + Vector3.up * 0.1f);
     }
 }

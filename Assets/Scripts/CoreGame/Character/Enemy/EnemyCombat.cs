@@ -2,6 +2,8 @@
 
 public class EnemyCombat : CharacterCombatBase
 {
+    [SerializeField] private bool drawGizmos = true;
+
     [Header("Enemy Detection")]
     [SerializeField] private float detectionRange = 12f;   // tầm phát hiện để LOCK
     [SerializeField] private float loseTargetRange = 16f;  // vượt quá thì UNLOCK (hysteresis tránh nhấp nháy)
@@ -91,5 +93,44 @@ public class EnemyCombat : CharacterCombatBase
 
     public override void Attack()
     {
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!drawGizmos) return;
+
+        // tầm phát hiện để LOCK (vàng)
+        Gizmos.color = new Color(1f, 0.85f, 0.2f, 0.9f);
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        // tầm mất target / UNLOCK (đỏ)
+        Gizmos.color = new Color(1f, 0.3f, 0.2f, 0.9f);
+        Gizmos.DrawWireSphere(transform.position, loseTargetRange);
+
+        // điểm "mắt" dùng cho line-of-sight (xanh cyan)
+        Vector3 eye = transform.position + Vector3.up * eyeHeight;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(eye, 0.08f);
+
+        // khi đang có target: vẽ tia ngắm + ô đánh dấu
+        if (lockOnTransform != null)
+        {
+            Vector3 targetEye = lockOnTransform.position + Vector3.up * eyeHeight;
+
+            // chỉ kiểm tra che khuất lúc play (cần state.ObstacleLayer)
+            bool blocked = Application.isPlaying && requireLineOfSight &&
+                Physics.Raycast(eye, (targetEye - eye).normalized,
+                                Vector3.Distance(eye, targetEye), state.ObstacleLayer);
+
+            Gizmos.color = blocked ? Color.red : Color.green; // đỏ = bị chắn, xanh = thấy
+            Gizmos.DrawLine(eye, targetEye);
+            Gizmos.DrawWireCube(lockOnTransform.position + Vector3.up, Vector3.one * 0.4f);
+
+#if UNITY_EDITOR
+            UnityEditor.Handles.color = Color.white;
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 2.2f,
+                blocked ? "TARGET (bị chắn)" : "TARGET (locked)");
+#endif
+        }
     }
 }
