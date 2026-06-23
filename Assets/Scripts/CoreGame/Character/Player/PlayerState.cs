@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlayerState : CharacterStateBase
 {
+    private SO_PlayerStats playerStats;
+
     #region Hearts
     public event Action<int, int> OnHeartsChanged;
 
@@ -73,7 +75,6 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Stamina
-    private SO_PlayerStats playerStats;
 
     [Header("Stamina (runtime)")]
     [SerializeField] protected float currentStamina;

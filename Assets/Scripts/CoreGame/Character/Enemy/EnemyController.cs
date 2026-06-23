@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FIMSpace.FProceduralAnimation;
+using UnityEngine;
 
 public class EnemyController : CharacterControllerBase
 {
@@ -6,11 +7,13 @@ public class EnemyController : CharacterControllerBase
     [SerializeField] private EnemyMovement movement;
     [SerializeField] private EnemyCombat combat;
     [SerializeField] private EnemyAnimation anim;
+    [SerializeField] private LegsAnimator legsAnim;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
     public override CharacterCombatBase GetCombat => combat;
     public override CharacterAnimationBase GetAnimation => anim;
+    public LegsAnimator GetLegsAnim => legsAnim;
 
     private void Awake()
     {

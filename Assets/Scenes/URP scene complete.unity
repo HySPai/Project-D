@@ -153,7 +153,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -399,7 +399,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -1545,7 +1545,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -1658,7 +1658,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -1889,6 +1889,36 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1058851030982838935, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_Spacing.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1058851030982838935, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_Spacing.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1058851030982838935, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_CellSize.x
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1058851030982838935, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_CellSize.y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791716652116186512, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791716652116186512, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3791716652116186512, guid: ef15546637b589146ac1fbcff37dc4fc,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -1898,6 +1928,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791716652116186512, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 592
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791716652116186512, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 109
+      objectReference: {fileID: 0}
+    - target: {fileID: 5370599203277255154, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_Spacing
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5921340383898075176, guid: ef15546637b589146ac1fbcff37dc4fc,
         type: 3}
@@ -1971,6 +2016,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8755121857416339992, guid: ef15546637b589146ac1fbcff37dc4fc,
         type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 24.424
+      objectReference: {fileID: 0}
+    - target: {fileID: 8755121857416339992, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1988,6 +2038,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8930605633601966653, guid: ef15546637b589146ac1fbcff37dc4fc,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 68.3245
       objectReference: {fileID: 0}
     - target: {fileID: 8930605633601966653, guid: ef15546637b589146ac1fbcff37dc4fc,
         type: 3}
@@ -2117,7 +2172,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -2541,7 +2596,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -6045,7 +6100,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -6877,15 +6932,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.7218
+      value: -1.92
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.118
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 12.741
+      value: 10.28
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6927,6 +6982,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -0.252
       objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 5fe097f7eabcb8b4e89ad9493c6a84fc, type: 2}
     - target: {fileID: 13700000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -6935,6 +6994,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1723150664}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
@@ -6968,6 +7031,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1723150657}
   m_SourcePrefab: {fileID: 100100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
+--- !u!95 &1086871330 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9500000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 1086871329}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1092483398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8766,7 +8835,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -9151,7 +9220,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -10645,7 +10714,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -10891,7 +10960,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -11339,6 +11408,25 @@ MonoBehaviour:
     ModuleReference: {fileID: 11400000, guid: 7d9bd86d54a7a594cb1793f9533e2e00, type: 2}
     customStringList: []
     customObjectList: []
+    variables:
+    - VariableName: Rotation Power
+      Tooltip: 
+      _value: {x: -0.25, y: 0, z: 0, w: 0}
+      _string: 
+      _curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      _uObject: {fileID: 0}
+      VariableType: 0
+      _rangeHelper: {x: 0, y: 0, z: 0, w: 0}
+  - Enabled: 1
+    Parent: {fileID: 1723150655}
+    ModuleReference: {fileID: 11400000, guid: 0645fbea8059aec47aa6ae9d2c93c1d4, type: 2}
+    customStringList: []
+    customObjectList: []
     variables: []
   ImpulsesPowerMultiplier: 1
   ImpulsesDurationMultiplier: 1
@@ -11457,11 +11545,11 @@ MonoBehaviour:
   HipsHeightStepBlend: 1
   HipsHeightStepSpeed: 0.7
   HipsAdjustStyle: 0
-  StabilizeCenterOfMass: 0.45
+  StabilizeCenterOfMass: 0.8
   AnimationIsStablePose: 0.75
   StabilizingSpeed: 0.375
-  PushHipsOnLegMove: 0.1
-  NormalizePush: 0
+  PushHipsOnLegMove: 0.11
+  NormalizePush: 1
   PushReactionSpeed: 0.3
   PushYBlend: 1
   HipsStretchPreventer: 0.15
@@ -11480,9 +11568,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.9081478
+    LegRaiseMultiplier: 0.8624876
+    GlueThresholdMultiplier: 0.94965494
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11511,9 +11599,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.8518422
+    LegRaiseMultiplier: 0.8866728
+    GlueThresholdMultiplier: 0.9555949
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11542,9 +11630,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.8243698
+    LegRaiseMultiplier: 0.9099239
+    GlueThresholdMultiplier: 0.9085376
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11573,9 +11661,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.8002725
+    LegRaiseMultiplier: 0.9719761
+    GlueThresholdMultiplier: 0.971959
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11604,9 +11692,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.900627
+    LegRaiseMultiplier: 0.9306349
+    GlueThresholdMultiplier: 0.89102584
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11635,9 +11723,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.9596853
+    LegRaiseMultiplier: 0.87716925
+    GlueThresholdMultiplier: 0.90447474
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11666,9 +11754,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.83742553
+    LegRaiseMultiplier: 0.9048497
+    GlueThresholdMultiplier: 0.9857198
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11697,9 +11785,9 @@ MonoBehaviour:
     _FinalIKPos: {x: 0, y: 0, z: 0}
     Owner: {fileID: 1723150655}
     LegBlendWeight: 1
-    LegMoveSpeedMultiplier: 1
-    LegRaiseMultiplier: 1
-    GlueThresholdMultiplier: 1
+    LegMoveSpeedMultiplier: 0.99284923
+    LegRaiseMultiplier: 0.8333089
+    GlueThresholdMultiplier: 0.9602016
     GluePointOffset: {x: 0, y: 0}
     LegStretchMultiplier: 1
     CustomLegAnimating: {fileID: 0}
@@ -11722,7 +11810,7 @@ MonoBehaviour:
     FootMiddlePosition: 0.5
     AnkleYawCorrection: 0
   BaseLegAnimating:
-    StepMoveDuration: 0.375
+    StepMoveDuration: 0.45
     MoveToGoalCurve:
       serializedVersion: 2
       m_Curve:
@@ -11762,34 +11850,34 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0
-        inSlope: 0.6958197
-        outSlope: 0.6958197
+        inSlope: -0.625
+        outSlope: -0.625
         tangentMode: 0
         weightedMode: 3
         inWeight: 0
-        outWeight: 0.460011
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.4
-        value: 0.3
-        inSlope: -0.04204308
-        outSlope: -0.04204308
+        value: -0.25
+        inSlope: -0.625
+        outSlope: -0.625
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.333
-        outWeight: 0.3410656
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.85
         value: 0
-        inSlope: -0.2721428
-        outSlope: -0.2721428
+        inSlope: 0.5555555
+        outSlope: 0.5555555
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.3953607
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    SpherizePower: 0.3
+    SpherizePower: 0.175
     MinFootRaise: 0.1
     MaxFootRaise: 0.4
     RaiseYAxisCurve:
@@ -11814,8 +11902,8 @@ MonoBehaviour:
         inWeight: 0.3333333
         outWeight: 0.3387407
       - serializedVersion: 3
-        time: 0.505118
-        value: 0.5
+        time: 0.5943514
+        value: 0.7946472
         inSlope: -0.2710344
         outSlope: -0.2710344
         tangentMode: 0
@@ -11823,7 +11911,7 @@ MonoBehaviour:
         inWeight: 0.3333333
         outWeight: 0.3333333
       - serializedVersion: 3
-        time: 0.9110107
+        time: 1
         value: 0
         inSlope: -0.1500788
         outSlope: -0.1500788
@@ -11835,7 +11923,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     AllowSpeedups: 0.4
-    AllowDetachBefore: 1
+    AllowDetachBefore: 0.9
     PushHipsOnMoveCurve:
       serializedVersion: 2
       m_Curve:
@@ -11849,8 +11937,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.198735
       - serializedVersion: 3
-        time: 0.383
-        value: 0.3733972
+        time: 0.320017
+        value: 0.654645
         inSlope: -0.1664574
         outSlope: -0.1664574
         tangentMode: 0
@@ -11858,8 +11946,8 @@ MonoBehaviour:
         inWeight: 0.333
         outWeight: 0.2940554
       - serializedVersion: 3
-        time: 0.7075226
-        value: 0.1460427
+        time: 0.6681702
+        value: 0.2174691
         inSlope: -1.565806
         outSlope: -1.565806
         tangentMode: 0
@@ -11923,20 +12011,20 @@ MonoBehaviour:
     DoStepAnimationOnDistanceFactor: 0.055
   UseGluing: 1
   MainGlueBlend: 1
-  GlueRangeThreshold: 0.375
+  GlueRangeThreshold: 0.25
   GlueFadeInSpeed: 0.85
   AllowGlueBelowFoot: 0.2
   GlueFadeOutSpeed: 0.5
   UnglueOn: 30
-  AllowGlueDrag: 0.7
+  AllowGlueDrag: 0.9
   GlueMode: 2
   OnlyLocalAnimation: 0
-  SmoothSuddenSteps: 0.85
-  LegElevateBlend: 0.7
+  SmoothSuddenSteps: 0
+  LegElevateBlend: 0
   LegElevateHeightLimit: 0.6
   FootRotationBlend: 1
   FootAlignRapidity: 0.75
-  AnimateFeet: 1
+  AnimateFeet: 0
   LimitFeetYaw: 30
   AnimationFloorLevel: 0.001
   _Editor_Foldout_Setup_LegsList: 1
@@ -11944,7 +12032,7 @@ MonoBehaviour:
   _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
   _EditorCategory: 0
-  _EditorSetupCategory: 1
+  _EditorSetupCategory: 0
   _EditorMotionCategory: 0
   _EditorExtraCategory: 0
   setupPose:
@@ -11962,7 +12050,7 @@ MonoBehaviour:
   baseTransform: {fileID: 0}
   Hips: {fileID: 1187876751}
   ScaleReferenceMode: 3
-  finalScaleReference: 0.5574655
+  finalScaleReference: 0.5574656
   finalScaleReferenceSqrt: 0.1
   customScaleReferenceValue: 0.5
   DelayedInitialization: 0
@@ -12030,7 +12118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bcdcf7b27db1b949a2266322262c8ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
-  animator: {fileID: 0}
+  animator: {fileID: 1086871330}
   horizontalParameter: Horizontal
   verticalParameter: Vertical
   isMoveParameter: IsMove
@@ -12056,14 +12144,14 @@ MonoBehaviour:
   canBlock: 1
   canDoCombo: 0
   comboResetDelay: 2
-  currentWeapon: {fileID: 0}
+  currentWeapon: {fileID: 11400000, guid: 25db803bef8dccc4887acbc446ce44f7, type: 2}
   comboIndex: 0
   lockOnLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   drawGizmos: 1
-  detectionRange: 12
-  loseTargetRange: 16
+  detectionRange: 5
+  loseTargetRange: 10
   requireLineOfSight: 1
   eyeHeight: 1.5
 --- !u!114 &1723150659
@@ -12079,7 +12167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   drawGizmos: 1
-  agent: {fileID: 0}
+  agent: {fileID: 1723150664}
   stoppingDistance: 1.8
   useRunSpeed: 0
 --- !u!114 &1723150660
@@ -12094,14 +12182,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c750358b857431b429b86fe5bc6c3f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyState
-  stats: {fileID: 0}
+  stats: {fileID: 11400000, guid: 426b604844cfa434994924503419b42f, type: 2}
   currentHp: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   moveSmoothSpeed: 8
   currentMoveSpeed: 0
   targetMoveSpeed: 0
@@ -12128,12 +12216,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef6265334385cb499ee730c1468df37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  rb: {fileID: 0}
-  capsule: {fileID: 0}
-  state: {fileID: 0}
-  movement: {fileID: 0}
-  combat: {fileID: 0}
-  anim: {fileID: 0}
+  rb: {fileID: 1723150662}
+  capsule: {fileID: 1723150656}
+  state: {fileID: 1723150660}
+  movement: {fileID: 1723150659}
+  combat: {fileID: 1723150658}
+  anim: {fileID: 1723150657}
+  legsAnim: {fileID: 1723150655}
 --- !u!54 &1723150662
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12159,8 +12248,30 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_Constraints: 112
+  m_CollisionDetection: 1
+--- !u!195 &1723150664
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723150652}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!4 &1735051911 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400040, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
@@ -12606,7 +12717,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
@@ -13483,6 +13594,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1086871329}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1978278042 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 705837824224657102, guid: 3fb88a481140c7b439a43078473a511b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5487530980976340484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f3505aa6d98bd4418e0744d5ab56fdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: AD_FimpAnimating::FIMSpace.FProceduralAnimation.LegsAnimator
 --- !u!1001 &2008468272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15258,6 +15381,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 705837824224657102, guid: 3fb88a481140c7b439a43078473a511b,
+        type: 3}
+      propertyPath: _Editor_OnValidateTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4434736665686606893, guid: 3fb88a481140c7b439a43078473a511b,
         type: 3}
       propertyPath: m_Name
@@ -15313,6 +15441,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5122456458811286135, guid: 3fb88a481140c7b439a43078473a511b,
+        type: 3}
+      propertyPath: legsAnim
+      value: 
+      objectReference: {fileID: 1978278042}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
