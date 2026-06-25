@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
@@ -17,14 +16,22 @@ public class PlayerState : CharacterStateBase
 
     private void RaiseHeartsChanged() => OnHeartsChanged?.Invoke(currentHearts, playerStats.maxHearts);
 
-    public override void TakeDamage(float damage)
+    // Damage dạng float (từ DamageCollider) → quy đổi sang số tim, tối thiểu 1.
+    public override void TakeDamage(float damage, Vector3 sourcePosition)
     {
-        int hearts = Mathf.Max(1, Mathf.RoundToInt(damage));   // tối thiểu 1 tim
-        TakeDamage(hearts);
+        if (damage <= 0f) return;
+        int hearts = Mathf.Max(1, Mathf.CeilToInt(damage));
+        TakeDamage(hearts, sourcePosition);
     }
 
+    public override void TakeDamage(float damage) =>
+        TakeDamage(damage, transform.position + transform.forward);
+
     [Button]
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount) =>
+        TakeDamage(amount, transform.position + transform.forward);
+
+    public void TakeDamage(int amount, Vector3 sourcePosition)
     {
         if (isDead) return;
         if (isInvulnerable) return;
@@ -41,15 +48,15 @@ public class PlayerState : CharacterStateBase
             return;
         }
 
-        EnableIsInvulnerable();          // bật i-frame (trước đây thiếu)
+        PlayHitReaction(sourcePosition);
+        EnableIsInvulnerable();
         InvulnerabilityAsync().Forget();
     }
 
     [Button]
     public int Heal(int amount)
     {
-        if (amount <= 0) return 0;
-        if (isDead) return 0;
+        if (amount <= 0 || isDead) return 0;
 
         int before = currentHearts;
         currentHearts = Mathf.Min(playerStats.maxHearts, currentHearts + amount);
@@ -64,6 +71,7 @@ public class PlayerState : CharacterStateBase
 
         return healed;
     }
+
     private async UniTaskVoid InvulnerabilityAsync()
     {
         var token = this.GetCancellationTokenOnDestroy();
@@ -75,10 +83,11 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Stamina
-
     [Header("Stamina (runtime)")]
     [SerializeField] protected float currentStamina;
     protected float lastStaminaUseTime;
+    private bool runExhausted;
+
     public event Action<float, float> OnStaminaChanged;
 
     public float Stamina => playerStats.maxStamina;
@@ -88,7 +97,7 @@ public class PlayerState : CharacterStateBase
 
     public float RollStaminaCost => playerStats.rollStaminaCost;
     public float RunStaminaDrainRate => playerStats.runStaminaDrainRate;
-    private bool runExhausted;
+
     public bool CanRun
     {
         get
@@ -98,81 +107,7 @@ public class PlayerState : CharacterStateBase
             return !runExhausted;
         }
     }
-    #endregion
 
-    #region Ground Check
-    [Header("Ground Check")]
-    [SerializeField] protected float groundCheckDistance = 5f;
-    [SerializeField] protected float edgeCheckForwardDistance = 0.5f;
-    public float GroundCheckDistance => groundCheckDistance;
-    public float EdgeCheckForwardDistance => edgeCheckForwardDistance;
-    #endregion
-
-    #region Input
-    [Header("Input")]
-    [SerializeField] private float fullSpeedInputThreshold = 0.7f;
-    [SerializeField] private Vector2 currentInput;
-    [SerializeField] private Vector2 currentCameraInput;
-    public float FullSpeedInputThreshold => fullSpeedInputThreshold;
-    public Vector2 CurrentInput => currentInput;
-    public Vector2 CurrentCameraInput => currentCameraInput;
-    #endregion
-
-    #region Animation
-    public float AnimationMoveAmount
-    {
-        get
-        {
-            float moveAmount =
-                Mathf.Clamp01(
-                    CurrentInput.magnitude /
-                    FullSpeedInputThreshold);
-            if (moveAmount <= 0.01f)
-            {
-                return 0f;
-            }
-            if (IsRunning)
-            {
-                return 2f;
-            }
-            return moveAmount;
-        }
-    }
-    #endregion
-
-    protected override void InitializeStats()
-    {
-        base.InitializeStats();
-
-        playerStats = stats as SO_PlayerStats;
-        if (playerStats == null)
-        {
-            Debug.LogError($"{name}: stats phải là SO_PlayerStats", this);
-            return;
-        }
-        currentStamina = playerStats.maxStamina;
-        currentHearts = playerStats.maxHearts;
-
-        maxHp = playerStats.maxHearts;
-    }
-
-    protected virtual void Update()
-    {
-        RegenerateStamina();
-    }
-
-    #region Input Setters
-    public void SetCurrentInput(Vector2 value)
-    {
-        currentInput = value;
-    }
-    public void SetCurrentCameraInput(Vector2 value)
-    {
-        currentCameraInput = value;
-    }
-    #endregion
-
-    #region Stamina Logic
     private void RaiseStaminaChanged() => OnStaminaChanged?.Invoke(currentStamina, playerStats.maxStamina);
 
     public void DrainStamina(float amount)
@@ -195,9 +130,88 @@ public class PlayerState : CharacterStateBase
     }
     #endregion
 
+    #region Ground Check Extra
+    [Header("Ground Check")]
+    [SerializeField] protected float groundCheckDistance = 5f;
+    [SerializeField] protected float edgeCheckForwardDistance = 0.5f;
+
+    public float GroundCheckDistance => groundCheckDistance;
+    public float EdgeCheckForwardDistance => edgeCheckForwardDistance;
+    #endregion
+
+    #region Input
+    [Header("Input")]
+    [SerializeField] private float fullSpeedInputThreshold = 0.7f;
+    [SerializeField] private Vector2 currentInput;
+    [SerializeField] private Vector2 currentCameraInput;
+
+    public float FullSpeedInputThreshold => fullSpeedInputThreshold;
+    public Vector2 CurrentInput => currentInput;
+    public Vector2 CurrentCameraInput => currentCameraInput;
+
+    public void SetCurrentInput(Vector2 value) => currentInput = value;
+    public void SetCurrentCameraInput(Vector2 value) => currentCameraInput = value;
+    #endregion
+
+    #region Animation Move Amount
+    public float AnimationMoveAmount
+    {
+        get
+        {
+            float moveAmount = Mathf.Clamp01(CurrentInput.magnitude / FullSpeedInputThreshold);
+            if (moveAmount <= 0.01f) return 0f;
+            if (IsRunning) return 2f;
+            return moveAmount;
+        }
+    }
+    #endregion
+
+    #region Lifecycle
+    protected override void InitializeStats()
+    {
+        base.InitializeStats();
+
+        playerStats = stats as SO_PlayerStats;
+        if (playerStats == null)
+        {
+            Debug.LogError($"{name}: stats phải là SO_PlayerStats", this);
+            return;
+        }
+
+        currentStamina = playerStats.maxStamina;
+        currentHearts = playerStats.maxHearts;
+        maxHp = playerStats.maxHearts;
+    }
+
+    protected virtual void Update()
+    {
+        RegenerateStamina();
+    }
+
     protected override void Die()
     {
         base.Die();
         Debug.Log("Player Dead");
     }
+    #endregion
+
+    #region Animation Test Buttons
+    private void PlayAction(in AnimationAction action)
+    {
+        var animation = owner != null ? owner.GetAnimation : null;
+        if (animation == null)
+        {
+            Debug.LogWarning($"{name}: thiếu Animation để play action", this);
+            return;
+        }
+        animation.Play(action);
+    }
+
+    [Button] public void AnimationDeath() => PlayAction(CharacterAnimations.Death);
+    [Button] public void AnimationRollForward() => PlayAction(CharacterAnimations.RollForward);
+    [Button] public void AnimationHitForward() => PlayAction(CharacterAnimations.HitForward);
+    [Button] public void AnimationHitBackward() => PlayAction(CharacterAnimations.HitBackward);
+    [Button] public void AnimationHitLeft() => PlayAction(CharacterAnimations.HitLeft);
+    [Button] public void AnimationHitRight() => PlayAction(CharacterAnimations.HitRight);
+    #endregion
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
 {
@@ -20,10 +20,14 @@ public class DamageCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        CharacterStateBase targetState = other.GetComponent<CharacterStateBase>();
+        if (currentDamage <= 0f) return;
+
+        // Lấy state ở parent để hitbox đặt ở child vẫn resolve được.
+        CharacterStateBase targetState = other.GetComponentInParent<CharacterStateBase>();
         if (targetState == null) return;
         if (targetState == ownerState) return;
 
-        targetState.TakeDamage(currentDamage);
+        // Nguồn damage = vị trí vật mang collider (vũ khí, viên đạn) để tính hướng hit.
+        targetState.TakeDamage(currentDamage, transform.position);
     }
 }

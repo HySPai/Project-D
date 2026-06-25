@@ -1135,8 +1135,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7861660919349431496}
   - component: {fileID: 3494009422608787902}
-  - component: {fileID: 8108633679974709002}
   - component: {fileID: 375398382370659543}
+  - component: {fileID: 5367365183276113152}
   - component: {fileID: 3676460191051749661}
   - component: {fileID: 1074759447180211755}
   - component: {fileID: 6237013157365418999}
@@ -1194,33 +1194,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!54 &8108633679974709002
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6101746182165348096}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 1
 --- !u!136 &375398382370659543
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1244,6 +1217,31 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.86, z: 0}
+--- !u!143 &5367365183276113152
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6101746182165348096}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &3676460191051749661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1287,14 +1285,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5683e67f47017504e967cb645c81536a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 8108633679974709002}
-  capsule: {fileID: 375398382370659543}
+  characterController: {fileID: 5367365183276113152}
   input: {fileID: 4935462881444096308}
   state: {fileID: 6237013157365418999}
   movement: {fileID: 3904609994375877722}
   anim: {fileID: 230835159006547521}
   combat: {fileID: 8004906126929870345}
-  camera: {fileID: 7694672649410949249}
+  playerCamera: {fileID: 7694672649410949249}
 --- !u!114 &6237013157365418999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1327,8 +1324,12 @@ MonoBehaviour:
   canMove: 1
   canRotate: 1
   rollDistanceMultiplier: 2
-  maxStepUpHeight: 0.3
+  gravityForce: -5.55
+  groundCheckSphereRadius: 0.3
+  groundedYVelocity: -20
+  fallStartYVelocity: -5
   maxStepDownHeight: 1
+  edgeCheckDistance: 1.5
   currentStamina: 0
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
@@ -1383,7 +1384,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fcbcf3d7424ba49a37051f5bce6004, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rollAction: Roll_Forward_01
 --- !u!114 &230835159006547521
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerAnimation anim;
     [SerializeField] private PlayerCombat combat;
-    [SerializeField] private PlayerCamera camera;
+    [SerializeField] private PlayerCamera playerCamera;
 
     private GamePlayView gamePlayView;
 
@@ -20,11 +20,10 @@ public class PlayerController : CharacterControllerBase
     private void Awake()
     {
         state.Initialize(this);
-        movement.Initialize(state, anim, combat, camera);
-        combat.Initialize(state, this, camera);
+        movement.Initialize(state, anim, combat, playerCamera);
+        combat.Initialize(state, this, playerCamera);
         anim.Initialize(state);
         input.Initialize(state);
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     private void Start()
@@ -42,6 +41,10 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
+        // 1) Cập nhật grounded + gravity trước mọi di chuyển.
+        state.HandleGroundCheckAndGravity();
+
+        // 2) Quyết định chạy/đi.
         bool canRun = input.IsRunning()
                       && state.CurrentInput.sqrMagnitude > 0.01f
                       && state.CanRun;
@@ -49,6 +52,7 @@ public class PlayerController : CharacterControllerBase
 
         movement.SetInput(state.CurrentInput);
 
+        // 3) Lock-on / switch target.
         if (input.IsLockTarget())
         {
             combat.LockTarget();
@@ -60,15 +64,13 @@ public class PlayerController : CharacterControllerBase
                 combat.SwitchTarget(switchDir);
         }
 
+        // 4) Action.
         if (input.IsFire()) combat.Attack();
         if (input.IsRolling()) movement.Roll();
 
-        anim.UpdateAnimation(state.AnimationMoveAmount);
-    }
-
-    private void FixedUpdate()
-    {
+        // 5) Di chuyển (CharacterController) + cập nhật animation.
         movement.Move();
+        anim.UpdateAnimation(state.AnimationMoveAmount);
     }
 
     private void OnDestroy()

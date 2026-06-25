@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
 public abstract class CharacterAnimationBase : MonoBehaviour
 {
@@ -11,18 +12,16 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     [SerializeField] protected float movementDampTime = 0.1f;
 
     protected CharacterStateBase state;
-    protected bool applyRootMotion;
-    protected Rigidbody rb;
-    protected CapsuleCollider capsule;
+    protected CharacterController cc;
 
     protected int horizontalHash;
     protected int verticalHash;
 
+    #region Init
     public virtual void Initialize(CharacterStateBase state)
     {
         this.state = state;
-        rb = state.Owner.Rigidbody;
-        capsule = state.Owner.Capsule;
+        cc = state.Owner.CharacterController;
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
@@ -32,9 +31,9 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         horizontalHash = Animator.StringToHash(horizontalParameter);
         verticalHash = Animator.StringToHash(verticalParameter);
     }
+    #endregion
 
-    // Cập nhật animation mỗi frame: đồng bộ root motion + lái blend tree locomotion.
-    // Controller chỉ cần gọi method này, mọi tính toán nằm ở đây.
+    #region Locomotion Update
     public virtual void UpdateAnimation(float moveAmount)
     {
         if (state == null) return;
@@ -70,7 +69,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         animator.SetFloat(verticalHash, vertical, movementDampTime, Time.deltaTime);
     }
 
-    // Mục tiêu đang lock (nếu có). Tách riêng để subclass dễ override nếu cần.
     protected virtual Transform GetLockOnTarget()
     {
         CharacterCombatBase combat = state.Owner.GetCombat;
@@ -81,12 +79,9 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     {
         animator.SetBool(isMoveParameter, isMoving);
     }
+    #endregion
 
-    public virtual void ApplyRootMotion(bool value)
-    {
-        applyRootMotion = value;
-    }
-
+    #region Play Animation
     public virtual void PlayTargetAnimation(
         string targetAnimation,
         bool isPerformingAction,
@@ -95,7 +90,7 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         bool canMove = false)
     {
         if (state == null) return;
-        this.applyRootMotion = applyRootMotion;
+
         animator.CrossFade(targetAnimation, 0.2f);
         state.SetAttacking(isPerformingAction);
         state.SetApplyRootMotion(applyRootMotion);
@@ -109,42 +104,23 @@ public abstract class CharacterAnimationBase : MonoBehaviour
             action.name, action.isAction, action.rootMotion,
             action.canRotate, action.canMove);
     }
+    #endregion
 
-    // ---- Root motion + bám đất + chặn xuyên tường (dùng chung) ----
+    #region Root Motion
     protected virtual void OnAnimatorMove()
     {
         if (state == null || !state.ApplyRootMotion) return;
 
         Vector3 delta = ScaledRootMotionDelta();
-        delta.y = 0f; // bỏ trục dọc, để ground check lo độ cao
 
-        Vector3 currentPos = rb.position;
+        // Tách phương ngang để chặn rơi xuống vực, giữ nguyên phương dọc cho gravity.
+        Vector3 horizontal = new Vector3(delta.x, 0f, delta.z);
+        horizontal = state.ResolveEdgeGuard(horizontal);
 
-        // Thử từng trục riêng, giống PlayerMovement.Move()
-        float finalX = currentPos.x;
-        float finalZ = currentPos.z;
+        Vector3 finalDelta = horizontal + state.GetGravityDelta();
 
-        Vector3 xTarget = currentPos + new Vector3(delta.x, 0f, 0f);
-        if (TryResolveGroundedPosition(xTarget, out Vector3 xGrounded)
-            && !IsBlockedByObstacle(xGrounded))
-        {
-            finalX = xGrounded.x;
-        }
-
-        Vector3 zTarget = currentPos + new Vector3(0f, 0f, delta.z);
-        if (TryResolveGroundedPosition(zTarget, out Vector3 zGrounded)
-            && !IsBlockedByObstacle(zGrounded))
-        {
-            finalZ = zGrounded.z;
-        }
-
-        // Lấy độ cao bám đất từ vị trí cuối cùng
-        Vector3 resolvedTarget = new Vector3(finalX, currentPos.y, finalZ);
-        if (TryResolveGroundedPosition(resolvedTarget, out Vector3 finalGrounded))
-            resolvedTarget = finalGrounded;
-
-        rb.MovePosition(resolvedTarget);
-        rb.MoveRotation(rb.rotation * animator.deltaRotation);
+        cc.Move(finalDelta);
+        transform.rotation *= animator.deltaRotation;
     }
 
     protected virtual Vector3 ScaledRootMotionDelta()
@@ -154,34 +130,5 @@ public abstract class CharacterAnimationBase : MonoBehaviour
             delta *= state.RollDistanceMultiplier;
         return delta;
     }
-
-    protected bool TryResolveGroundedPosition(Vector3 position, out Vector3 grounded)
-    {
-        grounded = position;
-        float up = state.MaxStepUpHeight + 0.2f;
-        Vector3 origin = position + Vector3.up * up;
-        float maxDistance = up + state.MaxStepDownHeight + 0.2f;
-
-        if (!Physics.Raycast(origin, Vector3.down, out RaycastHit groundHit, maxDistance, state.GroundLayer))
-            return false;
-
-        float heightDiff = groundHit.point.y - position.y;
-        if (heightDiff > state.MaxStepUpHeight) return false;
-        if (-heightDiff > state.MaxStepDownHeight) return false;
-
-        grounded = new Vector3(position.x, groundHit.point.y, position.z);
-        return true;
-    }
-
-    protected bool IsBlockedByObstacle(Vector3 groundedPosition)
-    {
-        float skin = state.MaxStepUpHeight;
-        Vector3 bottom = groundedPosition + Vector3.up * (skin + capsule.radius);
-        Vector3 top = groundedPosition + Vector3.up * (capsule.height - capsule.radius);
-        if (top.y < bottom.y) top = bottom;
-
-        return Physics.CheckCapsule(
-            bottom, top, capsule.radius * 0.9f,
-            state.GroundLayer, QueryTriggerInteraction.Ignore);
-    }
+    #endregion
 }

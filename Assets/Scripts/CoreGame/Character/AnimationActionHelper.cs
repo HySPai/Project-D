@@ -17,7 +17,9 @@
     }
 }
 
-public static class PlayerAnimations
+// Bộ animation dùng chung cho mọi character (Player & Enemy).
+// Nếu một loại character cần clip khác, override DeathAnimation/GetHitAnimation trong state của nó.
+public static class CharacterAnimations
 {
     // name,             isAction, rootMotion, canRotate, canMove
     public static readonly AnimationAction Death =
@@ -26,5 +28,13 @@ public static class PlayerAnimations
     public static readonly AnimationAction RollForward =
         new AnimationAction("Roll_Forward_01", true, true, false, false);
 
-    // thêm đòn khác ở đây khi cần...
+    // Hit reactions — isAction = true để khoá action, rootMotion = true.
+    public static readonly AnimationAction HitForward =
+        new AnimationAction("Hit_Forward", true, true, false, false);
+    public static readonly AnimationAction HitBackward =
+        new AnimationAction("Hit_Backward", true, true, false, false);
+    public static readonly AnimationAction HitLeft =
+        new AnimationAction("Hit_Left", true, true, false, false);
+    public static readonly AnimationAction HitRight =
+        new AnimationAction("Hit_Right", true, true, false, false);
 }
