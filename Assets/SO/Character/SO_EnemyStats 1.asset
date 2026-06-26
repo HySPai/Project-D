@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8b2501eed5779d48acfa0e28344a408, type: 3}
-  m_Name: SO_EnemyStats
+  m_Name: SO_EnemyStats 1
   m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyStats
   maxHp: 100
   moveSpeed: 3
@@ -20,7 +20,11 @@ MonoBehaviour:
   fieldOfViewAngle: 110
   eyeHeight: 1.6
   chaseSpeed: 4.5
-  stoppingDistance: 1.8
+  stoppingDistance: 1
   giveUpDistance: 18
   returnSpeed: 3
   homeReachedThreshold: 0.4
+  attackAnimationName: Attack_01
+  attackRange: 1
+  attackDamage: 1
+  attackCooldown: 3

@@ -16,6 +16,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.92
@@ -91,11 +95,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 624712185269592649}
+      addedObject: {fileID: 3924566930395403747}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3924566930395403747}
+      addedObject: {fileID: 3541355974719965302}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
@@ -116,7 +120,61 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 4718465854043262489}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6293801159981533275}
+    - targetCorrespondingSourceObject: {fileID: 100072, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6723115956991258145}
+    - targetCorrespondingSourceObject: {fileID: 100072, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7088252037161208334}
   m_SourcePrefab: {fileID: 100100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa, type: 3}
+--- !u!1 &4790376868823584805 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100072, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 4790376868823684813}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &6723115956991258145
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790376868823584805}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.33
+  m_Height: 0.33
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7088252037161208334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790376868823584805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8699862dcb93334892dc08b8d30dfc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
+  damageCollider: {fileID: 6723115956991258145}
 --- !u!1 &4790376868823584877 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
@@ -797,7 +855,7 @@ MonoBehaviour:
   AnimationFloorLevel: 0.001
   _Editor_Foldout_Setup_LegsList: 1
   _Editor_EnsureCount: 0
-  _Editor_OnValidateTrigger: 1
+  _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
   _EditorCategory: 0
   _EditorSetupCategory: 0
@@ -873,33 +931,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!54 &624712185269592649
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4790376868823584877}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 1
 --- !u!136 &3924566930395403747
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -920,9 +951,34 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.35
-  m_Height: 1.67
+  m_Height: 1.7
   m_Direction: 1
-  m_Center: {x: 0, y: 0.50293183, z: -0.005707264}
+  m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!143 &3541355974719965302
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790376868823584877}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.7
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &2660887879903214035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -935,13 +991,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef6265334385cb499ee730c1468df37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
-  rb: {fileID: 624712185269592649}
-  capsule: {fileID: 3924566930395403747}
+  characterController: {fileID: 3541355974719965302}
   state: {fileID: 4959885835505717527}
   movement: {fileID: 5302813413040657204}
   combat: {fileID: 5629983921490562998}
   anim: {fileID: 4718465854043262489}
+  vision: {fileID: 6293801159981533275}
   legsAnim: {fileID: 2338771140307498743}
+  agent: {fileID: 3425661932591497015}
 --- !u!114 &4959885835505717527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,7 +1011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c750358b857431b429b86fe5bc6c3f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyState
-  stats: {fileID: 11400000, guid: 426b604844cfa434994924503419b42f, type: 2}
+  stats: {fileID: 11400000, guid: 35a665e54a0bb6e43852272fa6ef66cd, type: 2}
   currentHp: 0
   groundLayer:
     serializedVersion: 2
@@ -974,8 +1031,14 @@ MonoBehaviour:
   canMove: 1
   canRotate: 1
   rollDistanceMultiplier: 1
-  maxStepUpHeight: 0.3
+  gravityForce: -5.55
+  groundCheckSphereRadius: 0.3
+  groundedYVelocity: -20
+  fallStartYVelocity: -5
   maxStepDownHeight: 1
+  edgeCheckDistance: 1.5
+  homePosition: {x: 0, y: 0, z: 0}
+  homeRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &5302813413040657204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -988,10 +1051,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac16627d8f573164d90e25e397f36dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  drawGizmos: 1
-  agent: {fileID: 3425661932591497015}
-  stoppingDistance: 1.8
-  useRunSpeed: 0
 --- !u!114 &5629983921490562998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1004,7 +1063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221d4017e1328c9448d8bd70206060af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  colAttack: {fileID: 0}
+  colAttack: {fileID: 7088252037161208334}
   currentAttackType: 0
   lastAttackAnimationPerformed: 
   lockOnTransform: {fileID: 0}
@@ -1018,11 +1077,6 @@ MonoBehaviour:
   lockOnLayer:
     serializedVersion: 2
     m_Bits: 64
-  drawGizmos: 1
-  detectionRange: 5
-  loseTargetRange: 10
-  requireLineOfSight: 1
-  eyeHeight: 1.5
 --- !u!114 &4718465854043262489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1040,6 +1094,25 @@ MonoBehaviour:
   verticalParameter: Vertical
   isMoveParameter: IsMove
   movementDampTime: 0.1
+--- !u!114 &6293801159981533275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790376868823584877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: decc41865c5d83941bde7d9176b8825f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyVision
+  eye: {fileID: 0}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 640
 --- !u!4 &4790376868823813123 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400078, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,

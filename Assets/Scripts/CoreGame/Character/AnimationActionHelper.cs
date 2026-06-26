@@ -37,4 +37,6 @@ public static class CharacterAnimations
         new AnimationAction("Hit_Left", true, true, false, false);
     public static readonly AnimationAction HitRight =
         new AnimationAction("Hit_Right", true, true, false, false);
+    public static readonly AnimationAction TakeDamage =
+    new AnimationAction("TakeDamage", true, true, false, false);
 }

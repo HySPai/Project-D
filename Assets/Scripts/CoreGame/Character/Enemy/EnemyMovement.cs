@@ -3,103 +3,81 @@ using UnityEngine.AI;
 
 public class EnemyMovement : CharacterMovementBase
 {
-    [SerializeField] private bool drawGizmos = true;
-
-    [Header("NavMesh")]
-    [SerializeField] private NavMeshAgent agent;
-    [SerializeField] private float stoppingDistance = 1.8f;
-    [SerializeField] private bool useRunSpeed = false;
-
+    private NavMeshAgent agent;
     private EnemyState state;
 
-    public float CurrentNormalizedSpeed { get; private set; }
-
-    public void Initialize(EnemyState state)
+    public void Initialize(EnemyState state, NavMeshAgent agent)
     {
         this.state = state;
+        this.agent = agent;
 
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-
-        if (agent != null)
-        {
-            agent.updateRotation = true;
-            agent.stoppingDistance = stoppingDistance;
-            agent.speed = useRunSpeed ? state.RunSpeed : state.MoveSpeed;
-        }
+        // Agent tự lo cả di chuyển lẫn xoay khi locomotion.
+        agent.updatePosition = true;
+        agent.updateRotation = true;
     }
 
-    // EnemyController gọi mỗi frame, truyền target hiện tại (null = không có).
-    public void Tick(Transform target)
-    {
-        if (agent == null || !agent.isOnNavMesh)
-        {
-            CurrentNormalizedSpeed = 0f;
-            return;
-        }
-
-        bool canChase =
-            target != null &&
-            state != null &&
-            !state.IsDead &&
-            state.CanMove &&
-            !state.IsAttacking;   // đang đánh thì dừng để không xung đột root motion
-
-        if (canChase)
-        {
-            agent.speed = useRunSpeed ? state.RunSpeed : state.MoveSpeed;
-            agent.isStopped = false;
-            agent.SetDestination(target.position);
-        }
-        else
-        {
-            StopAgent();
-        }
-
-        CurrentNormalizedSpeed = agent.speed > 0.01f
-            ? Mathf.Clamp01(agent.velocity.magnitude / agent.speed)
-            : 0f;
-    }
-
-    private void StopAgent()
-    {
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
-        if (agent.hasPath) agent.ResetPath();
-    }
-
+    // Enemy điều hướng bằng NavMesh nên không dùng input vector như Player.
     public override void SetInput(Vector2 input) { }
     public override void Move() { }
     public override void Roll() { }
 
-    public override Vector3 GetMoveDirection()
+    public void Chase(Transform target, float speed, float stoppingDistance)
     {
-        if (agent == null || agent.velocity.sqrMagnitude < 0.0001f)
-            return Vector3.zero;
-        return agent.velocity.normalized;
+        if (agent == null || !agent.isOnNavMesh || target == null) return;
+        agent.speed = speed;
+        agent.stoppingDistance = stoppingDistance;
+        agent.isStopped = false;
+        agent.SetDestination(target.position);
     }
 
-    private void OnDrawGizmosSelected()
+    public void MoveTo(Vector3 destination, float speed)
     {
-        if (!drawGizmos) return;
+        if (agent == null || !agent.isOnNavMesh) return;
+        agent.speed = speed;
+        agent.stoppingDistance = 0f;
+        agent.isStopped = false;
+        agent.SetDestination(destination);
+    }
 
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent == null) return;
+    public void Stop()
+    {
+        if (agent == null || !agent.isOnNavMesh) return;
+        agent.isStopped = true;
+        agent.ResetPath();
+    }
 
-        // vùng dừng (xanh dương)
-        Gizmos.color = new Color(0.2f, 0.6f, 1f, 0.9f);
-        Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+    public bool HasReachedDestination(float threshold)
+    {
+        if (agent == null || !agent.isOnNavMesh || agent.pathPending) return false;
+        return agent.remainingDistance <= Mathf.Max(threshold, agent.stoppingDistance);
+    }
 
-        if (!Application.isPlaying || !agent.hasPath) return;
+    // [0..1] để blend animation đi/đứng.
+    public float NormalizedSpeed =>
+        (agent == null || agent.speed <= 0.01f)
+            ? 0f
+            : Mathf.Clamp01(agent.velocity.magnitude / agent.speed);
 
-        // đích đến hiện tại (hồng)
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawSphere(agent.destination, 0.2f);
+    public override Vector3 GetMoveDirection()
+    {
+        if (agent == null) return Vector3.zero;
+        Vector3 v = agent.velocity; v.y = 0f;
+        return v.sqrMagnitude > 0.0001f ? v.normalized : Vector3.zero;
+    }
+    public void BeginRootMotion()
+    {
+        if (agent == null || !agent.isOnNavMesh) return;
+        agent.isStopped = true;
+        agent.ResetPath();
+        agent.updatePosition = false;
+        agent.updateRotation = false;
+    }
 
-        // đường path qua từng corner (xanh lá)
-        Vector3[] corners = agent.path.corners;
-        Gizmos.color = Color.green;
-        for (int i = 0; i < corners.Length - 1; i++)
-            Gizmos.DrawLine(corners[i] + Vector3.up * 0.1f,
-                            corners[i + 1] + Vector3.up * 0.1f);
+    public void EndRootMotion()
+    {
+        if (agent == null || !agent.isOnNavMesh) return;
+        agent.Warp(transform.position);
+        agent.updatePosition = true;
+        agent.updateRotation = true;
     }
 }

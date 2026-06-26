@@ -287,24 +287,36 @@ public abstract class CharacterStateBase : MonoBehaviour
         var animation = owner != null ? owner.GetAnimation : null;
         if (animation == null) return;
 
+        // null = character này không có hit reaction -> bỏ qua.
+        AnimationAction? hit = ResolveHitReaction(damageSourcePosition);
+        if (hit.HasValue)
+            animation.Play(hit.Value);
+    }
+
+    // HOOK chính để override:
+    // - Mặc định: hit theo 4 hướng (Player).
+    // - Override trả 1 clip cố định nếu character chỉ có 1 anim.
+    // - Override trả null nếu character không có hit reaction.
+    protected virtual AnimationAction? ResolveHitReaction(Vector3 damageSourcePosition)
+    {
+        return GetHitAnimation(ComputeHitDirection(damageSourcePosition));
+    }
+
+    // Tính hướng bị đánh dựa trên vị trí nguồn damage.
+    protected HitDirection ComputeHitDirection(Vector3 damageSourcePosition)
+    {
         Vector3 toSource = damageSourcePosition - transform.position;
         toSource.y = 0f;
 
         if (toSource.sqrMagnitude < 0.0001f)
-        {
-            animation.Play(GetHitAnimation(HitDirection.Forward));
-            return;
-        }
+            return HitDirection.Forward;
 
         Vector3 local = transform.InverseTransformDirection(toSource.normalized);
 
-        HitDirection dir;
         if (Mathf.Abs(local.z) >= Mathf.Abs(local.x))
-            dir = local.z >= 0f ? HitDirection.Forward : HitDirection.Backward;
-        else
-            dir = local.x >= 0f ? HitDirection.Left : HitDirection.Right;
+            return local.z >= 0f ? HitDirection.Forward : HitDirection.Backward;
 
-        animation.Play(GetHitAnimation(dir));
+        return local.x >= 0f ? HitDirection.Left : HitDirection.Right;
     }
 
     protected virtual AnimationAction GetHitAnimation(HitDirection dir)
