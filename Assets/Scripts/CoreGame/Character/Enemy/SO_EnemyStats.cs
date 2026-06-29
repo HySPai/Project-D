@@ -26,4 +26,5 @@ public class SO_EnemyStats : CharacterStats
     [Header("Knockback (Bị đẩy lùi khi trúng đòn)")]
     public float knockbackDistance = 1.5f;  // quãng đường bị đẩy lùi
     public float knockbackDuration = 0.25f; // thời gian đẩy lùi (nên ~ độ dài clip hit)
+    public float stunDuration = 0.5f;        // thời gian choáng (FSM đứng im) - nên >= knockbackDuration
 }

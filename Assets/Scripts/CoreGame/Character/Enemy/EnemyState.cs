@@ -41,15 +41,17 @@ public class EnemyState : CharacterStateBase
     public float AttackCooldown => EnemyStats.attackCooldown;
     #endregion
 
-    #region Knockback (bị đẩy lùi)
+    #region Knockback & Stun (đẩy lùi + choáng khi trúng đòn)
     public float KnockbackDistance => EnemyStats.knockbackDistance;
     public float KnockbackDuration => EnemyStats.knockbackDuration;
+    public float StunDuration => EnemyStats.stunDuration;
 
-    private float knockbackEndTime;
+    private float stunEndTime;
 
-    // FSM sẽ "đứng im" trong lúc bị đẩy lùi, để lực đẩy không bị logic state ghi đè.
-    public bool IsKnockedBack => Time.time < knockbackEndTime;
-    public void BeginKnockback(float duration) => knockbackEndTime = Time.time + duration;
+    // Trong lúc choáng, FSM "đứng im" (không đuổi/đánh) để player dễ chém liên tục.
+    // Mỗi lần trúng đòn lại gia hạn -> bị đánh dồn thì choáng kéo dài.
+    public bool IsStunned => Time.time < stunEndTime;
+    public void BeginStun(float duration) => stunEndTime = Time.time + duration;
     #endregion
 
     #region Animation

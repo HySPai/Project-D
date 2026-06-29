@@ -3,7 +3,9 @@
 public abstract class CharacterCombatBase : MonoBehaviour
 {
     protected CharacterStateBase state;
-    [SerializeField] protected DamageCollider colAttack;
+
+    [Header("Damage Colliders")]
+    [SerializeField] protected DamageCollider[] damageColliders;
 
     [Header("Attack Type")]
     public AttackType currentAttackType;
@@ -44,13 +46,20 @@ public abstract class CharacterCombatBase : MonoBehaviour
     {
         CheckAutoUnlock();
     }
+
     public virtual void Initialize(CharacterStateBase state)
     {
         this.state = state;
 
-        if (colAttack != null)
-            colAttack.Initialize(state);
+        // Khởi tạo TẤT CẢ damage collider (gán state để biết ai là chủ đòn đánh).
+        if (damageColliders != null)
+        {
+            for (int i = 0; i < damageColliders.Length; i++)
+                if (damageColliders[i] != null)
+                    damageColliders[i].Initialize(state);
+        }
     }
+
     private void CheckAutoUnlock()
     {
         if (lockOnTransform == null) return;
@@ -94,8 +103,53 @@ public abstract class CharacterCombatBase : MonoBehaviour
     public virtual void EnableCanRotate() => state?.SetCanRotate(true);
     public virtual void DisableCanRotate() => state?.SetCanRotate(false);
 
-    public virtual void OpenDamageCollider() => colAttack.GetCollider.enabled = true;
-    public virtual void CloseDamageCollider() => colAttack.GetCollider.enabled = false;
+    #region Damage Colliders
+    // Lấy collider theo chỉ số (null nếu chỉ số không hợp lệ).
+    protected DamageCollider GetDamageCollider(int index)
+    {
+        if (damageColliders == null || index < 0 || index >= damageColliders.Length)
+            return null;
+        return damageColliders[index];
+    }
+
+    // Đặt sát thương cho 1 collider cụ thể trước khi mở (dùng cho enemy nhiều đòn).
+    public void SetDamage(int index, float damage)
+    {
+        DamageCollider dc = GetDamageCollider(index);
+        if (dc != null) dc.SetDamage(damage);
+    }
+
+    // ---- Animation event (giữ nguyên cho đòn đánh đơn: collider [0]) ----
+    public virtual void OpenDamageCollider() => OpenDamageColliderAt(0);
+    public virtual void CloseDamageCollider() => CloseDamageColliderAt(0);
+
+    // ---- Animation event có chỉ số (cho đòn đánh nhiều collider) ----
+    public virtual void OpenDamageColliderAt(int index)
+    {
+        DamageCollider dc = GetDamageCollider(index);
+        if (dc != null && dc.GetCollider != null)
+            dc.GetCollider.enabled = true;
+    }
+
+    public virtual void CloseDamageColliderAt(int index)
+    {
+        DamageCollider dc = GetDamageCollider(index);
+        if (dc != null && dc.GetCollider != null)
+            dc.GetCollider.enabled = false;
+    }
+
+    // Tắt hết collider — gọi khi chết, hoặc khi cần dập đòn khẩn cấp.
+    public virtual void DisableAllDamageColliders()
+    {
+        if (damageColliders == null) return;
+        for (int i = 0; i < damageColliders.Length; i++)
+        {
+            DamageCollider dc = damageColliders[i];
+            if (dc != null && dc.GetCollider != null)
+                dc.GetCollider.enabled = false;
+        }
+    }
+    #endregion
 
     public virtual void AdvanceCombo()
     {
@@ -111,13 +165,16 @@ public abstract class CharacterCombatBase : MonoBehaviour
         comboIndex = Mathf.Clamp(comboIndex, 0, currentWeapon.lightAttacks.Length - 1);
         return currentWeapon.lightAttacks[comboIndex];
     }
+
     protected void PerformAttack(AttackData attack, CharacterControllerBase character)
     {
         if (attack == null || string.IsNullOrEmpty(attack.animationName)) return;
 
-        colAttack?.SetDamage(attack.damage);
+        // Đòn đánh đơn -> sát thương đặt vào collider mặc định [0].
+        SetDamage(0, attack.damage);
         PlayAttackAnimation(attack.animationName, character);
     }
+
     public virtual void ResetCombo() => comboIndex = 0;
 
     protected void PlayAttackAnimation(string animationName, CharacterControllerBase character)

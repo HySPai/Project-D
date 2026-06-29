@@ -25,7 +25,7 @@ MonoBehaviour:
   returnSpeed: 3
   homeReachedThreshold: 0.4
   attackAnimationName: Attack_01
-  attackRange: 2
+  attackRange: 0.5
   attackDamage: 1
   attackCooldown: 1.5
   knockbackDistance: 1.5
@@ -36,7 +36,3 @@ MonoBehaviour:
   strafeFlipMin: 1.5
   strafeFlipMax: 3.5
   turnSpeed: 10
-  leapRange: 6
-  leapDuration: 0.45
-  leapHeight: 1.8
-  leapStrikeDistance: 1.4

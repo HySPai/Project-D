@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1414396904808933280}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -4.2424283, y: -0.24808979, z: -2.9201312}
+  m_LocalPosition: {x: -3.5161197, y: -0.27549887, z: -4.6134996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBrain
   ShowDebugText: 0
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
@@ -197,7 +197,7 @@ Transform:
   m_GameObject: {fileID: 6560311854572119601}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -4.2424283, y: -0.24808979, z: -2.9201312}
+  m_LocalPosition: {x: -3.5161197, y: -0.27549887, z: -4.6134996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -261,7 +261,7 @@ MonoBehaviour:
   CameraDistance: 10
   DeadZoneDepth: 0
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: 0.01275584, y: 0.006747348}
     DeadZone:
       Enabled: 0
       Size: {x: 0, y: 0}

@@ -20,6 +20,11 @@ public class SpiderKiteState : IEnemyState
 
     public void Enter()
     {
+        // Tự xoay người về phía player (agent không tự xoay theo hướng đi nữa).
+        ctx.EnemyMovement.SetAutoRotation(false);
+
+        strafeDir = Random.value < 0.5f ? -1 : 1;
+        ScheduleFlip();
     }
 
     public void Tick()
@@ -43,14 +48,22 @@ public class SpiderKiteState : IEnemyState
             return;
         }
 
-        // Trong tầm đánh + hết cooldown -> tấn công NGAY TẠI CHỖ (không lao vào).
-        // Lưu ý: đặt attackRange (trong SO) >= preferredDistance để nhện đánh được
-        // từ chính vòng kite mà nó đang giữ.
-        if (ctx.EnemyCombat.CanAttack && dist <= s.AttackRange)
+        // SẴN SÀNG ĐÁNH (hết cooldown) -> tiến dần vào player để đánh.
+        if (ctx.EnemyCombat.CanAttack)
         {
-            ctx.ChangeState(ctx.AttackState);
+            if (dist <= s.AttackRange)
+            {
+                ctx.ChangeState(ctx.AttackState); // đã vào tầm -> đánh tại chỗ
+                return;
+            }
+
+            // Tiến thẳng vào player, dừng ngay khi sắp vào tầm đánh.
+            ctx.EnemyMovement.Chase(player, s.ChaseSpeed, s.AttackRange * 0.9f);
+            ctx.EnemyMovement.FaceTowards(player.position, s.TurnSpeed);
             return;
         }
+
+        // ĐANG COOLDOWN -> giữ khoảng cách + lượn vòng quanh player.
 
         // Thỉnh thoảng đổi chiều lượn cho đỡ máy móc.
         if (Time.time >= nextFlipTime)
@@ -60,15 +73,14 @@ public class SpiderKiteState : IEnemyState
         }
 
         // Giữ ở vành preferredDistance và lượn theo tiếp tuyến; nếu player ép sát,
-        // thành phần radial trong KiteAround tự đẩy Spider ra -> luôn "né lại gần".
+        // thành phần radial trong KiteAround tự đẩy Spider ra.
         ctx.EnemyMovement.KiteAround(player, s.PreferredDistance, s.KiteSpeed, strafeDir, s.StrafeLookAhead);
         ctx.EnemyMovement.FaceTowards(player.position, s.TurnSpeed);
     }
 
     public void Exit()
     {
-        // Trả quyền xoay lại cho agent: các state dùng chung (Idle/Return) cần xoay
-        // theo hướng di chuyển.
+        // Bật lại tự xoay theo hướng đi (dùng RotateSpeed) cho các state Idle/Return.
         ctx.EnemyMovement.SetAutoRotation(true);
     }
 

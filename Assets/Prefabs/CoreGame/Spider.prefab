@@ -1063,7 +1063,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221d4017e1328c9448d8bd70206060af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  colAttack: {fileID: 7088252037161208334}
+  damageColliders:
+  - {fileID: 7088252037161208334}
   currentAttackType: 0
   lastAttackAnimationPerformed: 
   lockOnTransform: {fileID: 0}

@@ -13,7 +13,8 @@ public class SO_SpiderStats : SO_EnemyStats
     public float strafeFlipMax = 3.5f;     // đổi chiều lượn ngẫu nhiên: max
     public float turnSpeed = 10f;          // tốc độ xoay thủ công để luôn ngoảnh về player
 
-    // Nhện đánh tại chỗ từ vòng kite, KHÔNG lao vào. Vì vậy hãy đặt 'attackRange'
-    // (kế thừa từ SO_EnemyStats) >= preferredDistance để nó đánh được từ khoảng cách đang giữ.
-    // Đòn đánh cũng nên là clip tại chỗ / tầm xa (không có root motion lao tới).
+    // Nhịp chơi: đang cooldown -> lượn giữ khoảng cách ở 'preferredDistance';
+    // hết cooldown -> tiến vào tới 'attackRange' (kế thừa từ SO_EnemyStats) rồi đánh,
+    // sau đó lại lùi ra lượn tiếp. Nên đặt attackRange < preferredDistance
+    // (tầm đánh gần, vòng lượn xa) để thấy rõ chu kỳ "lượn -> lao vào -> lùi ra".
 }

@@ -271,6 +271,11 @@ public abstract class CharacterStateBase : MonoBehaviour
     {
         isDead = true;
 
+        // Chết thì tắt mọi DamageCollider để xác không còn gây sát thương.
+        var combat = owner != null ? owner.GetCombat : null;
+        if (combat != null)
+            combat.DisableAllDamageColliders();
+
         var animation = owner != null ? owner.GetAnimation : null;
         if (animation != null)
             animation.Play(DeathAnimation);

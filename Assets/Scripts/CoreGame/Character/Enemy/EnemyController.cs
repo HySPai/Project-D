@@ -62,8 +62,8 @@ public class EnemyController : CharacterControllerBase
     {
         if (state.IsDead) { movement.Stop(); return; }
 
-        // Đang bị đẩy lùi -> tạm dừng FSM, để coroutine knockback toàn quyền điều khiển.
-        if (!state.IsKnockedBack)
+        // Đang choáng -> tạm dừng FSM (không đuổi/đánh), coroutine knockback lo việc đẩy.
+        if (!state.IsStunned)
             currentState?.Tick();
 
         // Animation chạy theo tốc độ thực của agent.
@@ -85,9 +85,30 @@ public class EnemyController : CharacterControllerBase
     {
         if (state.IsDead) return;
 
-        // Thoát sạch leap/attack (gọi Exit) rồi về "slot Chase" để hồi lại tự nhiên.
+        // Ngắt mọi đòn/hành động đang diễn (gọi Exit của state hiện tại) rồi về slot Chase.
         ChangeState(ChaseState);
-        state.BeginKnockback(state.KnockbackDuration);
-        movement.Knockback(sourcePosition, state.KnockbackDistance, state.KnockbackDuration);
+
+        // Choáng: tạm dừng FSM trong stunDuration -> player dễ chém liên tục.
+        state.BeginStun(state.StunDuration);
+
+        // Đẩy lùi theo HƯỚNG NGƯỜI CHƠI đang nhìn (không dựa vào vị trí nguồn damage).
+        Vector3 pushDir = ResolveKnockbackDirection(sourcePosition);
+        movement.Knockback(pushDir, state.KnockbackDistance, state.KnockbackDuration);
+    }
+
+    // Hướng đẩy = hướng player (Target) đang nhìn. Lúc player vung đòn là đang hướng
+    // về phía địch, nên địch bị hất ngược ra sau đúng theo hướng người chơi.
+    private Vector3 ResolveKnockbackDirection(Vector3 fallbackSource)
+    {
+        Transform player = state.Target;
+        if (player != null)
+        {
+            Vector3 f = player.forward; f.y = 0f;
+            if (f.sqrMagnitude > 0.0001f) return f.normalized;
+        }
+
+        // Chưa khoá được player (vd bị đánh lén lúc chưa phát hiện) -> tạm đẩy ra xa nguồn damage.
+        Vector3 away = transform.position - fallbackSource; away.y = 0f;
+        return away.sqrMagnitude > 0.0001f ? away.normalized : -transform.forward;
     }
 }
