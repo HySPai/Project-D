@@ -41,9 +41,33 @@ public class EnemyState : CharacterStateBase
     public float AttackCooldown => EnemyStats.attackCooldown;
     #endregion
 
+    #region Knockback (bị đẩy lùi)
+    public float KnockbackDistance => EnemyStats.knockbackDistance;
+    public float KnockbackDuration => EnemyStats.knockbackDuration;
+
+    private float knockbackEndTime;
+
+    // FSM sẽ "đứng im" trong lúc bị đẩy lùi, để lực đẩy không bị logic state ghi đè.
+    public bool IsKnockedBack => Time.time < knockbackEndTime;
+    public void BeginKnockback(float duration) => knockbackEndTime = Time.time + duration;
+    #endregion
+
     #region Animation
+    // Hit reaction của enemy: 1 clip cố định, rootMotion = false.
+    // Lý do: lực đẩy lùi do NavMeshAgent điều khiển, nếu để rootMotion = true thì
+    // OnAnimatorMove cũng đẩy nhân vật -> 2 hệ thống đánh nhau.
+    private static readonly AnimationAction HitReaction =
+        new AnimationAction("TakeDamage", true, false, false, false);
+
     protected override AnimationAction? ResolveHitReaction(Vector3 damageSourcePosition) =>
-        CharacterAnimations.TakeDamage;
+        HitReaction;
+
+    // Sau khi diễn anim trúng đòn -> kích hoạt đẩy lùi.
+    protected override void PlayHitReaction(Vector3 damageSourcePosition)
+    {
+        base.PlayHitReaction(damageSourcePosition);
+        (owner as EnemyController)?.OnKnockback(damageSourcePosition);
+    }
     #endregion
 
     protected override void InitializeStats()
@@ -60,6 +84,7 @@ public class EnemyState : CharacterStateBase
         homePosition = transform.position;
         homeRotation = transform.rotation;
     }
+
     protected override void Die()
     {
         base.Die();

@@ -1413,7 +1413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb4452e0c9963204cb32b17ef17643cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colAttack: {fileID: 1006852782392861420}
+  colAttack: {fileID: 7278304844208721636}
   currentAttackType: 0
   lastAttackAnimationPerformed: 
   lockOnTransform: {fileID: 0}
@@ -1984,16 +1984,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sword Rookie
       objectReference: {fileID: 0}
-    - target: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
-        type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2047,56 +2037,20 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6488258084473785165}
-    - targetCorrespondingSourceObject: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1006852782392861420}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3f9782aaa1c912940b59d55ebbbc1c79, type: 3}
---- !u!1 &7678343478425219907 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5131920344830540393, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
+--- !u!114 &7278304844208721636 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5239781326081574862, guid: 3f9782aaa1c912940b59d55ebbbc1c79,
     type: 3}
   m_PrefabInstance: {fileID: 3294043289606523178}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &6488258084473785165
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7678343478425219907}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.0662967, y: 0.2858662, z: 0.93434715}
-  m_Center: {x: 0.000000016959305, y: -0.0013327812, z: 0.32006148}
---- !u!114 &1006852782392861420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7678343478425219907}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8699862dcb93334892dc08b8d30dfc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
-  damageCollider: {fileID: 6488258084473785165}
 --- !u!4 &7678343478425644899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131920344830895689, guid: 3f9782aaa1c912940b59d55ebbbc1c79,

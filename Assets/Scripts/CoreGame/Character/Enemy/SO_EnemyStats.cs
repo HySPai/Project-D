@@ -22,4 +22,8 @@ public class SO_EnemyStats : CharacterStats
     public float attackRange = 2f;
     public float attackDamage = 1f;
     public float attackCooldown = 1.5f;   // giãn cách giữa 2 đòn
+
+    [Header("Knockback (Bị đẩy lùi khi trúng đòn)")]
+    public float knockbackDistance = 1.5f;  // quãng đường bị đẩy lùi
+    public float knockbackDuration = 0.25f; // thời gian đẩy lùi (nên ~ độ dài clip hit)
 }

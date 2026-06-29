@@ -27,11 +27,12 @@ public class EnemyController : CharacterControllerBase
     public EnemyVision Vision => vision;
     public EnemyCombat EnemyCombat => combat;
 
-    public IEnemyState IdleState { get; private set; }
-    public IEnemyState ChaseState { get; private set; }
-    public IEnemyState ReturnState { get; private set; }
+    // protected set: cho subclass (Spider) gắn state khác vào cùng "slot".
+    public IEnemyState IdleState { get; protected set; }
+    public IEnemyState ChaseState { get; protected set; }
+    public IEnemyState ReturnState { get; protected set; }
+    public IEnemyState AttackState { get; protected set; }
     private IEnemyState currentState;
-    public IEnemyState AttackState { get; private set; }
 
     private void Awake()
     {
@@ -43,19 +44,27 @@ public class EnemyController : CharacterControllerBase
         anim.Initialize(state);
         vision.Initialize(state.SightRange, state.FieldOfViewAngle, state.EyeHeight);
 
+        BuildStates();
+        ChangeState(IdleState);
+    }
+
+    // Hành vi mặc định = SpiderKing: tiếp cận thẳng + tấn công.
+    // Spider override để thay Chase -> Kite, Attack -> đánh tại chỗ giữ khoảng cách.
+    protected virtual void BuildStates()
+    {
         IdleState = new EnemyIdleState(this);
         ChaseState = new EnemyChaseState(this);
         ReturnState = new EnemyReturnState(this);
         AttackState = new EnemyAttackState(this);
-
-        ChangeState(IdleState);
     }
 
     private void Update()
     {
         if (state.IsDead) { movement.Stop(); return; }
 
-        currentState?.Tick();
+        // Đang bị đẩy lùi -> tạm dừng FSM, để coroutine knockback toàn quyền điều khiển.
+        if (!state.IsKnockedBack)
+            currentState?.Tick();
 
         // Animation chạy theo tốc độ thực của agent.
         float moveAmount = movement.NormalizedSpeed;
@@ -69,5 +78,16 @@ public class EnemyController : CharacterControllerBase
         currentState?.Exit();
         currentState = newState;
         currentState.Enter();
+    }
+
+    // Gọi từ EnemyState.PlayHitReaction khi trúng đòn.
+    public void OnKnockback(Vector3 sourcePosition)
+    {
+        if (state.IsDead) return;
+
+        // Thoát sạch leap/attack (gọi Exit) rồi về "slot Chase" để hồi lại tự nhiên.
+        ChangeState(ChaseState);
+        state.BeginKnockback(state.KnockbackDuration);
+        movement.Knockback(sourcePosition, state.KnockbackDistance, state.KnockbackDuration);
     }
 }

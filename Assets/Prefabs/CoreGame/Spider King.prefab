@@ -1227,7 +1227,7 @@ GameObject:
   - component: {fileID: 7982522537925527548}
   - component: {fileID: 1767450489799289872}
   - component: {fileID: 5751575906777225522}
-  - component: {fileID: 5122456458811286135}
+  - component: {fileID: 6910421988852895851}
   - component: {fileID: 4974993047601184332}
   - component: {fileID: 131468092968485471}
   - component: {fileID: 2664900806905825255}
@@ -1239,7 +1239,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4571954975655803575
 Transform:
   m_ObjectHideFlags: 0
@@ -1914,7 +1914,7 @@ MonoBehaviour:
   AnimationFloorLevel: 0.001
   _Editor_Foldout_Setup_LegsList: 1
   _Editor_EnsureCount: 0
-  _Editor_OnValidateTrigger: 1
+  _Editor_OnValidateTrigger: 0
   _EditorAllowAutoUpdateFeetParams: 1
   _EditorCategory: 0
   _EditorSetupCategory: 0
@@ -2038,7 +2038,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &5122456458811286135
+--- !u!114 &6910421988852895851
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2047,9 +2047,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4434736665686606893}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fef6265334385cb499ee730c1468df37, type: 3}
+  m_Script: {fileID: 11500000, guid: 203ca3ca2861cac4d8c75ce75f1ff84f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  m_EditorClassIdentifier: Assembly-CSharp::SpiderKingController
   characterController: {fileID: 5751575906777225522}
   state: {fileID: 4974993047601184332}
   movement: {fileID: 131468092968485471}
@@ -2077,7 +2077,7 @@ MonoBehaviour:
     m_Bits: 128
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 640
   moveSmoothSpeed: 8
   currentMoveSpeed: 0
   targetMoveSpeed: 0
@@ -2122,7 +2122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 221d4017e1328c9448d8bd70206060af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  colAttack: {fileID: 0}
+  colAttack: {fileID: 6644224893488804425}
   currentAttackType: 0
   lastAttackAnimationPerformed: 
   lockOnTransform: {fileID: 0}

@@ -4538,18 +4538,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5eed8b3be816664c8a6793f9311d258, type: 3}
---- !u!114 &543253317 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6644224893488804425, guid: 3fb88a481140c7b439a43078473a511b,
-    type: 3}
-  m_PrefabInstance: {fileID: 5487530980976340484}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8699862dcb93334892dc08b8d30dfc7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageCollider
 --- !u!1 &560797595
 GameObject:
   m_ObjectHideFlags: 0
@@ -15852,20 +15840,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2664900806905825255, guid: 3fb88a481140c7b439a43078473a511b,
-        type: 3}
-      propertyPath: colAttack
-      value: 
-      objectReference: {fileID: 543253317}
     - target: {fileID: 4434736665686606893, guid: 3fb88a481140c7b439a43078473a511b,
         type: 3}
       propertyPath: m_Name
       value: Spider King
-      objectReference: {fileID: 0}
-    - target: {fileID: 4434736665686606893, guid: 3fb88a481140c7b439a43078473a511b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4571954975655803575, guid: 3fb88a481140c7b439a43078473a511b,
         type: 3}
@@ -15916,11 +15894,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4974993047601184332, guid: 3fb88a481140c7b439a43078473a511b,
-        type: 3}
-      propertyPath: obstacleLayer.m_Bits
-      value: 640
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16342,8 +16315,8 @@ SceneRoots:
   - {fileID: 1545472590}
   - {fileID: 929092737}
   - {fileID: 3303447748632517357}
-  - {fileID: 5487530980976340484}
   - {fileID: 6535969195385699699}
+  - {fileID: 5487530980976340484}
   - {fileID: 1924844854}
   - {fileID: 638033776}
   - {fileID: 199765671}

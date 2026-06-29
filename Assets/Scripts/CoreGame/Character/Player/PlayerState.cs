@@ -206,12 +206,5 @@ public class PlayerState : CharacterStateBase
         }
         animation.Play(action);
     }
-
-    [Button] public void AnimationDeath() => PlayAction(CharacterAnimations.Death);
-    [Button] public void AnimationRollForward() => PlayAction(CharacterAnimations.RollForward);
-    [Button] public void AnimationHitForward() => PlayAction(CharacterAnimations.HitForward);
-    [Button] public void AnimationHitBackward() => PlayAction(CharacterAnimations.HitBackward);
-    [Button] public void AnimationHitLeft() => PlayAction(CharacterAnimations.HitLeft);
-    [Button] public void AnimationHitRight() => PlayAction(CharacterAnimations.HitRight);
     #endregion
 }

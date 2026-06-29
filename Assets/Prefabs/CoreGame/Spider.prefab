@@ -103,11 +103,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2660887879903214035}
+      addedObject: {fileID: 8133450296536018289}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4959885835505717527}
+      addedObject: {fileID: 3557596274901029803}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
@@ -979,7 +979,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &2660887879903214035
+--- !u!114 &8133450296536018289
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -988,18 +988,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4790376868823584877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fef6265334385cb499ee730c1468df37, type: 3}
+  m_Script: {fileID: 11500000, guid: 043bb77a7f737bc4ebb8b775b00559c5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  m_EditorClassIdentifier: Assembly-CSharp::SpiderController
   characterController: {fileID: 3541355974719965302}
-  state: {fileID: 4959885835505717527}
+  state: {fileID: 3557596274901029803}
   movement: {fileID: 5302813413040657204}
   combat: {fileID: 5629983921490562998}
   anim: {fileID: 4718465854043262489}
   vision: {fileID: 6293801159981533275}
   legsAnim: {fileID: 2338771140307498743}
   agent: {fileID: 3425661932591497015}
---- !u!114 &4959885835505717527
+--- !u!114 &3557596274901029803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1008,17 +1008,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 4790376868823584877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c750358b857431b429b86fe5bc6c3f74, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a59293c8fbbde3419f1120c375546fc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyState
-  stats: {fileID: 11400000, guid: 35a665e54a0bb6e43852272fa6ef66cd, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::SpiderState
+  stats: {fileID: 11400000, guid: 809302a478ac99f44b3ef0369f47d34d, type: 2}
   currentHp: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 640
   moveSmoothSpeed: 8
   currentMoveSpeed: 0
   targetMoveSpeed: 0
@@ -1106,7 +1106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decc41865c5d83941bde7d9176b8825f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVision
-  eye: {fileID: 0}
+  eye: {fileID: 4790376868823813129}
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -1116,6 +1116,12 @@ MonoBehaviour:
 --- !u!4 &4790376868823813123 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400078, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 4790376868823684813}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4790376868823813129 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400068, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
     type: 3}
   m_PrefabInstance: {fileID: 4790376868823684813}
   m_PrefabAsset: {fileID: 0}
