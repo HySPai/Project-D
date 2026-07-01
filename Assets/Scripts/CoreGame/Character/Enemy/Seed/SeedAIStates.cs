@@ -65,56 +65,57 @@ public class SeedWanderState : IEnemyState
 }
 #endregion
 
-#region SeedChargeState (lao thẳng tới player rồi đánh, KHÔNG bám đuổi)
+#region SeedChargeState (lao thẳng tới điểm đã chốt rồi đánh khi đến nơi)
 public class SeedChargeState : IEnemyState
 {
     private readonly SeedController ctx;
-    private bool charging; // true = đang lao tới; false = đang đứng chờ cooldown
+    private bool charging;   // đang lao tới điểm đã chốt
+    private bool waiting;    // đang đứng chờ hết cooldown
 
     public SeedChargeState(SeedController ctx) => this.ctx = ctx;
 
     public void Enter()
     {
-        charging = false; // để Tick quyết định: đủ cooldown thì lao, chưa thì đứng chờ
-        ctx.SeedAnim.SetHorizontalTarget(1f); // đuổi -> Horizontal 1
+        charging = false;
+        waiting = false;
+        // Horizontal do BeginCharge/BeginWait set trong Tick.
     }
 
     public void Tick()
     {
         SeedState s = ctx.SeedState;
         Transform player = s.Target;
-
         if (player == null) { ctx.ChangeState(ctx.ReturnState); return; }
 
-        float dist = Vector3.Distance(ctx.transform.position, player.position);
-        if (dist > s.GiveUpDistance) { ctx.ChangeState(ctx.ReturnState); return; }
+        float distToPlayer = Vector3.Distance(ctx.transform.position, player.position);
+        if (distToPlayer > s.GiveUpDistance) { ctx.ChangeState(ctx.ReturnState); return; }
 
-        // Vào tầm + sẵn sàng -> đánh.
-        if (ctx.EnemyCombat.CanAttack && dist <= s.AttackRange)
+        // Chưa hết cooldown -> đứng chờ, ngoảnh mặt về player.
+        if (!ctx.EnemyCombat.CanAttack)
         {
-            ctx.ChangeState(ctx.AttackState);
+            BeginWait();
+            ctx.EnemyMovement.FaceTowards(player.position, s.RotateSpeed);
             return;
         }
 
-        if (ctx.EnemyCombat.CanAttack)
+        // Hết cooldown mà chưa lao -> CHỐT vị trí player rồi lao thẳng tới.
+        if (!charging)
         {
-            // Sẵn sàng đánh nhưng chưa tới -> LAO THẲNG tới vị trí player đã chốt.
-            // Chỉ chốt điểm khi bắt đầu lao và khi đã tới điểm cũ (player dời chỗ),
-            // KHÔNG cập nhật mỗi frame -> "đi thẳng đến đó", không bám đuổi.
-            if (!charging || ctx.EnemyMovement.HasReachedDestination(s.ChargeArriveThreshold))
-                BeginCharge();
+            BeginCharge();
+            return;
         }
-        else
-        {
-            // Chưa hết cooldown -> đứng yên (Horizontal 0, isMoving false), ngoảnh về player.
-            BeginWait();
-            ctx.EnemyMovement.FaceTowards(player.position, s.RotateSpeed);
-        }
+
+        // Đang lao: TỚI GẦN ĐIỂM ĐÃ CHỐT -> đánh (dù player có dời đi hay không).
+        // Hoặc player lọt vào tầm giữa đường -> đánh luôn cho nhạy.
+        bool reachedSpot = ctx.EnemyMovement.HasReachedDestination(s.ChargeArriveThreshold);
+        bool playerInRange = distToPlayer <= s.AttackRange;
+        if (reachedSpot || playerInRange)
+            ctx.ChangeState(ctx.AttackState);
     }
 
     public void Exit()
     {
-        // Về Return/Attack thì đưa Horizontal về 0 và trả lại tự xoay cho locomotion.
+        // Về Return/Attack: đưa Horizontal về 0 và trả lại tự xoay cho locomotion.
         ctx.SeedAnim.SetHorizontalTarget(0f);
         ctx.EnemyMovement.SetAutoRotation(true);
     }
@@ -122,20 +123,23 @@ public class SeedChargeState : IEnemyState
     private void BeginCharge()
     {
         charging = true;
+        waiting = false;
         ctx.EnemyMovement.SetAutoRotation(true);   // lao tới đâu xoay tới đó
-        ctx.SeedAnim.SetHorizontalTarget(1f);
-        Transform player = ctx.SeedState.Target;
-        if (player != null)
-            ctx.EnemyMovement.MoveTo(player.position, ctx.SeedState.ChaseSpeed); // chốt điểm + chạy
+        ctx.SeedAnim.SetHorizontalTarget(1f);      // đuổi -> Horizontal 1
+
+        // CHỐT vị trí player tại thời điểm này rồi chạy thẳng tới (không bám đuổi).
+        Vector3 chargeDest = ctx.SeedState.Target.position;
+        ctx.EnemyMovement.MoveTo(chargeDest, ctx.SeedState.ChaseSpeed);
     }
 
     private void BeginWait()
     {
-        if (!charging) return; // đã đang chờ rồi
+        if (waiting) return; // đã đang chờ
+        waiting = true;
         charging = false;
-        ctx.EnemyMovement.SetAutoRotation(false);  // tự xoay mặt về player bằng FaceTowards
+        ctx.EnemyMovement.SetAutoRotation(false);  // tự ngoảnh về player bằng FaceTowards
         ctx.EnemyMovement.Stop();
-        ctx.SeedAnim.SetHorizontalTarget(0f);      // đứng chờ -> Horizontal 0
+        ctx.SeedAnim.SetHorizontalTarget(0f);      // đứng chờ -> Horizontal 0, isMoving false
     }
 }
 #endregion

@@ -15,7 +15,7 @@ MonoBehaviour:
   maxHp: 100
   moveSpeed: 5
   runSpeed: 10
-  rotateSpeed: 36
+  rotateSpeed: 12
   sightRange: 12
   fieldOfViewAngle: 110
   eyeHeight: 1.6

@@ -24,3 +24,10 @@ MonoBehaviour:
   giveUpDistance: 18
   returnSpeed: 3
   homeReachedThreshold: 0.4
+  attackAnimationName: Attack_01
+  attackRange: 2
+  attackDamage: 1
+  attackCooldown: 3
+  knockbackDistance: 1.5
+  knockbackDuration: 0.25
+  stunDuration: 0.5
