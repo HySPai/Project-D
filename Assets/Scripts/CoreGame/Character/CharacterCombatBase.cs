@@ -35,6 +35,7 @@ public abstract class CharacterCombatBase : MonoBehaviour
     protected Camera viewCamera;
 
     public Transform LockOnTransform => lockOnTransform;
+    protected CharacterStateBase LockedTargetState => _lockedTargetState;
     public bool CanDoCombo => canDoCombo;
 
     protected virtual void Awake()

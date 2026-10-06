@@ -43,6 +43,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -141,6 +142,7 @@ GameObject:
   - component: {fileID: 5823900221269488755}
   - component: {fileID: 6540975691627364702}
   - component: {fileID: 2813836958941087528}
+  - component: {fileID: 8301221998019385457}
   m_Layer: 0
   m_Name: prefab_FeedbackController
   m_TagString: Untagged
@@ -216,6 +218,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9769636dcb8795f43b5509b6b6a571b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8301221998019385457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624607011842041194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f7de9ef06f04864391a928af29f4b46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MoreMountains.Tools::MoreMountains.Feedbacks.MMTimeManager
+  NormalTimeScale: 1
+  UpdateTimescale: 1
+  UpdateFixedDeltaTime: 1
+  UpdateMaximumDeltaTime: 1
+  CurrentTimeScale: 1
+  TargetTimeScale: 1
+  TestButton: 0
 --- !u!1 &1471110277195009969
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,6 +280,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

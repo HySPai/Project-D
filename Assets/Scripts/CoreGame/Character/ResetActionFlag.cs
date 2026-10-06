@@ -22,6 +22,8 @@ public class ResetActionFlag : StateMachineBehaviour
         state.SetCanMove(true);
         state.SetRolling(false);
 
+        character.GetAnimation.SetPlaybackSpeed(1f);
+
         character.GetCombat.DisableCanDoCombo();
         character.GetCombat.DisableCanDoRollingAttack();
     }

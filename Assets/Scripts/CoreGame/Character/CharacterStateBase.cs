@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using MMF_Player = MoreMountains.Feedbacks.MMF_Player;
 
 public abstract class CharacterStateBase : MonoBehaviour
 {
@@ -255,6 +256,7 @@ public abstract class CharacterStateBase : MonoBehaviour
             PlayHitReaction(sourcePosition);
         }
 
+        PlayDamageFeedback();
         RaiseHpChanged();
     }
 
@@ -262,6 +264,18 @@ public abstract class CharacterStateBase : MonoBehaviour
     public virtual void TakeDamage(float damage)
     {
         TakeDamage(damage, transform.position + transform.forward);
+    }
+
+    protected void PlayDamageFeedback()
+    {
+        if (owner == null) return;
+
+        MMF_Player feedback = isDead && owner.DeathFeedback != null
+            ? owner.DeathFeedback
+            : owner.DamageFeedback;
+
+        if (feedback != null)
+            feedback.PlayFeedbacks(transform.position);
     }
 
     public virtual void EnableIsInvulnerable() => isInvulnerable = true;

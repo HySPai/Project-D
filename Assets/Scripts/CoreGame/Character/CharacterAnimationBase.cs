@@ -91,11 +91,17 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     {
         if (state == null) return;
 
+        animator.speed = 1f;
         animator.CrossFade(targetAnimation, 0.2f);
         state.SetAttacking(isPerformingAction);
         state.SetApplyRootMotion(applyRootMotion);
         state.SetCanRotate(canRotate);
         state.SetCanMove(canMove);
+    }
+
+    public void SetPlaybackSpeed(float speed)
+    {
+        animator.speed = speed;
     }
 
     public void Play(in AnimationAction action)

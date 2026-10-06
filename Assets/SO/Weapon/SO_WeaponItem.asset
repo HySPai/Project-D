@@ -19,14 +19,34 @@ MonoBehaviour:
   - animationName: Main_Light_Attack_01
     damage: 25
     stamina: 10
+    range: 1.9
+    arc: 160
+    animationSpeed: 1.15
+    lungeDistance: 1.5
+    impact: 1
   - animationName: Main_Light_Attack_02
     damage: 25
     stamina: 10
+    range: 2
+    arc: 170
+    animationSpeed: 1.15
+    lungeDistance: 1.5
+    impact: 1.35
   runningAttack:
     animationName: Main_Run_Attack_01
     damage: 25
     stamina: 20
+    range: 2.2
+    arc: 150
+    animationSpeed: 1.1
+    lungeDistance: 2
+    impact: 1.4
   rollingAttack:
     animationName: Main_Roll_Attack_01
     damage: 25
     stamina: 20
+    range: 2.1
+    arc: 200
+    animationSpeed: 1.1
+    lungeDistance: 1.5
+    impact: 1.3

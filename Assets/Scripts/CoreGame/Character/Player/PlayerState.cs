@@ -42,6 +42,9 @@ public class PlayerState : CharacterStateBase
         RaiseHeartsChanged();
         RaiseHpChanged();
 
+        InterruptAttack();
+        PlayDamageFeedback();
+
         if (currentHearts <= 0)
         {
             Die();
@@ -51,6 +54,13 @@ public class PlayerState : CharacterStateBase
         PlayHitReaction(sourcePosition);
         EnableIsInvulnerable();
         InvulnerabilityAsync().Forget();
+    }
+
+    private void InterruptAttack()
+    {
+        var combat = owner != null ? owner.GetCombat : null;
+        if (combat != null)
+            combat.DisableAllDamageColliders();
     }
 
     [Button]
