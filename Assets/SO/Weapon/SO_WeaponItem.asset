@@ -22,7 +22,6 @@ MonoBehaviour:
     range: 1.9
     arc: 160
     animationSpeed: 1.15
-    lungeDistance: 1.5
     impact: 1
     weight: 0
   - animationName: Main_Light_Attack_02
@@ -31,7 +30,6 @@ MonoBehaviour:
     range: 2
     arc: 170
     animationSpeed: 1.15
-    lungeDistance: 1.5
     impact: 1.35
     weight: 1
   runningAttack:
@@ -41,7 +39,6 @@ MonoBehaviour:
     range: 2.2
     arc: 150
     animationSpeed: 1.1
-    lungeDistance: 2
     impact: 1.4
     weight: 1
   rollingAttack:
@@ -51,7 +48,6 @@ MonoBehaviour:
     range: 2.1
     arc: 200
     animationSpeed: 1.1
-    lungeDistance: 1.5
     impact: 1.3
     weight: 1
   feelProfile: {fileID: 11400000, guid: d76d2ab4375a4e5438d866b205349f6a, type: 2}

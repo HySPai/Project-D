@@ -25,7 +25,6 @@ public class AttackData
 
     [Header("Feel")]
     public float animationSpeed = 1f;
-    public float lungeDistance = 1.5f;
     public float impact = 1f;
     public AttackWeight weight = AttackWeight.Light;
 }

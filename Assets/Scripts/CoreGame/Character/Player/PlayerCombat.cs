@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 public class PlayerCombat : CharacterCombatBase
@@ -21,8 +20,6 @@ public class PlayerCombat : CharacterCombatBase
     [SerializeField] private float aimAssistRange = 4f;
     [SerializeField] private float aimAssistAngleWithInput = 70f;
     [SerializeField] private float aimAssistAngleWithoutInput = 110f;
-    [SerializeField] private float lungeStopDistance = 0.9f;
-    [SerializeField] private float lungeDuration = 0.14f;
 
     [Header("Input Buffer")]
     [SerializeField] private float attackBufferDuration = 0.4f;
@@ -44,7 +41,6 @@ public class PlayerCombat : CharacterCombatBase
     private float bufferedAttackTime = NoBufferedAttack;
     private bool hitWindowOpen;
     private float hitWindowExpireTime;
-    private Tween lungeTween;
 
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
     {
@@ -139,7 +135,7 @@ public class PlayerCombat : CharacterCombatBase
         EndHitWindow();
         currentAttack = attack;
 
-        AimAttack(attack);
+        AimAttack();
         PerformAttack(attack, character);
         character.GetAnimation.SetPlaybackSpeed(attack.animationSpeed > 0f ? attack.animationSpeed : 1f);
         return true;
@@ -164,7 +160,7 @@ public class PlayerCombat : CharacterCombatBase
     #endregion
 
     #region Aim Assist
-    private void AimAttack(AttackData attack)
+    private void AimAttack()
     {
         Vector3 inputDirection = character.GetMovement.GetMoveDirection();
         bool hasInput = inputDirection.sqrMagnitude > 0.01f;
@@ -178,7 +174,6 @@ public class PlayerCombat : CharacterCombatBase
         }
 
         Vector3 attackDirection = desiredDirection;
-        float lungeDistance = 0f;
 
         if (target != null)
         {
@@ -187,19 +182,11 @@ public class PlayerCombat : CharacterCombatBase
             float distance = toTarget.magnitude;
 
             if (distance > 0.05f)
-            {
                 attackDirection = toTarget / distance;
-
-                float edgeDistance = distance - GetTargetRadius(target);
-                if (edgeDistance <= aimAssistRange)
-                    lungeDistance = Mathf.Clamp(edgeDistance - lungeStopDistance, 0f, attack.lungeDistance);
-            }
         }
 
         if (attackDirection.sqrMagnitude > 0.0001f)
             transform.rotation = Quaternion.LookRotation(attackDirection);
-
-        StartLunge(attackDirection, lungeDistance);
     }
 
     private CharacterControllerBase ResolveLockedTarget()
@@ -246,34 +233,6 @@ public class PlayerCombat : CharacterCombatBase
         return best;
     }
 
-    private void StartLunge(Vector3 direction, float distance)
-    {
-        KillLunge();
-        if (distance <= 0.01f) return;
-
-        CharacterController controller = character.CharacterController;
-        float travelled = 0f;
-
-        lungeTween = DOVirtual.Float(0f, distance, lungeDuration, value =>
-            {
-                float step = value - travelled;
-                travelled = value;
-
-                if (state.IsDead || !controller.enabled) return;
-                controller.Move(state.ResolveEdgeGuard(direction * step));
-            })
-            .SetEase(Ease.OutCubic)
-            .SetLink(gameObject);
-    }
-
-    private void KillLunge()
-    {
-        if (lungeTween != null && lungeTween.IsActive())
-            lungeTween.Kill();
-
-        lungeTween = null;
-    }
-
     private Vector3 GetFlatForward()
     {
         Vector3 forward = transform.forward;
@@ -290,7 +249,6 @@ public class PlayerCombat : CharacterCombatBase
     {
         base.DisableAllDamageColliders();
         EndHitWindow();
-        KillLunge();
     }
 
     private void BeginHitWindow()
