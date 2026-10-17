@@ -19,3 +19,10 @@ MonoBehaviour:
   shakeVelocityHeavy: {x: 0.08, y: -0.1, z: 0}
   shakeVelocityKill: {x: 0.16, y: -0.2, z: 0}
   hitFeedbackIntensityScale: 1
+  swingSound: {fileID: 8300000, guid: 32ec1608c62b5764fa09978f6dcef69e, type: 3}
+  hitSoundLight: {fileID: 8300000, guid: 4c422dc7e6b9e234caa55c2cfd70a296, type: 3}
+  hitSoundHeavy: {fileID: 8300000, guid: 6bb987904907cfc4882be76a0553bb8d, type: 3}
+  killSound: {fileID: 8300000, guid: 319a4829798270045bf007052f292145, type: 3}
+  soundVolume: 1
+  pitchVariation: 0.08
+  inputBufferDuration: 0.4

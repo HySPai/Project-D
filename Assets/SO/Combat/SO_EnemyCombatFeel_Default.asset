@@ -16,4 +16,4 @@ MonoBehaviour:
   windupAnimationSpeed: 0.5
   telegraphColor: {r: 3, g: 1.6, b: 0.3, a: 1}
   telegraphFlickerPeriod: 0.06
-  telegraphSound: {fileID: 0}
+  telegraphSound: {fileID: 8300000, guid: 2b8edf3bd002a5e4ebc6446df21fe20c, type: 3}

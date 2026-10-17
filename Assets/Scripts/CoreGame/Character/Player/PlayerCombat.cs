@@ -87,7 +87,10 @@ public class PlayerCombat : CharacterCombatBase
     {
         if (float.IsNegativeInfinity(bufferedAttackTime)) return;
 
-        if (Time.time - bufferedAttackTime > attackBufferDuration)
+        WeaponFeelProfile bufferProfile = currentWeapon != null ? currentWeapon.feelProfile : null;
+        float bufferDuration = bufferProfile != null ? bufferProfile.InputBufferDuration : attackBufferDuration;
+
+        if (Time.time - bufferedAttackTime > bufferDuration)
         {
             bufferedAttackTime = NoBufferedAttack;
             return;
@@ -303,6 +306,9 @@ public class PlayerCombat : CharacterCombatBase
             swingTrail.Clear();
             swingTrail.emitting = true;
         }
+
+        if (combatFeel != null)
+            combatFeel.PlaySwing(currentWeapon != null ? currentWeapon.feelProfile : null, transform.position);
 
         SweepHitWindow();
     }

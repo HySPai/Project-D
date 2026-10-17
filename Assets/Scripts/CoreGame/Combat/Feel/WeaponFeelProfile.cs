@@ -23,7 +23,35 @@ public class WeaponFeelProfile : ScriptableObject
     [Header("Intensity")]
     [SerializeField, Range(0.5f, 2f)] private float hitFeedbackIntensityScale = 1f;
 
+    [Header("Sound")]
+    [SerializeField] private AudioClip swingSound;
+    [SerializeField] private AudioClip hitSoundLight;
+    [SerializeField] private AudioClip hitSoundHeavy;
+    [SerializeField] private AudioClip killSound;
+    [SerializeField, Range(0f, 1f)] private float soundVolume = 1f;
+    [SerializeField, Range(0f, 0.3f)] private float pitchVariation = 0.08f;
+
+    [Header("Input")]
+    [SerializeField, Range(0.1f, 0.5f)] private float inputBufferDuration = 0.4f;
+
     public float IntensityScale => hitFeedbackIntensityScale;
+    public AudioClip SwingSound => swingSound;
+    public AudioClip HitSoundLight => hitSoundLight;
+    public AudioClip HitSoundHeavy => hitSoundHeavy;
+    public AudioClip KillSound => killSound;
+    public float SoundVolume => soundVolume;
+    public float PitchVariation => pitchVariation;
+    public float InputBufferDuration => inputBufferDuration;
+
+    public AudioClip GetHitSound(HitFeelTier tier)
+    {
+        switch (tier)
+        {
+            case HitFeelTier.Heavy: return hitSoundHeavy;
+            case HitFeelTier.Kill: return killSound;
+            default: return hitSoundLight;
+        }
+    }
 
     public float GetHitStop(HitFeelTier tier)
     {
