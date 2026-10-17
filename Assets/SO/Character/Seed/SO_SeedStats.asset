@@ -32,6 +32,7 @@ MonoBehaviour:
   knockbackDistance: 1.5
   knockbackDuration: 0.25
   stunDuration: 0.5
+  combatFeel: {fileID: 11400000, guid: 350cc11fb0571ae4e9e83b6f22b0aba5, type: 2}
   wanderRadius: 6
   wanderSpeed: 2
   wanderPauseMin: 1

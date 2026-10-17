@@ -40,6 +40,7 @@ public class EnemyState : CharacterStateBase
     public float AttackDamage => EnemyStats.attackDamage;
     public bool AttackUnblockable => EnemyStats.attackUnblockable;
     public float AttackCooldown => EnemyStats.attackCooldown;
+    public EnemyCombatFeelProfile CombatFeel => EnemyStats.combatFeel;
     #endregion
 
     #region Knockback & Stun (đẩy lùi + choáng khi trúng đòn)
