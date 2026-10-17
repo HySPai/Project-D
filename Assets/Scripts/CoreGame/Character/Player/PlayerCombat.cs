@@ -29,6 +29,7 @@ public class PlayerCombat : CharacterCombatBase
 
     [Header("Feedbacks (Feel)")]
     [SerializeField] private CombatFeelPlayer combatFeel;
+    [SerializeField] private CombatVfxController combatVfx;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly HashSet<CharacterStateBase> hitTargets = new HashSet<CharacterStateBase>();
@@ -323,10 +324,21 @@ public class PlayerCombat : CharacterCombatBase
 
             hitCount++;
             killedAny |= result.targetDied;
+
+            PlayHitBlood(origin, target, targetState, result.targetDied);
         }
 
         if (hitCount > 0)
             PlayHitFeedback(killedAny);
+    }
+
+    private void PlayHitBlood(Vector3 origin, CharacterControllerBase target, CharacterStateBase targetState, bool killed)
+    {
+        if (combatVfx == null) return;
+
+        Vector3 targetPosition = target.transform.position;
+        HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentAttack, killed);
+        combatVfx.PlayBlood(targetPosition, targetPosition - origin, tier, targetState.HitBlood);
     }
 
     private void PlayHitFeedback(bool killedAny)

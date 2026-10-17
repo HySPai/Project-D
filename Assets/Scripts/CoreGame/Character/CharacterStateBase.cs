@@ -22,6 +22,9 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     public float MoveSpeed => moveSpeed;
     public float RunSpeed => runSpeed;
     public float RotateSpeed => rotateSpeed;
+
+    /// <summary>Blood spray used when this character is hit; null means no blood.</summary>
+    public virtual HitBloodProfile HitBlood => null;
     #endregion
 
     #region Layers

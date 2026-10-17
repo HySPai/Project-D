@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9deaf42e933e032409daef05889ded53, type: 3}
+  m_Name: SO_HitBlood_Default
+  m_EditorClassIdentifier: Assembly-CSharp::HitBloodProfile
+  light:
+    streakCount: 0
+    streakSpeedRange: {x: 8, y: 15}
+    streakConeAngle: 30
+    streakUpwardBias: 0.1
+    streakWidthRange: {x: 0.06, y: 0.1}
+    streakLifetimeRange: {x: 0.18, y: 0.3}
+    splashCount: 0
+    splashSizeRange: {x: 2.2, y: 3}
+    splashSpreadAngle: 22
+    splashLifetimeRange: {x: 0.22, y: 0.32}
+    splashDriftSpeed: 1.2
+    dropletCountRange: {x: 2, y: 6}
+    speedRange: {x: 1.8, y: 4}
+    coneAngle: 30
+    upwardBias: 0.3
+    dropletSizeRange: {x: 0.07, y: 0.12}
+    dropletLifetimeRange: {x: 0.6, y: 1.1}
+    decalChance: 1
+    decalSizeRange: {x: 0.1, y: 0.28}
+  heavy:
+    streakCount: 0
+    streakSpeedRange: {x: 9, y: 17}
+    streakConeAngle: 35
+    streakUpwardBias: 0.1
+    streakWidthRange: {x: 0.06, y: 0.1}
+    streakLifetimeRange: {x: 0.18, y: 0.3}
+    splashCount: 0
+    splashSizeRange: {x: 2.8, y: 3.8}
+    splashSpreadAngle: 30
+    splashLifetimeRange: {x: 0.24, y: 0.36}
+    splashDriftSpeed: 1.2
+    dropletCountRange: {x: 2, y: 6}
+    speedRange: {x: 1.8, y: 4}
+    coneAngle: 30
+    upwardBias: 0.3
+    dropletSizeRange: {x: 0.07, y: 0.12}
+    dropletLifetimeRange: {x: 0.6, y: 1.1}
+    decalChance: 1
+    decalSizeRange: {x: 0.12, y: 0.32}
+  kill:
+    streakCount: 0
+    streakSpeedRange: {x: 10, y: 20}
+    streakConeAngle: 40
+    streakUpwardBias: 0.1
+    streakWidthRange: {x: 0.06, y: 0.1}
+    streakLifetimeRange: {x: 0.18, y: 0.3}
+    splashCount: 0
+    splashSizeRange: {x: 3.4, y: 4.8}
+    splashSpreadAngle: 40
+    splashLifetimeRange: {x: 0.28, y: 0.4}
+    splashDriftSpeed: 1.2
+    dropletCountRange: {x: 2, y: 6}
+    speedRange: {x: 1.8, y: 4}
+    coneAngle: 30
+    upwardBias: 0.3
+    dropletSizeRange: {x: 0.07, y: 0.12}
+    dropletLifetimeRange: {x: 0.6, y: 1.1}
+    decalChance: 1
+    decalSizeRange: {x: 0.14, y: 0.38}
+  splashColor: {r: 0.95, g: 0.04, b: 0.1, a: 1}
+  streakColor: {r: 1, g: 0.05, b: 0.12, a: 1}
+  streakDrag: 0.2
+  dropletColor: {r: 0.75, g: 0.02, b: 0.07, a: 1}
+  gravityModifier: 1.4
+  spawnHeight: 0.8
+  spawnBackOffset: 0.45
+  decalMaterial: {fileID: 2100000, guid: 7e744e45eb64f044e85cc4ab872257e1, type: 2}
+  decalStayDuration: 6
+  decalFadeDuration: 1.5
+  decalOpacity: 1
+  decalProjectionDepth: 0.4
