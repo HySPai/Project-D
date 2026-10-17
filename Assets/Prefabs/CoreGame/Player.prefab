@@ -2182,6 +2182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 5367365183276113152}
+  hurtboxes: []
   damageFeedback: {fileID: 8912662728325990622}
   deathFeedback: {fileID: 0}
   input: {fileID: 4935462881444096308}
@@ -2341,8 +2342,7 @@ MonoBehaviour:
   lungeDuration: 0.14
   attackBufferDuration: 0.4
   swingTrail: {fileID: 3780479759015107473}
-  hitFeedback: {fileID: 1987881308303024513}
-  killFeedback: {fileID: 4605510643443736066}
+  combatFeel: {fileID: 6354327488156036788}
 --- !u!114 &7694672649410949249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2768,6 +2768,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2447414553949586640}
+  - component: {fileID: 6354327488156036788}
   m_Layer: 0
   m_Name: Feedbacks
   m_TagString: Untagged
@@ -2793,6 +2794,20 @@ Transform:
   - {fileID: 5549563010823605003}
   m_Father: {fileID: 7861660919349431496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6354327488156036788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6745443518896372635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 959245312833c3840b8b7016c338a601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatFeelPlayer
+  hitFeedback: {fileID: 1987881308303024513}
+  killFeedback: {fileID: 4605510643443736066}
 --- !u!1 &6816793165107160804
 GameObject:
   m_ObjectHideFlags: 0

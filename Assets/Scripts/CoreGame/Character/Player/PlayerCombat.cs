@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using MMF_Player = MoreMountains.Feedbacks.MMF_Player;
 
 public class PlayerCombat : CharacterCombatBase
 {
@@ -32,8 +31,7 @@ public class PlayerCombat : CharacterCombatBase
     [SerializeField] private TrailRenderer swingTrail;
 
     [Header("Feedbacks (Feel)")]
-    [SerializeField] private MMF_Player hitFeedback;
-    [SerializeField] private MMF_Player killFeedback;
+    [SerializeField] private CombatFeelPlayer combatFeel;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly HashSet<CharacterStateBase> hitTargets = new HashSet<CharacterStateBase>();
@@ -55,6 +53,9 @@ public class PlayerCombat : CharacterCombatBase
         this.playerState = state as PlayerState;
         this.character = character;
         this.playerCamera = playerCamera;
+
+        if (combatFeel != null)
+            combatFeel.Initialize();
 
         if (swingTrail != null)
             swingTrail.emitting = false;
@@ -361,10 +362,11 @@ public class PlayerCombat : CharacterCombatBase
 
     private void PlayHitFeedback(bool killedAny)
     {
-        MMF_Player feedback = killedAny && killFeedback != null ? killFeedback : hitFeedback;
-        if (feedback == null) return;
+        if (combatFeel == null) return;
 
-        feedback.PlayFeedbacks(transform.position, currentAttack.impact);
+        HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentWeapon, currentAttack, killedAny);
+        WeaponFeelProfile profile = currentWeapon != null ? currentWeapon.feelProfile : null;
+        combatFeel.PlayHit(profile, tier, currentAttack.impact, transform.position);
     }
 
     private bool TryResolveTarget(Collider targetCollider, out CharacterControllerBase target)

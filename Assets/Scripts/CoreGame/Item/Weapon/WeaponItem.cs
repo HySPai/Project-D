@@ -39,4 +39,7 @@ public class WeaponItem : ScriptableObject
 
     [Header("Rolling Attack")]
     public AttackData rollingAttack;
+
+    [Header("Feel")]
+    public WeaponFeelProfile feelProfile;
 }
