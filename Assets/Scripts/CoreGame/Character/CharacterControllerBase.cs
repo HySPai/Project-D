@@ -5,6 +5,7 @@ using MMF_Player = MoreMountains.Feedbacks.MMF_Player;
 public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
 {
     [SerializeField] protected CharacterController characterController;
+    [SerializeField] protected Collider[] hurtboxes;
 
     [Header("Feedbacks (Feel)")]
     [SerializeField] protected MMF_Player damageFeedback;
@@ -22,11 +23,22 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     protected virtual void OnEnable()
     {
         CombatTargetRegistry.Register(characterController, this);
+
+        if (hurtboxes == null) return;
+        for (int i = 0; i < hurtboxes.Length; i++)
+        {
+            if (hurtboxes[i] != null)
+                CombatTargetRegistry.Register(hurtboxes[i], this);
+        }
     }
 
     protected virtual void OnDisable()
     {
         CombatTargetRegistry.Unregister(characterController);
+
+        if (hurtboxes == null) return;
+        for (int i = 0; i < hurtboxes.Length; i++)
+            CombatTargetRegistry.Unregister(hurtboxes[i]);
     }
 
     protected virtual void Reset()

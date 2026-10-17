@@ -16,31 +16,35 @@ public class PlayerState : CharacterStateBase
 
     private void RaiseHeartsChanged() => OnHeartsChanged?.Invoke(currentHearts, playerStats.maxHearts);
 
-    // Damage dạng float (từ DamageCollider) → quy đổi sang số tim, tối thiểu 1.
-    public override void TakeDamage(float damage, Vector3 sourcePosition)
-    {
-        if (damage <= 0f) return;
-        int hearts = Mathf.Max(1, Mathf.CeilToInt(damage));
-        TakeDamage(hearts, sourcePosition);
-    }
+    private const float MinPointsPerHeart = 0.01f;
 
-    public override void TakeDamage(float damage) =>
-        TakeDamage(damage, transform.position + transform.forward);
+    private float damageRemainder;
 
     [Button]
-    public void TakeDamage(int amount) =>
-        TakeDamage(amount, transform.position + transform.forward);
-
-    public void TakeDamage(int amount, Vector3 sourcePosition)
+    public void DebugReceiveDamage(float points = 25f)
     {
-        if (isDead) return;
-        if (isInvulnerable) return;
-        if (amount <= 0) return;
+        DamageInfo info = new DamageInfo(
+            points, null, transform.position + transform.forward,
+            ElementType.None, DamageSource.Weapon, false, 0f);
+        ReceiveDamage(in info);
+    }
 
-        currentHearts = Mathf.Max(0, currentHearts - amount);
-        currentHp = currentHearts;
-        RaiseHeartsChanged();
-        RaiseHpChanged();
+    protected override DamageResult ApplyDamage(in DamageInfo info)
+    {
+        if (info.points <= 0f) return default;
+
+        float pointsPerHeart = Mathf.Max(MinPointsPerHeart, playerStats.pointsPerHeart);
+        damageRemainder += info.points;
+        int hearts = Mathf.FloorToInt(damageRemainder / pointsPerHeart);
+        damageRemainder -= hearts * pointsPerHeart;
+
+        if (hearts > 0)
+        {
+            currentHearts = Mathf.Max(0, currentHearts - hearts);
+            currentHp = currentHearts;
+            RaiseHeartsChanged();
+            RaiseHpChanged();
+        }
 
         InterruptAttack();
         PlayDamageFeedback();
@@ -48,12 +52,13 @@ public class PlayerState : CharacterStateBase
         if (currentHearts <= 0)
         {
             Die();
-            return;
+            return new DamageResult(info.points, false, false, true);
         }
 
-        PlayHitReaction(sourcePosition);
+        PlayHitReaction(info.sourcePosition);
         EnableIsInvulnerable();
         InvulnerabilityAsync().Forget();
+        return new DamageResult(info.points, false, false, false);
     }
 
     private void InterruptAttack()
@@ -68,6 +73,7 @@ public class PlayerState : CharacterStateBase
     {
         if (amount <= 0 || isDead) return 0;
 
+        damageRemainder = 0f;
         int before = currentHearts;
         currentHearts = Mathf.Min(playerStats.maxHearts, currentHearts + amount);
         int healed = currentHearts - before;

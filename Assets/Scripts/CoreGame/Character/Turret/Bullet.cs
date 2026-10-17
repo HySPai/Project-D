@@ -23,7 +23,8 @@ public class Bullet : MonoBehaviour
     public void Fire(Vector3 position, Quaternion rotation, float damage)
     {
         transform.SetPositionAndRotation(position, rotation);
-        _damageCollider?.SetDamage(damage);
+        if (_damageCollider != null)
+            _damageCollider.SetDamage(damage, DamageSource.Machine);
         _despawnTimer = _lifeTime;
     }
 

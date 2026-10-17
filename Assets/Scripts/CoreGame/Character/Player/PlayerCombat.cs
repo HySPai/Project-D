@@ -335,6 +335,10 @@ public class PlayerCombat : CharacterCombatBase
         int hitCount = 0;
         bool killedAny = false;
 
+        DamageInfo info = new DamageInfo(
+            currentAttack.damage, character, transform.position,
+            ElementType.None, DamageSource.Weapon, false, 0f);
+
         for (int i = 0; i < count; i++)
         {
             if (!TryResolveTarget(hitBuffer[i], out CharacterControllerBase target)) continue;
@@ -345,10 +349,10 @@ public class PlayerCombat : CharacterCombatBase
             if (!IsInsideHitArc(origin, forward, target)) continue;
 
             hitTargets.Add(targetState);
-            targetState.TakeDamage(currentAttack.damage, transform.position);
+            DamageResult result = targetState.ReceiveDamage(in info);
 
             hitCount++;
-            killedAny |= targetState.IsDead;
+            killedAny |= result.targetDied;
         }
 
         if (hitCount > 0)

@@ -2,7 +2,7 @@
 using UnityEngine;
 using MMF_Player = MoreMountains.Feedbacks.MMF_Player;
 
-public abstract class CharacterStateBase : MonoBehaviour
+public abstract class CharacterStateBase : MonoBehaviour, IDamageable
 {
     #region Stats
     [Header("Stats")]
@@ -239,12 +239,22 @@ public abstract class CharacterStateBase : MonoBehaviour
     #region Health
     protected void RaiseHpChanged() => OnHpChanged?.Invoke(currentHp, maxHp);
 
-    public virtual void TakeDamage(float damage, Vector3 sourcePosition)
+    public DamageResult ReceiveDamage(in DamageInfo info)
     {
-        if (isDead) return;
-        if (isInvulnerable) return;
+        if (isDead) return default;
+        if (isInvulnerable) return default;
 
-        currentHp -= damage;
+        DamageInfo resolved = ResolveIncoming(in info);
+        DamageResult result = ApplyDamage(in resolved);
+        NotifyAttacker(in resolved, result);
+        return result;
+    }
+
+    protected virtual DamageInfo ResolveIncoming(in DamageInfo info) => info;
+
+    protected virtual DamageResult ApplyDamage(in DamageInfo info)
+    {
+        currentHp -= info.points;
 
         if (currentHp <= 0f)
         {
@@ -253,17 +263,22 @@ public abstract class CharacterStateBase : MonoBehaviour
         }
         else
         {
-            PlayHitReaction(sourcePosition);
+            PlayHitReaction(info.sourcePosition);
         }
 
         PlayDamageFeedback();
         RaiseHpChanged();
+
+        return new DamageResult(info.points, false, false, isDead);
     }
 
-    // Overload không có nguồn — mặc định coi đòn đến từ phía trước.
-    public virtual void TakeDamage(float damage)
+    private void NotifyAttacker(in DamageInfo info, DamageResult result)
     {
-        TakeDamage(damage, transform.position + transform.forward);
+        if (info.attacker == null) return;
+
+        CharacterCombatBase attackerCombat = info.attacker.GetCombat;
+        if (attackerCombat != null)
+            attackerCombat.RaiseHitLanded(this, result);
     }
 
     protected void PlayDamageFeedback()

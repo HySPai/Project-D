@@ -25,7 +25,7 @@ public class EnemyCombat : CharacterCombatBase
 
         lastAttackTime = Time.time;
 
-        SetDamage(0, enemyState.AttackDamage);
+        SetDamage(0, enemyState.AttackDamage, DamageSource.Weapon, ElementType.None, enemyState.AttackUnblockable);
         PlayAttackAnimation(enemyState.AttackAnimationName, character);
     }
 }

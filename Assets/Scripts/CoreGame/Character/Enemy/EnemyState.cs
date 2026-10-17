@@ -38,6 +38,7 @@ public class EnemyState : CharacterStateBase
     public string AttackAnimationName => EnemyStats.attackAnimationName;
     public float AttackRange => EnemyStats.attackRange;
     public float AttackDamage => EnemyStats.attackDamage;
+    public bool AttackUnblockable => EnemyStats.attackUnblockable;
     public float AttackCooldown => EnemyStats.attackCooldown;
     #endregion
 

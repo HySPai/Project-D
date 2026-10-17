@@ -26,7 +26,8 @@ MonoBehaviour:
   homeReachedThreshold: 0.4
   attackAnimationName: Attack_01
   attackRange: 2
-  attackDamage: 1
+  attackDamage: 25
+  attackUnblockable: 0
   attackCooldown: 3
   knockbackDistance: 1.5
   knockbackDuration: 0.25

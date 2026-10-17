@@ -21,6 +21,7 @@ public class SO_EnemyStats : CharacterStats
     public string attackAnimationName = "Attack_01";
     public float attackRange = 2f;
     public float attackDamage = 1f;
+    public bool attackUnblockable = false;
     public float attackCooldown = 1.5f;   // giãn cách giữa 2 đòn
 
     [Header("Knockback (Bị đẩy lùi khi trúng đòn)")]

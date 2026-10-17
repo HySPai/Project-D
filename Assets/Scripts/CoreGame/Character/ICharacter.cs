@@ -10,11 +10,7 @@ public interface ICharacter
 
 public interface IDamageable
 {
-    void TakeDamage(float damage);
-}
-public interface IAttacker
-{
-    void Attack();
+    DamageResult ReceiveDamage(in DamageInfo info);
 }
 public interface IMovable
 {

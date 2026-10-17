@@ -9528,7 +9528,7 @@ MonoBehaviour:
   _aimThreshold: 5
   _bulletPrefab: {fileID: 3818929943325812871, guid: 5c2fac88d646e1a4fb99970e9a3632dc,
     type: 3}
-  _damage: 1
+  _damage: 25
   _bulletsPerBurst: 3
   _shotCooldown: 0.2
   _burstCooldown: 3
@@ -16958,7 +16958,7 @@ PrefabInstance:
     - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.486477
+      value: -3.4552736
       objectReference: {fileID: 0}
     - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
@@ -16968,12 +16968,12 @@ PrefabInstance:
     - target: {fileID: 4259010407133444461, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.6431427
+      value: -4.674346
       objectReference: {fileID: 0}
     - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.486477
+      value: -3.4552736
       objectReference: {fileID: 0}
     - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
@@ -16983,7 +16983,7 @@ PrefabInstance:
     - target: {fileID: 4372831880530447484, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.6431427
+      value: -4.674346
       objectReference: {fileID: 0}
     - target: {fileID: 5546673301475518391, guid: b1146b0816abbe34e893dbaebf12d5a5,
         type: 3}

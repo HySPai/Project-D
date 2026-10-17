@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class CharacterCombatBase : MonoBehaviour
 {
     protected CharacterStateBase state;
+
+    public event Action<CharacterStateBase, DamageResult> OnHitLanded;
 
     [Header("Damage Colliders")]
     [SerializeField] protected DamageCollider[] damageColliders;
@@ -113,11 +116,21 @@ public abstract class CharacterCombatBase : MonoBehaviour
         return damageColliders[index];
     }
 
-    // Đặt sát thương cho 1 collider cụ thể trước khi mở (dùng cho enemy nhiều đòn).
-    public void SetDamage(int index, float damage)
+    public void SetDamage(
+        int index,
+        float points,
+        DamageSource source,
+        ElementType element = ElementType.None,
+        bool unblockable = false,
+        float staggerAmount = 0f)
     {
         DamageCollider dc = GetDamageCollider(index);
-        if (dc != null) dc.SetDamage(damage);
+        if (dc != null) dc.SetDamage(points, source, element, unblockable, staggerAmount);
+    }
+
+    public void RaiseHitLanded(CharacterStateBase target, DamageResult result)
+    {
+        OnHitLanded?.Invoke(target, result);
     }
 
     // ---- Animation event (giữ nguyên cho đòn đánh đơn: collider [0]) ----
@@ -171,8 +184,7 @@ public abstract class CharacterCombatBase : MonoBehaviour
     {
         if (attack == null || string.IsNullOrEmpty(attack.animationName)) return;
 
-        // Đòn đánh đơn -> sát thương đặt vào collider mặc định [0].
-        SetDamage(0, attack.damage);
+        SetDamage(0, attack.damage, DamageSource.Weapon);
         PlayAttackAnimation(attack.animationName, character);
     }
 

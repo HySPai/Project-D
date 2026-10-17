@@ -5,6 +5,7 @@ public class SO_PlayerStats : CharacterStats
 {
     [Header("Hearts")]
     public int maxHearts = 4;
+    public float pointsPerHeart = 25f;
     public float invulnerabilityDuration = 1f;
 
     [Header("Stamina")]
