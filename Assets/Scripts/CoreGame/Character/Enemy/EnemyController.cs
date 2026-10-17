@@ -81,7 +81,7 @@ public class EnemyController : CharacterControllerBase
     }
 
     // Gọi từ EnemyState.PlayHitReaction khi trúng đòn.
-    public void OnKnockback(Vector3 sourcePosition)
+    public void OnKnockback(Vector3 sourcePosition, float knockbackScale, float stunScale)
     {
         if (state.IsDead) return;
 
@@ -89,11 +89,11 @@ public class EnemyController : CharacterControllerBase
         ChangeState(ChaseState);
 
         // Choáng: tạm dừng FSM trong stunDuration -> player dễ chém liên tục.
-        state.BeginStun(state.StunDuration);
+        state.BeginStun(state.StunDuration * Mathf.Max(0f, stunScale));
 
         // Đẩy lùi theo HƯỚNG NGƯỜI CHƠI đang nhìn (không dựa vào vị trí nguồn damage).
         Vector3 pushDir = ResolveKnockbackDirection(sourcePosition);
-        movement.Knockback(pushDir, state.KnockbackDistance, state.KnockbackDuration);
+        movement.Knockback(pushDir, state.KnockbackDistance * Mathf.Max(0f, knockbackScale), state.KnockbackDuration);
     }
 
     // Hướng đẩy = hướng player (Target) đang nhìn. Lúc player vung đòn là đang hướng

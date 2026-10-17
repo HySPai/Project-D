@@ -9,6 +9,8 @@ public readonly struct DamageInfo
     public readonly DamageSource source;
     public readonly bool unblockable;
     public readonly float staggerAmount;
+    public readonly float knockbackScale;
+    public readonly float stunScale;
 
     public DamageInfo(
         float points,
@@ -17,8 +19,12 @@ public readonly struct DamageInfo
         ElementType element,
         DamageSource source,
         bool unblockable,
-        float staggerAmount)
+        float staggerAmount,
+        float knockbackScale = 1f,
+        float stunScale = 1f)
     {
+        this.knockbackScale = knockbackScale;
+        this.stunScale = stunScale;
         this.points = points;
         this.attacker = attacker;
         this.sourcePosition = sourcePosition;

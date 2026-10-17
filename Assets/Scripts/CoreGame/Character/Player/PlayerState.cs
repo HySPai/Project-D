@@ -55,7 +55,7 @@ public class PlayerState : CharacterStateBase
             return new DamageResult(info.points, false, false, true);
         }
 
-        PlayHitReaction(info.sourcePosition);
+        PlayHitReaction(in info);
         EnableIsInvulnerable();
         InvulnerabilityAsync().Forget();
         return new DamageResult(info.points, false, false, false);

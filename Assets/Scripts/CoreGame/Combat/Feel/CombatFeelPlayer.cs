@@ -76,15 +76,12 @@ public class CombatFeelPlayer : MonoBehaviour
         swingFeedback.PlayFeedbacks(position);
     }
 
-    public static HitFeelTier ResolveTier(WeaponItem weapon, AttackData attack, bool killed)
+    public static HitFeelTier ResolveTier(AttackData attack, bool killed)
     {
         if (killed) return HitFeelTier.Kill;
-        if (weapon == null || attack == null) return HitFeelTier.Light;
+        if (attack == null) return HitFeelTier.Light;
 
-        if (ReferenceEquals(attack, weapon.runningAttack) || ReferenceEquals(attack, weapon.rollingAttack))
-            return HitFeelTier.Heavy;
-
-        return HitFeelTier.Light;
+        return attack.weight == AttackWeight.Heavy ? HitFeelTier.Heavy : HitFeelTier.Light;
     }
 
     private void CacheFeedbacks(MMF_Player player, out MMF_FreezeFrame freeze, out MMF_CinemachineImpulse impulse)

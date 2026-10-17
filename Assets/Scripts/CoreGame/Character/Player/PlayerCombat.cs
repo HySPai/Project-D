@@ -342,9 +342,14 @@ public class PlayerCombat : CharacterCombatBase
         int hitCount = 0;
         bool killedAny = false;
 
+        WeaponFeelProfile feelProfile = currentWeapon != null ? currentWeapon.feelProfile : null;
+        float knockbackScale = feelProfile != null ? feelProfile.GetKnockbackScale(currentAttack.weight) : 1f;
+        float stunScale = feelProfile != null ? feelProfile.GetStunScale(currentAttack.weight) : 1f;
+
         DamageInfo info = new DamageInfo(
             currentAttack.damage, character, transform.position,
-            ElementType.None, DamageSource.Weapon, false, 0f);
+            ElementType.None, DamageSource.Weapon, false, 0f,
+            knockbackScale, stunScale);
 
         for (int i = 0; i < count; i++)
         {
@@ -370,7 +375,7 @@ public class PlayerCombat : CharacterCombatBase
     {
         if (combatFeel == null) return;
 
-        HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentWeapon, currentAttack, killedAny);
+        HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentAttack, killedAny);
         WeaponFeelProfile profile = currentWeapon != null ? currentWeapon.feelProfile : null;
         combatFeel.PlayHit(profile, tier, currentAttack.impact, transform.position);
     }

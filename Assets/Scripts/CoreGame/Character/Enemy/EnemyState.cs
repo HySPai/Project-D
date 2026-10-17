@@ -67,10 +67,10 @@ public class EnemyState : CharacterStateBase
         HitReaction;
 
     // Sau khi diễn anim trúng đòn -> kích hoạt đẩy lùi.
-    protected override void PlayHitReaction(Vector3 damageSourcePosition)
+    protected override void PlayHitReaction(in DamageInfo info)
     {
-        base.PlayHitReaction(damageSourcePosition);
-        (owner as EnemyController)?.OnKnockback(damageSourcePosition);
+        base.PlayHitReaction(in info);
+        (owner as EnemyController)?.OnKnockback(info.sourcePosition, info.knockbackScale, info.stunScale);
     }
     #endregion
 

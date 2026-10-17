@@ -20,6 +20,12 @@ public class WeaponFeelProfile : ScriptableObject
     [SerializeField] private Vector3 shakeVelocityHeavy = new Vector3(0.08f, -0.1f, 0f);
     [SerializeField] private Vector3 shakeVelocityKill = new Vector3(0.16f, -0.2f, 0f);
 
+    [Header("Hit Weight (scales SO_EnemyStats knockback / stun)")]
+    [SerializeField, Range(0f, 3f)] private float knockbackScaleLight = 1f;
+    [SerializeField, Range(0f, 3f)] private float knockbackScaleHeavy = 1.6f;
+    [SerializeField, Range(0f, 3f)] private float stunScaleLight = 1f;
+    [SerializeField, Range(0f, 3f)] private float stunScaleHeavy = 1.5f;
+
     [Header("Intensity")]
     [SerializeField, Range(0.5f, 2f)] private float hitFeedbackIntensityScale = 1f;
 
@@ -62,6 +68,12 @@ public class WeaponFeelProfile : ScriptableObject
             default: return hitStopLight;
         }
     }
+
+    public float GetKnockbackScale(AttackWeight weight) =>
+        weight == AttackWeight.Heavy ? knockbackScaleHeavy : knockbackScaleLight;
+
+    public float GetStunScale(AttackWeight weight) =>
+        weight == AttackWeight.Heavy ? stunScaleHeavy : stunScaleLight;
 
     public Vector3 GetShakeVelocity(HitFeelTier tier)
     {

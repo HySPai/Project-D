@@ -263,7 +263,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         }
         else
         {
-            PlayHitReaction(info.sourcePosition);
+            PlayHitReaction(in info);
         }
 
         PlayDamageFeedback();
@@ -316,13 +316,13 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     #region Hit Reaction
     protected enum HitDirection { Forward, Backward, Left, Right }
 
-    protected virtual void PlayHitReaction(Vector3 damageSourcePosition)
+    protected virtual void PlayHitReaction(in DamageInfo info)
     {
         var animation = owner != null ? owner.GetAnimation : null;
         if (animation == null) return;
 
         // null = character này không có hit reaction -> bỏ qua.
-        AnimationAction? hit = ResolveHitReaction(damageSourcePosition);
+        AnimationAction? hit = ResolveHitReaction(info.sourcePosition);
         if (hit.HasValue)
             animation.Play(hit.Value);
     }

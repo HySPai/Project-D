@@ -6,6 +6,12 @@ public enum WeaponClass
     Greatsword
 }
 
+public enum AttackWeight
+{
+    Light,
+    Heavy
+}
+
 [System.Serializable]
 public class AttackData
 {
@@ -21,6 +27,7 @@ public class AttackData
     public float animationSpeed = 1f;
     public float lungeDistance = 1.5f;
     public float impact = 1f;
+    public AttackWeight weight = AttackWeight.Light;
 }
 
 [CreateAssetMenu(fileName = "WeaponItem", menuName = "Game/Weapon Item")]
