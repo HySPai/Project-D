@@ -43,6 +43,7 @@ public class PlayerController : CharacterControllerBase
     {
         // 1) Cập nhật grounded + gravity trước mọi di chuyển.
         state.HandleGroundCheckAndGravity();
+        if (state.IsDead) return;
 
         // 2) Quyết định chạy/đi.
         bool canRun = input.IsRunning()

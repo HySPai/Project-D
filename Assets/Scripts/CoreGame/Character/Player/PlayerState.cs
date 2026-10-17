@@ -201,7 +201,7 @@ public class PlayerState : CharacterStateBase
     protected override void Die()
     {
         base.Die();
-        Debug.Log("Player Dead");
+        GameEvent.OnPlayerDied?.Invoke();
     }
     #endregion
 

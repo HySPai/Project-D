@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/URP scene complete.unity
+    guid: 8da9d2b2659abb942a832640bf162d96
   - enabled: 0
-    path: Assets/Scenes/Gameplay.unity
+    path: Assets/Demo/AssetsPixel/Scenes/Test/ShaderTest.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects: {}
