@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 336ee974775b9d04ea3a3092b758bbe4, type: 3}
+  m_Name: SO_CameraFeel_Default
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFeelProfile
+  maxOffsetX: 0.15
+  maxOffsetY: 0.15
+  freeLookSmoothSpeed: 5
+  lockOnSmoothSpeed: 5
+  lockOnMaxOffsetX: 0.3
+  lockOnMaxOffsetY: 0.3
+  defaultOrthographicSize: 4.5
+  maxOrthographicSize: 8
+  zoomSmoothSpeed: 3
+  zoomThresholdViewport: 0.5
+  zoomEpsilon: 0.01
+  hitKickDistance: 0.08
+  hitKickDuration: 0.08
+  killKickMultiplier: 1.5

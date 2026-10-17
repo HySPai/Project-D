@@ -1,4 +1,5 @@
-﻿using Unity.Cinemachine;
+﻿using DG.Tweening;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class CameraOffsetController : MonoBehaviour
@@ -6,25 +7,8 @@ public class CameraOffsetController : MonoBehaviour
     [SerializeField] private CinemachineCamera virtualCamera;
     [SerializeField] private CinemachinePositionComposer composer;
     [SerializeField] private PlayerController playerController;
-
-    [Header("Free Look Screen Position")]
-    [SerializeField] private float maxOffsetX = 0.15f;
-    [SerializeField] private float maxOffsetY = 0.15f;
-    [SerializeField] private float freeLookSmoothSpeed = 5f;
-
-    [Header("Lock On Screen Position")]
-    [SerializeField] private float lockOnSmoothSpeed = 5f;
-    [SerializeField] private float lockOnMaxOffsetX = 0.3f;
-    [SerializeField] private float lockOnMaxOffsetY = 0.3f;
-
-    [Header("Lock On Lens Zoom")]
-    [SerializeField] private float defaultOrthographicSize = 4f;
-    [SerializeField] private float maxOrthographicSize = 8f;
-    [SerializeField] private float zoomSmoothSpeed = 3f;
-    [SerializeField] private float zoomThresholdViewport = 0.6f;
-
-    [Header("Settle Threshold")]
-    [SerializeField] private float zoomEpsilon = 0.01f;
+    [SerializeField] private CinemachineCameraOffset kickOffset;
+    [SerializeField] private CameraFeelProfile profile;
 
     private PlayerState _state;
     private CharacterCombatBase _combat;
@@ -33,9 +17,18 @@ public class CameraOffsetController : MonoBehaviour
     private Camera _cam;
 
     private bool _zoomSettled;
+    private bool _ready;
+
+    private Tween _kickTween;
 
     private void Start()
     {
+        if (profile == null)
+        {
+            Debug.LogError($"{nameof(CameraOffsetController)} on {name}: CameraFeelProfile is not assigned.", this);
+            return;
+        }
+
         _state = (PlayerState)playerController.GetState;
         _combat = playerController.GetCombat;
 
@@ -43,14 +36,32 @@ public class CameraOffsetController : MonoBehaviour
         _cam = Camera.main;
 
         var lens = virtualCamera.Lens;
-        lens.OrthographicSize = defaultOrthographicSize;
+        lens.OrthographicSize = profile.DefaultOrthographicSize;
         virtualCamera.Lens = lens;
 
         _zoomSettled = true;
+
+        if (kickOffset != null)
+            kickOffset.Offset = Vector3.zero;
+
+        if (_combat != null)
+            _combat.OnHitLanded += HandleHitLanded;
+
+        _ready = true;
+    }
+
+    private void OnDestroy()
+    {
+        if (_combat != null)
+            _combat.OnHitLanded -= HandleHitLanded;
+
+        _kickTween?.Kill();
     }
 
     private void LateUpdate()
     {
+        if (!_ready) return;
+
         bool isLocked = _combat.LockOnTransform != null;
 
         if (isLocked)
@@ -83,14 +94,14 @@ public class CameraOffsetController : MonoBehaviour
         );
 
         Vector2 targetScreenPos = new Vector2(
-            Mathf.Clamp(vpDelta.x, -lockOnMaxOffsetX, lockOnMaxOffsetX),
-            Mathf.Clamp(vpDelta.y, -lockOnMaxOffsetY, lockOnMaxOffsetY)
+            Mathf.Clamp(vpDelta.x, -profile.LockOnMaxOffsetX, profile.LockOnMaxOffsetX),
+            Mathf.Clamp(vpDelta.y, -profile.LockOnMaxOffsetY, profile.LockOnMaxOffsetY)
         );
 
         _currentScreenPosition = Vector2.Lerp(
             _currentScreenPosition,
             targetScreenPos,
-            lockOnSmoothSpeed * Time.deltaTime
+            profile.LockOnSmoothSpeed * Time.deltaTime
         );
     }
 
@@ -107,44 +118,47 @@ public class CameraOffsetController : MonoBehaviour
             targetVP.y - playerVP.y
         ).magnitude;
 
+        float defaultSize = profile.DefaultOrthographicSize;
+        float threshold = profile.ZoomThresholdViewport;
+
         float targetSize;
-        if (vpDistance > zoomThresholdViewport)
+        if (vpDistance > threshold)
         {
-            float excess = vpDistance - zoomThresholdViewport;
-            float maxExcess = Mathf.Sqrt(2f) - zoomThresholdViewport;
+            float excess = vpDistance - threshold;
+            float maxExcess = Mathf.Sqrt(2f) - threshold;
             float t = Mathf.Clamp01(excess / maxExcess);
-            targetSize = Mathf.Lerp(defaultOrthographicSize, maxOrthographicSize, t);
+            targetSize = Mathf.Lerp(defaultSize, profile.MaxOrthographicSize, t);
         }
         else
         {
-            targetSize = defaultOrthographicSize;
+            targetSize = defaultSize;
         }
 
         var lens = virtualCamera.Lens;
         lens.OrthographicSize = Mathf.Lerp(
             lens.OrthographicSize,
             targetSize,
-            zoomSmoothSpeed * Time.deltaTime
+            profile.ZoomSmoothSpeed * Time.deltaTime
         );
         virtualCamera.Lens = lens;
 
-        // Đang lock thì zoom còn động → đánh dấu chưa settle
-        // để khi unlock sẽ chạy ResetZoom
         _zoomSettled = false;
     }
 
     private void ResetZoom()
     {
+        float defaultSize = profile.DefaultOrthographicSize;
+
         var lens = virtualCamera.Lens;
         float newSize = Mathf.Lerp(
             lens.OrthographicSize,
-            defaultOrthographicSize,
-            zoomSmoothSpeed * Time.deltaTime
+            defaultSize,
+            profile.ZoomSmoothSpeed * Time.deltaTime
         );
 
-        if (Mathf.Abs(newSize - defaultOrthographicSize) < zoomEpsilon)
+        if (Mathf.Abs(newSize - defaultSize) < profile.ZoomEpsilon)
         {
-            newSize = defaultOrthographicSize;
+            newSize = defaultSize;
             _zoomSettled = true;
         }
 
@@ -157,14 +171,14 @@ public class CameraOffsetController : MonoBehaviour
         Vector2 input = _state.CurrentCameraInput;
 
         Vector2 targetScreenPos = new Vector2(
-            -input.x * maxOffsetX,
-            input.y * maxOffsetY
+            -input.x * profile.MaxOffsetX,
+            input.y * profile.MaxOffsetY
         );
 
         _currentScreenPosition = Vector2.Lerp(
             _currentScreenPosition,
             targetScreenPos,
-            freeLookSmoothSpeed * Time.deltaTime
+            profile.FreeLookSmoothSpeed * Time.deltaTime
         );
     }
 
@@ -173,5 +187,54 @@ public class CameraOffsetController : MonoBehaviour
         var composition = composer.Composition;
         composition.ScreenPosition = _currentScreenPosition;
         composer.Composition = composition;
+    }
+
+    private void HandleHitLanded(CharacterStateBase target, DamageResult result)
+    {
+        if (kickOffset == null) return;
+
+        float distance = profile.HitKickDistance;
+        if (distance <= 0f) return;
+
+        Transform playerTransform = playerController.transform;
+
+        Vector3 direction = Vector3.zero;
+        if (target != null)
+        {
+            direction = target.transform.position - playerTransform.position;
+            direction.y = 0f;
+        }
+
+        if (direction.sqrMagnitude < 0.0001f)
+        {
+            direction = playerTransform.forward;
+            direction.y = 0f;
+        }
+
+        if (direction.sqrMagnitude < 0.0001f) return;
+
+        direction.Normalize();
+
+        if (result.targetDied)
+            distance *= profile.KillKickMultiplier;
+
+        Vector3 peak = virtualCamera.transform.InverseTransformDirection(direction * distance);
+        peak.z = 0f;
+
+        _kickTween?.Kill();
+        kickOffset.Offset = Vector3.zero;
+
+        _kickTween = DOTween.To(() => kickOffset.Offset, v => kickOffset.Offset = v, peak, profile.HitKickDuration * 0.5f)
+            .SetEase(Ease.OutQuad)
+            .SetLoops(2, LoopType.Yoyo)
+            .SetUpdate(true)
+            .SetLink(gameObject)
+            .OnKill(ResetKickOffset);
+    }
+
+    private void ResetKickOffset()
+    {
+        if (kickOffset != null)
+            kickOffset.Offset = Vector3.zero;
     }
 }
