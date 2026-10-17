@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using MoreMountains.Feedbacks;
 using UnityEngine;
 
 public class EnemyCombat : CharacterCombatBase
 {
-    [Header("Telegraph")]
-    [SerializeField] private MMF_Player telegraphFeedback;
-    [SerializeField] private AudioSource telegraphAudioSource;
-
     private CharacterControllerBase character;
     private EnemyState enemyState;
 
-    private MMF_Flicker telegraphFlicker;
-    private bool telegraphFlickerResolved;
     private bool telegraphActive;
     private int attackSerial;
     private float lastKnownHp;
@@ -70,24 +63,7 @@ public class EnemyCombat : CharacterCombatBase
     private void BeginTelegraph(EnemyCombatFeelProfile feel, int serial)
     {
         telegraphActive = true;
-
         character.GetAnimation.SetPlaybackSpeed(feel.WindupAnimationSpeed);
-
-        if (telegraphFeedback != null)
-        {
-            MMF_Flicker flicker = ResolveTelegraphFlicker();
-            if (flicker != null)
-            {
-                flicker.FlickerColor = feel.TelegraphColor;
-                flicker.FlickerDuration = feel.TelegraphDuration;
-                flicker.FlickerPeriod = feel.TelegraphFlickerPeriod;
-            }
-            telegraphFeedback.PlayFeedbacks(transform.position);
-        }
-
-        if (feel.TelegraphSound != null && telegraphAudioSource != null)
-            telegraphAudioSource.PlayOneShot(feel.TelegraphSound);
-
         EndTelegraphAfterDelay(serial, feel.TelegraphDuration).Forget();
     }
 
@@ -113,12 +89,6 @@ public class EnemyCombat : CharacterCombatBase
 
         telegraphActive = false;
         attackSerial++;
-
-        if (telegraphFeedback != null)
-        {
-            telegraphFeedback.StopFeedbacks();
-            telegraphFeedback.ResetFeedbacks();
-        }
     }
 
     private void HandleHpChanged(float currentHp, float maxHp)
@@ -126,15 +96,5 @@ public class EnemyCombat : CharacterCombatBase
         if (currentHp < lastKnownHp)
             CancelTelegraph();
         lastKnownHp = currentHp;
-    }
-
-    private MMF_Flicker ResolveTelegraphFlicker()
-    {
-        if (!telegraphFlickerResolved)
-        {
-            telegraphFlicker = telegraphFeedback.GetFeedbackOfType<MMF_Flicker>();
-            telegraphFlickerResolved = true;
-        }
-        return telegraphFlicker;
     }
 }
