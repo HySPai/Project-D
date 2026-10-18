@@ -18,9 +18,9 @@ MonoBehaviour:
   edgeWidth: 0.08
   edgeColor: {r: 3, g: 0.6, b: 0.25, a: 1}
   noiseScale: 4
-  particleCount: 140
-  particleLifetimeRange: {x: 0.6, y: 1.3}
-  particleSizeRange: {x: 0.03, y: 0.08}
+  particleCount: 47
+  particleLifetimeRange: {x: 0.7, y: 1.4}
+  particleSizeRange: {x: 0.045, y: 0.11}
   particleRiseSpeedRange: {x: 0.6, y: 1.6}
   particleTurbulence: 0.6
   particleColor: {r: 1, g: 0.55, b: 0.3, a: 1}
