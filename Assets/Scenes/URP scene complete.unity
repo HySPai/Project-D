@@ -33827,11 +33827,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Seed
       objectReference: {fileID: 0}
-    - target: {fileID: 4224781658059092692, guid: 28e1ad3bbc1747b41ba5b2a24bbb85bc,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34160,11 +34155,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Spider King
-      objectReference: {fileID: 0}
-    - target: {fileID: 4434736665686606893, guid: 3fb88a481140c7b439a43078473a511b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4571954975655803575, guid: 3fb88a481140c7b439a43078473a511b,
         type: 3}
@@ -34549,7 +34539,7 @@ PrefabInstance:
     - target: {fileID: 4790376868823584877, guid: e8fb8c0c79d31494da3d4c7bddf81f16,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4790376868823813197, guid: e8fb8c0c79d31494da3d4c7bddf81f16,
         type: 3}
