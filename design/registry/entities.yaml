@@ -1,0 +1,29 @@
+# Entity registry — cross-system facts owned by one GDD and referenced by others.
+# Created 2026-10-18 by /design-system (save-load). Values are locked: change them
+# in the owning GDD first, then here, and surface the conflict to referencing GDDs.
+
+entities: []
+
+items: []
+
+formulas: []
+
+constants:
+  - name: save_slot_count
+    value: 3
+    unit: slots
+    source: design/gdd/save-load.md
+    referenced_by: []
+  - name: carried_resource_write_delay
+    value: 1
+    unit: seconds
+    description: Thời gian tối đa từ lần đổi tàn ý, mũi tên hoặc Mảnh Sắt Cũ cuối cùng đến lúc ghi xuống slot
+    source: design/gdd/save-load.md
+    referenced_by:
+      - design/gdd/weapons.md
+  - name: rest_block_chase_radius
+    value: 10
+    unit: meters
+    description: Có quái đang truy đuổi người chơi trong bán kính này thì Ngưỡng Lạnh, không nghỉ được
+    source: design/gdd/rest-point.md
+    referenced_by: []

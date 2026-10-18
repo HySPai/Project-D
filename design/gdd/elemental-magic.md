@@ -172,7 +172,8 @@ Cách triển khai kỹ thuật (event hay controller trung tâm, ScriptableObje
 | Combat (lock-on, đòn kiếm) | Elemental Magic phụ thuộc vào | Cứng | Có code, chưa có GDD. Cần sự kiện "đòn trúng" để nạp thanh |
 | Stamina | Liên quan | Mềm | Có code, chưa có GDD. Ràng buộc: phép không tốn stamina |
 | Lướt (MVP, brief mục 4) | Elemental Magic phụ thuộc vào | Cứng | Chưa có code và GDD. Lướt Gió nâng cấp trên nó |
-| Ngưỡng / chết kiểu Souls (brief mục 2) | Elemental Magic phụ thuộc vào | Cứng | Chưa có. Hồi thanh và lưu nguyên tố khi nghỉ |
+| Ngưỡng (`design/gdd/rest-point.md`) | Elemental Magic phụ thuộc vào | Cứng | Nghỉ hoặc hồi sinh thì hồi đầy thanh |
+| Lưu và tải (`design/gdd/save-load.md`) | Elemental Magic phụ thuộc vào | Mềm | Nguyên tố đã có và đang trang bị ghi ngay khi đổi; thanh nguyên tố không lưu (đầy lại khi tải ở Ngưỡng) |
 | Enemy AI / EnemyState | Phụ thuộc vào Elemental Magic | Cứng | Cần thêm dữ liệu yếu/kháng và xử lý Bỏng, Chậm, Choáng |
 | Vật giải đố và cổng chặn | Phụ thuộc vào Elemental Magic | Cứng | Chưa có hệ thống. Các màn chơi dựng trên nó |
 | HUD (`GamePlayView`) | Phụ thuộc vào Elemental Magic | Mềm | Thêm thanh nguyên tố và vòng chọn |

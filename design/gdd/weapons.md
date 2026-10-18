@@ -214,7 +214,8 @@ Cung không có duyên với nguyên tố nào.
 | Stamina (`PlayerState`, `SO_PlayerStats`) | Weapons phụ thuộc vào | Cứng | Có code, chưa có GDD |
 | Lock-on | Weapons phụ thuộc vào | Mềm | Tự nhắm cho Cung |
 | Elemental Magic (`design/gdd/elemental-magic.md`) | Hai chiều | Cứng | Đã sửa luật 7 (nạp theo sát thương) và thêm duyên, tên nguyên tố, Búa vào giáp |
-| Ngưỡng / chết kiểu Souls (brief mục 2) | Weapons phụ thuộc vào | Cứng | Chưa có. Đổi vũ khí và lưu vũ khí ở đây |
+| Ngưỡng (`design/gdd/rest-point.md`) | Weapons phụ thuộc vào | Cứng | Đổi vũ khí qua Menu Ngưỡng khi đang nghỉ |
+| Lưu và tải (`design/gdd/save-load.md`) | Weapons phụ thuộc vào | Mềm | Vũ khí đã có, cấp nâng cấp, đang trang bị ghi ngay khi đổi; số tên ghi chậm nhất 1 giây |
 | Thợ rèn và cửa hàng Làng Mái Vá (brief mục 3) | Weapons phụ thuộc vào | Cứng | Chưa có. Nâng cấp và bán tên |
 | Enemy AI / EnemyState | Phụ thuộc vào Weapons | Cứng | Cần cờ `unblockable`, trạng thái mất thăng bằng và mất thế |
 | Vật giải đố và bí mật | Phụ thuộc vào Weapons | Mềm | Chưa có hệ thống |
