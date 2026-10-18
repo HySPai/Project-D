@@ -14,7 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxNames:
   - prefab_hand_trail
+  - vfx_blood_slash_small
+  - vfx_blood_slash_medium
+  - vfx_blood_slash_large
   itemVfxs:
   - vfxName: 0
     vfxPrefab: {fileID: 7721503645036885989, guid: 4dbc885114831ca42a6fe556011a6d19,
+      type: 3}
+  - vfxName: 1
+    vfxPrefab: {fileID: 6687492512340055790, guid: 3b18165b84c7ca346b585a618b03c7d6,
+      type: 3}
+  - vfxName: 2
+    vfxPrefab: {fileID: 6248943880708775799, guid: 2e7b1b5e057528742ad40d4d757aca71,
+      type: 3}
+  - vfxName: 3
+    vfxPrefab: {fileID: 6201816901083323154, guid: 8a4708fa49d775e439a114163322d1bc,
       type: 3}

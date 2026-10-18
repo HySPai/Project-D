@@ -30,6 +30,7 @@ public class PlayerCombat : CharacterCombatBase
     [Header("Feedbacks (Feel)")]
     [SerializeField] private CombatFeelPlayer combatFeel;
     [SerializeField] private CombatVfxController combatVfx;
+    [SerializeField] private EffectController effectController;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly HashSet<CharacterStateBase> hitTargets = new HashSet<CharacterStateBase>();
@@ -338,7 +339,26 @@ public class PlayerCombat : CharacterCombatBase
 
         Vector3 targetPosition = target.transform.position;
         HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentAttack, killed);
-        combatVfx.PlayBlood(targetPosition, targetPosition - origin, tier, targetState.HitBlood);
+        WeaponFeelProfile feel = currentWeapon != null ? currentWeapon.feelProfile : null;
+        if (feel != null)
+            combatVfx.PlayBlood(targetPosition, targetPosition - origin, tier, targetState.HitBlood,
+                feel.GetBloodDroplets(tier));
+        else
+            combatVfx.PlayBlood(targetPosition, targetPosition - origin, tier, targetState.HitBlood);
+
+        PlayBloodSlashVfx(origin, targetPosition, targetState.HitBlood, feel, tier);
+    }
+
+    private void PlayBloodSlashVfx(Vector3 origin, Vector3 targetPosition, HitBloodProfile blood, WeaponFeelProfile feel, HitFeelTier tier)
+    {
+        if (effectController == null || blood == null || feel == null) return;
+
+        Vector3 direction = targetPosition - origin;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f) return;
+
+        Vector3 spawn = targetPosition + Vector3.up * blood.SpawnHeight;
+        effectController.SpawnFx(feel.GetBloodSlashVfx(tier), spawn, Quaternion.LookRotation(direction), feel.BloodSlashLifetime);
     }
 
     private void PlayHitFeedback(bool killedAny)

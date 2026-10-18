@@ -26,6 +26,17 @@ public class WeaponFeelProfile : ScriptableObject
     [SerializeField, Range(0f, 3f)] private float stunScaleLight = 1f;
     [SerializeField, Range(0f, 3f)] private float stunScaleHeavy = 1.5f;
 
+    [Header("Blood Amount (falling droplets per hit)")]
+    [SerializeField, Range(0, 32)] private int bloodDropletsLight = 2;
+    [SerializeField, Range(0, 32)] private int bloodDropletsHeavy = 3;
+    [SerializeField, Range(0, 32)] private int bloodDropletsKill = 5;
+
+    [Header("Blood Slash Vfx (prefabs registered in SO_Vfx)")]
+    [SerializeField] private VFXName bloodSlashLight = VFXName.vfx_blood_slash_small;
+    [SerializeField] private VFXName bloodSlashHeavy = VFXName.vfx_blood_slash_medium;
+    [SerializeField] private VFXName bloodSlashKill = VFXName.vfx_blood_slash_large;
+    [SerializeField, Range(0.2f, 3f)] private float bloodSlashLifetime = 1f;
+
     [Header("Intensity")]
     [SerializeField, Range(0.5f, 2f)] private float hitFeedbackIntensityScale = 1f;
 
@@ -66,6 +77,30 @@ public class WeaponFeelProfile : ScriptableObject
             case HitFeelTier.Heavy: return hitStopHeavy;
             case HitFeelTier.Kill: return hitStopKill;
             default: return hitStopLight;
+        }
+    }
+
+    /// <summary>Blood droplets this weapon spills for a hit tier. Example: GetBloodDroplets(HitFeelTier.Kill)</summary>
+    public int GetBloodDroplets(HitFeelTier tier)
+    {
+        switch (tier)
+        {
+            case HitFeelTier.Heavy: return bloodDropletsHeavy;
+            case HitFeelTier.Kill: return bloodDropletsKill;
+            default: return bloodDropletsLight;
+        }
+    }
+
+    public float BloodSlashLifetime => bloodSlashLifetime;
+
+    /// <summary>Blood slash prefab this weapon plays for a hit tier. Example: GetBloodSlashVfx(HitFeelTier.Heavy)</summary>
+    public VFXName GetBloodSlashVfx(HitFeelTier tier)
+    {
+        switch (tier)
+        {
+            case HitFeelTier.Heavy: return bloodSlashHeavy;
+            case HitFeelTier.Kill: return bloodSlashKill;
+            default: return bloodSlashLight;
         }
     }
 

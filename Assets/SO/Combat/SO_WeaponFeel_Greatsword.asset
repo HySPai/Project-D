@@ -18,6 +18,17 @@ MonoBehaviour:
   shakeVelocityLight: {x: 0.14, y: -0.18, z: 0}
   shakeVelocityHeavy: {x: 0.18, y: -0.24, z: 0}
   shakeVelocityKill: {x: 0.24, y: -0.3, z: 0}
+  knockbackScaleLight: 1
+  knockbackScaleHeavy: 1.6
+  stunScaleLight: 1
+  stunScaleHeavy: 1.5
+  bloodDropletsLight: 4
+  bloodDropletsHeavy: 6
+  bloodDropletsKill: 9
+  bloodSlashLight: 2
+  bloodSlashHeavy: 3
+  bloodSlashKill: 3
+  bloodSlashLifetime: 1
   hitFeedbackIntensityScale: 1
   swingSound: {fileID: 8300000, guid: 32ec1608c62b5764fa09978f6dcef69e, type: 3}
   hitSoundLight: {fileID: 8300000, guid: 6bb987904907cfc4882be76a0553bb8d, type: 3}

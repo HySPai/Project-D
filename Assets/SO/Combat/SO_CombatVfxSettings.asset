@@ -19,6 +19,3 @@ MonoBehaviour:
     m_Bits: 129
   decalSurfaceOffset: 0.02
   minDecalNormalY: -1
-  maxStreaks: 800
-  maxSplashes: 120
-  splashCameraOffset: 2.5

@@ -14,9 +14,6 @@ public class CombatVfxController : MonoBehaviour
 
     [SerializeField] private CombatVfxSettings settings;
     [SerializeField] private ParticleSystem bloodDroplets;
-    [SerializeField] private ParticleSystem bloodStreaks;
-    [SerializeField] private ParticleSystem bloodSplash;
-    [SerializeField] private Camera viewCamera;
     [SerializeField] private DecalProjector decalTemplate;
     [SerializeField] private Transform decalRoot;
 
@@ -45,18 +42,6 @@ public class CombatVfxController : MonoBehaviour
         ParticleSystem.CollisionModule collision = bloodDroplets.collision;
         collision.collidesWith = settings.DropletCollisionLayers;
 
-        if (bloodStreaks != null)
-        {
-            ParticleSystem.MainModule streakMain = bloodStreaks.main;
-            streakMain.maxParticles = settings.MaxStreaks;
-        }
-
-        if (bloodSplash != null)
-        {
-            ParticleSystem.MainModule splashMain = bloodSplash.main;
-            splashMain.maxParticles = settings.MaxSplashes;
-        }
-
         decalTemplate.gameObject.SetActive(false);
 
         int size = settings.DecalPoolSize;
@@ -83,10 +68,19 @@ public class CombatVfxController : MonoBehaviour
     }
 
     /// <summary>
-    /// Sprays droplets out of the far side of the target along the hit direction.
+    /// Drops blood out of the far side of the target along the hit direction; the count comes from the profile.
     /// Example: PlayBlood(target.position, target.position - attacker.position, HitFeelTier.Light, profile);
     /// </summary>
     public void PlayBlood(Vector3 targetPosition, Vector3 hitDirection, HitFeelTier tier, HitBloodProfile profile)
+    {
+        PlayBlood(targetPosition, hitDirection, tier, profile, -1);
+    }
+
+    /// <summary>
+    /// Same as PlayBlood, with the droplet count set by the weapon; a negative count falls back to the profile.
+    /// Example: PlayBlood(pos, dir, tier, profile, weaponFeel.GetBloodDroplets(tier));
+    /// </summary>
+    public void PlayBlood(Vector3 targetPosition, Vector3 hitDirection, HitFeelTier tier, HitBloodProfile profile, int dropletCount)
     {
         if (!enabled || profile == null) return;
 
@@ -101,65 +95,19 @@ public class CombatVfxController : MonoBehaviour
         Vector3 origin = targetPosition + Vector3.up * profile.SpawnHeight + direction * profile.SpawnBackOffset;
         Quaternion basis = Quaternion.LookRotation(direction);
 
-        EmitSplash(origin, direction, burst, profile);
-        EmitStreaks(origin, basis, burst, profile);
-        EmitDroplets(origin, basis, burst, profile);
+        EmitDroplets(origin, basis, burst, profile, dropletCount >= 0 ? dropletCount : RandomDropletCount(burst));
 
         lastProfile = profile;
         lastBurst = burst;
     }
 
-    private void EmitSplash(Vector3 origin, Vector3 direction, BloodBurstSettings burst, HitBloodProfile profile)
-    {
-        if (bloodSplash == null || viewCamera == null || burst.splashCount <= 0) return;
-
-        Transform cam = viewCamera.transform;
-        float screenAngle = Mathf.Atan2(Vector3.Dot(direction, cam.up), Vector3.Dot(direction, cam.right)) * Mathf.Rad2Deg;
-        Vector3 towardCamera = -cam.forward * settings.SplashCameraOffset;
-        Vector3 screenDirection = (cam.right * Mathf.Cos(screenAngle * Mathf.Deg2Rad)
-            + cam.up * Mathf.Sin(screenAngle * Mathf.Deg2Rad));
-
-        for (int i = 0; i < burst.splashCount; i++)
-        {
-            float spread = Random.Range(-burst.splashSpreadAngle, burst.splashSpreadAngle);
-
-            emitParams.position = origin + towardCamera;
-            emitParams.velocity = screenDirection * burst.splashDriftSpeed;
-            emitParams.startSize = Random.Range(burst.splashSizeRange.x, burst.splashSizeRange.y);
-            emitParams.startLifetime = Random.Range(burst.splashLifetimeRange.x, burst.splashLifetimeRange.y);
-            emitParams.startColor = profile.SplashColor;
-            emitParams.rotation = screenAngle + spread;
-            bloodSplash.Emit(emitParams, 1);
-        }
-
-        emitParams.rotation = 0f;
-    }
-
-    private void EmitStreaks(Vector3 origin, Quaternion basis, BloodBurstSettings burst, HitBloodProfile profile)
-    {
-        if (bloodStreaks == null || burst.streakCount <= 0) return;
-
-        ParticleSystem.LimitVelocityOverLifetimeModule limit = bloodStreaks.limitVelocityOverLifetime;
-        limit.drag = profile.StreakDrag;
-
-        float coneTangent = Mathf.Tan(burst.streakConeAngle * Mathf.Deg2Rad);
-        for (int i = 0; i < burst.streakCount; i++)
-        {
-            emitParams.position = origin;
-            emitParams.velocity = basis * ConeDirection(coneTangent, burst.streakUpwardBias)
-                * Random.Range(burst.streakSpeedRange.x, burst.streakSpeedRange.y);
-            emitParams.startSize = Random.Range(burst.streakWidthRange.x, burst.streakWidthRange.y);
-            emitParams.startLifetime = Random.Range(burst.streakLifetimeRange.x, burst.streakLifetimeRange.y);
-            emitParams.startColor = profile.StreakColor;
-            bloodStreaks.Emit(emitParams, 1);
-        }
-    }
-
-    private void EmitDroplets(Vector3 origin, Quaternion basis, BloodBurstSettings burst, HitBloodProfile profile)
-    {
-        int dropletCount = Random.Range(
+    private static int RandomDropletCount(BloodBurstSettings burst) =>
+        Random.Range(
             Mathf.Max(0, burst.dropletCountRange.x),
             Mathf.Max(burst.dropletCountRange.x, burst.dropletCountRange.y) + 1);
+
+    private void EmitDroplets(Vector3 origin, Quaternion basis, BloodBurstSettings burst, HitBloodProfile profile, int dropletCount)
+    {
         if (dropletCount <= 0) return;
 
         ParticleSystem.MainModule main = bloodDroplets.main;
