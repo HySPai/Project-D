@@ -12,6 +12,7 @@ public class EnemyController : CharacterControllerBase
     [SerializeField] private EnemyVision vision;
     [SerializeField] private LegsAnimator legsAnim;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private EnemyDeathDissolve deathDissolve;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
@@ -46,6 +47,16 @@ public class EnemyController : CharacterControllerBase
 
         BuildStates();
         ChangeState(IdleState);
+
+        if (deathDissolve != null)
+            deathDissolve.Prepare(state.DeathDissolve);
+    }
+
+    /// <summary>Starts the dissolve and disintegrate effect; called from EnemyState.Die.</summary>
+    public void PlayDeathDissolve()
+    {
+        if (deathDissolve != null)
+            deathDissolve.Play(state.DeathDissolve);
     }
 
     // Hành vi mặc định = SpiderKing: tiếp cận thẳng + tấn công.

@@ -32,4 +32,5 @@ public class SO_EnemyStats : CharacterStats
     [Header("Feel")]
     public EnemyCombatFeelProfile combatFeel;
     public HitBloodProfile hitBlood;
+    public DeathDissolveProfile deathDissolve;
 }

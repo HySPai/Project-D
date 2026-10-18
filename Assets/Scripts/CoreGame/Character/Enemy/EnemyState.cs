@@ -42,6 +42,7 @@ public class EnemyState : CharacterStateBase
     public float AttackCooldown => EnemyStats.attackCooldown;
     public EnemyCombatFeelProfile CombatFeel => EnemyStats.combatFeel;
     public override HitBloodProfile HitBlood => EnemyStats.hitBlood;
+    public DeathDissolveProfile DeathDissolve => EnemyStats.deathDissolve;
     #endregion
 
     #region Knockback & Stun (đẩy lùi + choáng khi trúng đòn)
@@ -100,5 +101,8 @@ public class EnemyState : CharacterStateBase
         var enemyController = owner as EnemyController;
         if (enemyController != null && enemyController.GetLegsAnim != null)
             enemyController.GetLegsAnim.enabled = false;
+
+        if (enemyController != null)
+            enemyController.PlayDeathDissolve();
     }
 }
