@@ -65,6 +65,6 @@ Khám phá là chính. Kể chuyện gián tiếp qua môi trường; người c
 ---
 **Dành cho ai / cảm giác gì:** Fan Souls và metroidvania thích trận đấu khó phải đọc chiêu. Cảm giác căng thẳng khi đấu, thỏa mãn khi mở được lối tắt, tò mò khi lần ra dấu vết loài người.
 
-**Hướng hình ảnh & âm thanh:** Low-poly stylized. Tàn tích bê tông và máy móc gỉ của loài người bị cây cỏ phủ kín. Động vật nhân hóa dễ thương đối lập với côn trùng đáng sợ, quái nhìn thấy được xuyên tường. Hit feedback mạnh và có haptics.
+**Hướng hình ảnh & âm thanh:** Low-poly stylized. Tàn tích bê tông và máy móc gỉ của loài người bị cây cỏ phủ kín. Động vật nhân hóa dễ thương đối lập với côn trùng đáng sợ, quái nhìn thấy được xuyên tường. Hit feedback mạnh và có haptics. Nhân vật chính là chó nhỏ dáng chó rừng, tai to dựng nhọn, khăn quàng và kiếm đeo sau lưng, tính cách tò mò và giản dị (xem `design/narrative/characters/hiep-si-cho.md`).
 
 **Game tham chiếu:** Tunic: cũng isometric, nhân vật là một con vật nhỏ, combat kiểu Souls với lock-on, lăn và stamina, thế giới mở dần. MVP giữ khoảng 10% của Tunic: 2 vùng và 1 kỹ năng mở lối tắt, không có hệ thống bí ẩn hay sách hướng dẫn.

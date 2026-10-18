@@ -202,6 +202,7 @@ CANON: Làng Mái Vá (gồm 7 cư dân và tên NPC) cùng 9 nền văn minh d�
 
 ## 6. Hiệp sĩ chó
 
+- Ngoại hình, tính cách và móc gameplay: xem `design/narrative/characters/hiep-si-cho.md` (CANON 2026-10-18: chó nhỏ dáng chó rừng, tai to dựng nhọn, khăn quàng, kiếm đeo sau lưng; tò mò, dễ trầm trồ, nhu cầu giản dị).
 - CANON: kẻ lưu lạc không quê, không nhớ quê hương. Hành trình vừa tìm lại quá khứ vừa khám phá thế giới.
 - ĐỀ XUẤT, ngắn hạn: giúp từng nơi mình ghé qua để đổi lấy chỗ nghỉ và thông tin. Mỗi nơi để lại cho hiệp sĩ một thứ mang theo.
 - ĐỀ XUẤT, dài hạn: tìm ra mình đến từ đâu.
