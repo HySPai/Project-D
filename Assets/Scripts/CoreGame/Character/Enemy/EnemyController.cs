@@ -107,6 +107,15 @@ public class EnemyController : CharacterControllerBase
         movement.Knockback(pushDir, state.KnockbackDistance * Mathf.Max(0f, knockbackScale), state.KnockbackDuration);
     }
 
+    public void OnParried(float staggerDuration)
+    {
+        if (state.IsDead) return;
+
+        ChangeState(ChaseState);
+        state.BeginStun(staggerDuration);
+        movement.Knockback(ResolveKnockbackDirection(transform.position), state.KnockbackDistance * 0.5f, state.KnockbackDuration);
+    }
+
     // Hướng đẩy = hướng player (Target) đang nhìn. Lúc player vung đòn là đang hướng
     // về phía địch, nên địch bị hất ngược ra sau đúng theo hướng người chơi.
     private Vector3 ResolveKnockbackDirection(Vector3 fallbackSource)

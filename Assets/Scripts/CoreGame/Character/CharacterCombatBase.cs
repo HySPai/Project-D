@@ -101,6 +101,9 @@ public abstract class CharacterCombatBase : MonoBehaviour
     public void EnableCanDoRollingAttack() => canPerformRollingAttack = true;
     public void DisableCanDoRollingAttack() => canPerformRollingAttack = false;
 
+    public void EnableCanDoBackstepAttack() => canPerformBackstepAttack = true;
+    public void DisableCanDoBackstepAttack() => canPerformBackstepAttack = false;
+
     public virtual void EnableCanDoCombo() => canDoCombo = true;
     public virtual void DisableCanDoCombo() => canDoCombo = false;
 

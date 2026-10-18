@@ -10,6 +10,7 @@ public class PlayerInputHandler : MonoBehaviour
     public InputActionReference run_Roll;
     public InputActionReference walk;
     public InputActionReference lockTarget;
+    public InputActionReference guard;
 
     [Header("Movement Input")]
     [SerializeField] private Vector2 movementInput;
@@ -21,6 +22,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     [Header("Action Input")]
     [SerializeField] private bool isFire;
+    [SerializeField] private bool isFireReleased;
+    [SerializeField] private bool isGuardHeld;
+    [SerializeField] private bool isGuardPressed;
     [SerializeField] private bool isRunPressed;
     [SerializeField] private bool isWalkPressed;
     [SerializeField] private bool isDash;
@@ -64,6 +68,13 @@ public class PlayerInputHandler : MonoBehaviour
         walk.action.Enable();
         lockTarget.action.Enable();
 
+        if (guard != null)
+        {
+            guard.action.Enable();
+            guard.action.started += OnGuardStarted;
+            guard.action.canceled += OnGuardCanceled;
+        }
+
         moveAction.action.performed += OnMovePerformed;
         moveAction.action.canceled += OnMoveCanceled;
 
@@ -71,6 +82,7 @@ public class PlayerInputHandler : MonoBehaviour
         cameraAction.action.canceled += OnCameraCanceled;
 
         fire.action.performed += OnFirePerformed;
+        fire.action.canceled += OnFireCanceled;
 
         run_Roll.action.started += OnRunStarted;
         run_Roll.action.canceled += OnRunCanceled;
@@ -90,6 +102,14 @@ public class PlayerInputHandler : MonoBehaviour
         cameraAction.action.canceled -= OnCameraCanceled;
 
         fire.action.performed -= OnFirePerformed;
+        fire.action.canceled -= OnFireCanceled;
+
+        if (guard != null)
+        {
+            guard.action.started -= OnGuardStarted;
+            guard.action.canceled -= OnGuardCanceled;
+            guard.action.Disable();
+        }
 
         run_Roll.action.started -= OnRunStarted;
         run_Roll.action.canceled -= OnRunCanceled;
@@ -153,6 +173,22 @@ public class PlayerInputHandler : MonoBehaviour
         isFire = true;
     }
 
+    private void OnFireCanceled(InputAction.CallbackContext ctx)
+    {
+        isFireReleased = true;
+    }
+
+    private void OnGuardStarted(InputAction.CallbackContext ctx)
+    {
+        isGuardHeld = true;
+        isGuardPressed = true;
+    }
+
+    private void OnGuardCanceled(InputAction.CallbackContext ctx)
+    {
+        isGuardHeld = false;
+    }
+
     private void OnRunStarted(InputAction.CallbackContext ctx)
     {
         isRunHeld = true;
@@ -187,12 +223,35 @@ public class PlayerInputHandler : MonoBehaviour
         return isWalkPressed;
     }
 
-    public bool IsFire()
+    public bool ConsumeFirePressed()
     {
         if (!isFire)
             return false;
 
         isFire = false;
+        return true;
+    }
+
+    public bool ConsumeFireReleased()
+    {
+        if (!isFireReleased)
+            return false;
+
+        isFireReleased = false;
+        return true;
+    }
+
+    public bool IsGuardHeld()
+    {
+        return isGuardHeld;
+    }
+
+    public bool ConsumeGuardPressed()
+    {
+        if (!isGuardPressed)
+            return false;
+
+        isGuardPressed = false;
         return true;
     }
 

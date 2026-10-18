@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6c856d37673b094785cd28c95b6d344, type: 3}
+  m_Name: SO_WeaponItem_DualBlades
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponItem
+  weaponName: Dual Blades
+  weaponIcon: {fileID: 0}
+  weaponClass: 2
+  lightAttacks:
+  - animationName: Dw_Light_01
+    damage: 14
+    stamina: 6
+    range: 1.7
+    arc: 180
+    animationSpeed: 1.25
+    impact: 0.8
+    weight: 0
+  - animationName: Dw_Light_02
+    damage: 14
+    stamina: 6
+    range: 1.7
+    arc: 180
+    animationSpeed: 1.25
+    impact: 0.8
+    weight: 0
+  heavyHoldThreshold: 0.35
+  heavyAttacks: []
+  runningAttack:
+    animationName: Dw_Run_Attack
+    damage: 20
+    stamina: 10
+    range: 1.9
+    arc: 160
+    animationSpeed: 1.2
+    impact: 1
+    weight: 0
+  rollingAttack:
+    animationName: Dw_Roll_Attack_01
+    damage: 20
+    stamina: 10
+    range: 1.8
+    arc: 200
+    animationSpeed: 1.2
+    impact: 1
+    weight: 0
+  backstepAnimation: Backstep_Main
+  backstepAttack:
+    animationName: Dw_Backstep_Attack_01
+    damage: 24
+    stamina: 10
+    range: 1.9
+    arc: 140
+    animationSpeed: 1.1
+    impact: 1
+    weight: 0
+  guard:
+    canGuard: 1
+    animationSet: Dw
+    blockArc: 120
+    blockedDamageRatio: 0.5
+    staminaPerBlockedPoint: 1
+    moveSpeedMultiplier: 0.5
+    blockInvulnerability: 0.12
+    mediumBlockPoints: 15
+    heavyBlockPoints: 30
+    guardBreakStun: 1
+    guardStunThreshold: 1
+    guardStunDuration: 0.6
+    canParry: 0
+    parryWindow: 0.15
+    parryStaminaCost: 10
+    parryCooldown: 0.4
+    parryStaggerDuration: 1.5
+    parrySlowScale: 0.2
+    parrySlowDuration: 0.1
+  counterMultiplier: 1
+  feelProfile: {fileID: 11400000, guid: d76d2ab4375a4e5438d866b205349f6a, type: 2}

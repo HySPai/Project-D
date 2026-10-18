@@ -61,6 +61,17 @@ Vũ khí chính chỉ đổi được ở Ngưỡng. Chọn vũ khí là chọn 
 
 6. Đòn khi chạy và đòn khi lăn (đã có trong code) giữ nguyên cho mọi vũ khí. Mỗi vũ khí có dữ liệu `runningAttack` và `rollingAttack` riêng.
 
+**Đã làm trong code (bộ animation Straight Sword, 2026-10-19)**
+
+6b. **Đòn nặng theo ngữ cảnh.** Giữ nút đánh ≥ `heavyHoldThreshold` (0.35s) thì vào gồng (anim charge, rồi hold lặp), thả nút thì ra đòn. Đòn nhẹ ra khi thả nút trước ngưỡng, nên đòn nhẹ trễ bằng thời gian bấm (thường 60–120ms).
+   - Ba biến thể, chọn theo lúc bắt đầu gồng: đứng yên → bản 1, trong cửa sổ combo → bản 2, đang chạy → bản 3. Thiếu bản nào thì dùng bản đầu.
+   - Gồng đủ `fullChargeTime` (1.2s) thì ra bản "đầy": sát thương ×1.5, tầm +15%, cung +20°, stamina như bản thường.
+   - Lăn hoặc bị đánh trúng thì hủy gồng. Hủy bằng lăn không tính là thả nút.
+6c. **Lùi bước.** Nhấn nút lăn khi không giữ hướng đi thì lùi bước thay vì lăn: tốn 10 stamina (`backstepStaminaCost`), i-frame từ 0.04s đến 0.38s, lùi khoảng 2m.
+   - Nhấn đánh trong cửa sổ từ 0.30s đến hết anim thì ra **đòn lùi bước** (`backstepAttack`), tương tự đòn khi lăn.
+   - Kiếm 30 sát thương / 15 stamina; Đại kiếm 55 / 24; Song kiếm 24 / 10.
+6d. **Dữ liệu từng vũ khí.** Kiếm (bộ main + off), Đại kiếm (bộ th, chặn bằng thân kiếm, không parry) và Song kiếm (bộ dw, chặn 50%, không parry, không có đòn nặng) đều đã có `WeaponItem`. Búa trong luật bảng trên dùng bộ th làm xương anim tạm. Đổi vũ khí chỉ để thử qua nút `CycleDebugWeapon` trên `PlayerCombat`; luật 3 vẫn đúng với bản chơi thật.
+
 **Khiên** (chỉ dùng với Kiếm và Giáo; có từ đầu, MVP)
 
 7. **Chặn:** giữ nút chặn.
@@ -73,6 +84,8 @@ Vũ khí chính chỉ đổi được ở Ngưỡng. Chọn vũ khí là chọn 
    - Đòn đầu tiên trúng quái đang mất thăng bằng là **phản kích** (Kiếm ×3, Giáo ×2).
 10. **Đòn không chặn được:** đòn có cờ `unblockable` (ví dụ đòn tóm hoặc đòn có viền đỏ) xuyên qua cả chặn lẫn parry. Quái nào có đòn này thì do thiết kế quái quyết định.
 11. Không thể chặn hay parry khi đang lăn, đang cast nguyên tố, đang nhắm cung hoặc đang bị choáng.
+11b. **Phản hồi chặn theo sức đòn** (đã làm): đòn dưới 15 sát thương diễn anim chặn nhẹ, từ 15 chặn vừa, từ 30 chặn nặng. Đòn có `staggerAmount` ≥ 1 làm khiên bị đẩy: choáng 0.6s dù stamina còn. Sau mỗi lần chặn hoặc parry có 0.12s bất tử ngắn để một nhát vung nhiều collider không bị tính hai lần.
+11c. **Nút:** chuột phải, phím Q hoặc vai trái tay cầm. Đòn đánh khi đang giữ chặn vẫn ra, và khiên tự dựng lại khi đòn xong nếu còn giữ nút. Parry hồi chiêu 0.4s giữa hai lần nhấn.
 
 **Cung** (vũ khí phụ, nhận sớm ở Làng Mái Vá, MVP)
 

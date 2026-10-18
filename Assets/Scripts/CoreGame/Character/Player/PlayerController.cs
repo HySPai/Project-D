@@ -8,6 +8,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerAnimation anim;
     [SerializeField] private PlayerCombat combat;
+    [SerializeField] private PlayerGuard guard;
     [SerializeField] private PlayerCamera playerCamera;
 
     private GamePlayView gamePlayView;
@@ -16,13 +17,15 @@ public class PlayerController : CharacterControllerBase
     public override CharacterMovementBase GetMovement => movement;
     public override CharacterCombatBase GetCombat => combat;
     public override CharacterAnimationBase GetAnimation => anim;
+    public PlayerGuard GetGuard => guard;
 
     private void Awake()
     {
         state.Initialize(this);
-        movement.Initialize(state, anim, combat, playerCamera);
+        movement.Initialize(state, anim, combat, playerCamera, guard);
         combat.Initialize(state, this, playerCamera);
         anim.Initialize(state);
+        guard.Initialize(state, anim, combat);
         input.Initialize(state);
     }
 
@@ -45,10 +48,13 @@ public class PlayerController : CharacterControllerBase
         state.HandleGroundCheckAndGravity();
         if (state.IsDead) return;
 
+        guard.Tick(input.IsGuardHeld(), input.ConsumeGuardPressed());
+
         // 2) Quyết định chạy/đi.
         bool canRun = input.IsRunning()
                       && state.CurrentInput.sqrMagnitude > 0.01f
-                      && state.CanRun;
+                      && state.CanRun
+                      && !guard.IsGuardActive;
         state.SetRunning(!state.IsRolling && canRun);
 
         movement.SetInput(state.CurrentInput);
@@ -66,7 +72,8 @@ public class PlayerController : CharacterControllerBase
         }
 
         // 4) Action.
-        if (input.IsFire()) combat.Attack();
+        if (input.ConsumeFirePressed()) combat.AttackPressed();
+        if (input.ConsumeFireReleased()) combat.AttackReleased();
         if (input.IsRolling()) movement.Roll();
 
         // 5) Di chuyển (CharacterController) + cập nhật animation.

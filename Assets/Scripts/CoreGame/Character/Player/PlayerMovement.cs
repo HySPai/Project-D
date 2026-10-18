@@ -8,9 +8,13 @@ public class PlayerMovement : CharacterMovementBase
     private PlayerAnimation anim;
     private PlayerCombat combat;
     private PlayerCamera playerCamera;
+    private PlayerGuard guard;
 
-    public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat, PlayerCamera playerCamera)
+    private const string DefaultBackstepAnimation = "Backstep_Main";
+
+    public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat, PlayerCamera playerCamera, PlayerGuard guard)
     {
+        this.guard = guard;
         this.state = state;
         this.anim = animation;
         this.combat = combat;
@@ -82,6 +86,8 @@ public class PlayerMovement : CharacterMovementBase
         if (moveAmount > 0f)
             targetSpeed = state.IsRunning ? state.RunSpeed : state.MoveSpeed * moveAmount;
 
+        targetSpeed *= guard != null ? guard.MoveSpeedMultiplier : 1f;
+
         state.SetTargetMoveSpeed(targetSpeed);
 
         if (moveAmount <= 0f)
@@ -98,12 +104,18 @@ public class PlayerMovement : CharacterMovementBase
     public override void Roll()
     {
         if (state == null || state.IsDead) return;
-        if (state.IsRolling || state.IsAttacking) return;
+        if (state.IsRolling) return;
+        if (state.IsAttacking && !combat.IsCharging) return;
         if (!state.HasStamina) return;
 
         Vector3 moveDirection = playerCamera.GetMoveDirection(input);
         if (moveDirection.sqrMagnitude <= 0.01f)
-            moveDirection = transform.forward;
+        {
+            Backstep();
+            return;
+        }
+
+        combat.CancelCharge();
         moveDirection.Normalize();
 
         transform.rotation = Quaternion.LookRotation(moveDirection);
@@ -111,6 +123,19 @@ public class PlayerMovement : CharacterMovementBase
         state.DrainStamina(state.RollStaminaCost);
         state.SetRolling(true);
         anim.Play(CharacterAnimations.RollForward);
+    }
+
+    private void Backstep()
+    {
+        WeaponItem weapon = combat.CurrentWeapon;
+        string animationName = weapon != null && !string.IsNullOrEmpty(weapon.backstepAnimation)
+            ? weapon.backstepAnimation
+            : DefaultBackstepAnimation;
+
+        combat.CancelCharge();
+        combat.DisableCanDoBackstepAttack();
+        state.DrainStamina(state.BackstepStaminaCost);
+        anim.Play(new AnimationAction(animationName, true, true, false, false));
     }
 
     public override Vector3 GetMoveDirection() =>

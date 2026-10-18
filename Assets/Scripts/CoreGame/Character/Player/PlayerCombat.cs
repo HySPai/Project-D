@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class PlayerCombat : CharacterCombatBase
@@ -44,6 +45,19 @@ public class PlayerCombat : CharacterCombatBase
     private bool hitWindowOpen;
     private float hitWindowExpireTime;
 
+    private bool attackHeld;
+    private float attackPressTime;
+    private bool heavyCharging;
+    private float chargeStartTime;
+    private HeavyAttackData activeHeavy;
+
+    [Header("Debug Weapons")]
+    [SerializeField] private WeaponItem[] debugWeapons;
+    private int debugWeaponIndex;
+
+    public bool IsCharging => heavyCharging;
+    public WeaponItem CurrentWeapon => currentWeapon;
+
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
     {
         base.Initialize(state);
@@ -65,11 +79,33 @@ public class PlayerCombat : CharacterCombatBase
 
         if (state == null) return;
 
+        TickHeavyHold();
         ConsumeBufferedAttack();
         SweepHitWindow();
     }
 
     #region Attack Input
+    public void AttackPressed()
+    {
+        attackHeld = true;
+        attackPressTime = Time.time;
+    }
+
+    public void AttackReleased()
+    {
+        if (!attackHeld) return;
+
+        attackHeld = false;
+
+        if (heavyCharging)
+        {
+            ReleaseHeavy();
+            return;
+        }
+
+        Attack();
+    }
+
     public override void Attack()
     {
         if (TryStartAttack())
@@ -103,6 +139,13 @@ public class PlayerCombat : CharacterCombatBase
         if (state == null || state.IsDead) return false;
         if (currentWeapon == null) return false;
         if (playerState != null && !playerState.HasStamina) return false;
+
+        if (canPerformBackstepAttack)
+        {
+            DisableCanDoBackstepAttack();
+            currentAttackType = AttackType.BackstepAttack;
+            return DoAttack(currentWeapon.backstepAttack);
+        }
 
         if (canPerformRollingAttack)
         {
@@ -142,6 +185,95 @@ public class PlayerCombat : CharacterCombatBase
         character.GetAnimation.SetPlaybackSpeed(attack.animationSpeed > 0f ? attack.animationSpeed : 1f);
         return true;
     }
+
+    #region Heavy Attack
+    private void TickHeavyHold()
+    {
+        if (!attackHeld || heavyCharging) return;
+        if (currentWeapon == null || currentWeapon.heavyAttacks == null || currentWeapon.heavyAttacks.Length == 0) return;
+        if (Time.time - attackPressTime < currentWeapon.heavyHoldThreshold) return;
+
+        TryBeginHeavy();
+    }
+
+    private void TryBeginHeavy()
+    {
+        if (state == null || state.IsDead || state.IsRolling) return;
+        if (playerState != null && !playerState.HasStamina) return;
+
+        bool inComboWindow = state.IsAttacking && canDoCombo;
+        if (state.IsAttacking && !inComboWindow) return;
+
+        HeavyContext context = inComboWindow ? HeavyContext.AfterCombo
+            : state.IsRunning ? HeavyContext.Running
+            : HeavyContext.Standing;
+
+        HeavyAttackData heavy = currentWeapon.GetHeavyAttack(context);
+        if (heavy == null || string.IsNullOrEmpty(heavy.chargeAnimation)) return;
+
+        DisableCanDoCombo();
+        EndHitWindow();
+        bufferedAttackTime = NoBufferedAttack;
+
+        activeHeavy = heavy;
+        heavyCharging = true;
+        chargeStartTime = Time.time;
+
+        AimAttack();
+        PlayAttackAnimation(heavy.chargeAnimation, character);
+        character.GetAnimation.SetPlaybackSpeed(1f);
+    }
+
+    private void ReleaseHeavy()
+    {
+        HeavyAttackData heavy = activeHeavy;
+        heavyCharging = false;
+        activeHeavy = null;
+
+        if (heavy == null) return;
+
+        bool fullyCharged = Time.time - chargeStartTime >= heavy.fullChargeTime;
+        bool hasFull = heavy.releaseFull != null && !string.IsNullOrEmpty(heavy.releaseFull.animationName);
+
+        currentAttackType = AttackType.HeavyRelease;
+        DoAttack(fullyCharged && hasFull ? heavy.releaseFull : heavy.release);
+    }
+
+    public void CancelCharge()
+    {
+        heavyCharging = false;
+        activeHeavy = null;
+        attackHeld = false;
+    }
+    #endregion
+
+    #region Weapon
+    public void EquipWeapon(WeaponItem weapon)
+    {
+        if (weapon == null) return;
+
+        CancelCharge();
+        currentWeapon = weapon;
+        comboIndex = 0;
+    }
+
+    [Button]
+    public void CycleDebugWeapon()
+    {
+        if (debugWeapons == null || debugWeapons.Length == 0) return;
+
+        debugWeaponIndex = (debugWeaponIndex + 1) % debugWeapons.Length;
+        EquipWeapon(debugWeapons[debugWeaponIndex]);
+    }
+
+    public void PlayDefenseFeedback(HitFeelTier tier, Vector3 position)
+    {
+        if (combatFeel == null) return;
+
+        WeaponFeelProfile profile = currentWeapon != null ? currentWeapon.feelProfile : null;
+        combatFeel.PlayHit(profile, tier, 1f, position);
+    }
+    #endregion
 
     public void DrainStaminaBasedOnAttack()
     {
@@ -251,6 +383,7 @@ public class PlayerCombat : CharacterCombatBase
     {
         base.DisableAllDamageColliders();
         EndHitWindow();
+        CancelCharge();
     }
 
     private void BeginHitWindow()
@@ -306,10 +439,7 @@ public class PlayerCombat : CharacterCombatBase
         float knockbackScale = feelProfile != null ? feelProfile.GetKnockbackScale(currentAttack.weight) : 1f;
         float stunScale = feelProfile != null ? feelProfile.GetStunScale(currentAttack.weight) : 1f;
 
-        DamageInfo info = new DamageInfo(
-            currentAttack.damage, character, transform.position,
-            ElementType.None, DamageSource.Weapon, false, 0f,
-            knockbackScale, stunScale);
+        float counterMultiplier = currentWeapon != null ? currentWeapon.counterMultiplier : 1f;
 
         for (int i = 0; i < count; i++)
         {
@@ -321,6 +451,18 @@ public class PlayerCombat : CharacterCombatBase
             if (!IsInsideHitArc(origin, forward, target)) continue;
 
             hitTargets.Add(targetState);
+
+            float points = currentAttack.damage;
+            if (targetState.IsOffBalance)
+            {
+                points *= counterMultiplier;
+                targetState.ClearOffBalance();
+            }
+
+            DamageInfo info = new DamageInfo(
+                points, character, transform.position,
+                ElementType.None, DamageSource.Weapon, false, 0f,
+                knockbackScale, stunScale);
             DamageResult result = targetState.ReceiveDamage(in info);
 
             hitCount++;

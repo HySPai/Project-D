@@ -248,12 +248,35 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         if (isInvulnerable) return default;
 
         DamageInfo resolved = ResolveIncoming(in info);
+
+        if (AbsorbIncoming(ref resolved, out DamageResult absorbed))
+        {
+            NotifyAttacker(in resolved, absorbed);
+            return absorbed;
+        }
+
         DamageResult result = ApplyDamage(in resolved);
         NotifyAttacker(in resolved, result);
         return result;
     }
 
     protected virtual DamageInfo ResolveIncoming(in DamageInfo info) => info;
+
+    protected virtual bool AbsorbIncoming(ref DamageInfo info, out DamageResult absorbed)
+    {
+        absorbed = default;
+        return false;
+    }
+
+    #region Balance
+    private float offBalanceUntil;
+
+    public bool IsOffBalance => Time.time < offBalanceUntil;
+    public void MarkOffBalance(float duration) => offBalanceUntil = Time.time + duration;
+    public void ClearOffBalance() => offBalanceUntil = 0f;
+
+    public virtual void OnParried(float staggerDuration) { }
+    #endregion
 
     protected virtual DamageResult ApplyDamage(in DamageInfo info)
     {

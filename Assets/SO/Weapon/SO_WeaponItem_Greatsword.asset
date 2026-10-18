@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6c856d37673b094785cd28c95b6d344, type: 3}
+  m_Name: SO_WeaponItem_Greatsword
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponItem
+  weaponName: Greatsword
+  weaponIcon: {fileID: 0}
+  weaponClass: 1
+  lightAttacks:
+  - animationName: Th_Light_01
+    damage: 50
+    stamina: 24
+    range: 2.2
+    arc: 200
+    animationSpeed: 1.15
+    impact: 1.3
+    weight: 1
+  - animationName: Th_Light_02
+    damage: 50
+    stamina: 24
+    range: 2.2
+    arc: 200
+    animationSpeed: 1.15
+    impact: 1.3
+    weight: 1
+  - animationName: Th_Light_03
+    damage: 55
+    stamina: 26
+    range: 2.4
+    arc: 200
+    animationSpeed: 1.15
+    impact: 1.5
+    weight: 1
+  heavyHoldThreshold: 0.35
+  heavyAttacks:
+  - context: 0
+    chargeAnimation: Th_Heavy1_Charge
+    holdAnimation: Th_Heavy1_Hold
+    fullChargeTime: 1.4
+    release:
+      animationName: Th_Heavy1_Release
+      damage: 90
+      stamina: 40
+      range: 2.5
+      arc: 220
+      animationSpeed: 1
+      impact: 1.7
+      weight: 1
+    releaseFull:
+      animationName: Th_Heavy1_ReleaseFull
+      damage: 135
+      stamina: 40
+      range: 2.875
+      arc: 240
+      animationSpeed: 1
+      impact: 2.2
+      weight: 1
+  - context: 1
+    chargeAnimation: Th_Heavy2_Charge
+    holdAnimation: Th_Heavy2_Hold
+    fullChargeTime: 1.4
+    release:
+      animationName: Th_Heavy2_Release
+      damage: 90
+      stamina: 40
+      range: 2.5
+      arc: 220
+      animationSpeed: 1
+      impact: 1.7
+      weight: 1
+    releaseFull:
+      animationName: Th_Heavy2_ReleaseFull
+      damage: 135
+      stamina: 40
+      range: 2.875
+      arc: 240
+      animationSpeed: 1
+      impact: 2.2
+      weight: 1
+  runningAttack:
+    animationName: Th_Run_Attack
+    damage: 50
+    stamina: 26
+    range: 2.4
+    arc: 170
+    animationSpeed: 1.1
+    impact: 1.5
+    weight: 1
+  rollingAttack:
+    animationName: Th_Roll_Attack_01
+    damage: 50
+    stamina: 26
+    range: 2.3
+    arc: 200
+    animationSpeed: 1.1
+    impact: 1.4
+    weight: 1
+  backstepAnimation: Backstep_Th
+  backstepAttack:
+    animationName: Th_Backstep_Attack_01
+    damage: 55
+    stamina: 24
+    range: 2.5
+    arc: 120
+    animationSpeed: 1
+    impact: 1.4
+    weight: 1
+  guard:
+    canGuard: 1
+    animationSet: Th
+    blockArc: 120
+    blockedDamageRatio: 0.5
+    staminaPerBlockedPoint: 1
+    moveSpeedMultiplier: 0.5
+    blockInvulnerability: 0.12
+    mediumBlockPoints: 15
+    heavyBlockPoints: 30
+    guardBreakStun: 1
+    guardStunThreshold: 1
+    guardStunDuration: 0.6
+    canParry: 0
+    parryWindow: 0.15
+    parryStaminaCost: 10
+    parryCooldown: 0.4
+    parryStaggerDuration: 1.5
+    parrySlowScale: 0.2
+    parrySlowDuration: 0.1
+  counterMultiplier: 1
+  feelProfile: {fileID: 11400000, guid: d76d2ab4375a4e5438d866b205349f6a, type: 2}

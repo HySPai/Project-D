@@ -15,6 +15,7 @@ public class SO_PlayerStats : CharacterStats
 
     [Header("Stamina Cost")]
     public float rollStaminaCost = 15f;
+    public float backstepStaminaCost = 10f;
     public float runStaminaDrainRate = 10f;
     public float runResumeStamina = 20f;
 }

@@ -32,6 +32,74 @@ MonoBehaviour:
     animationSpeed: 1.15
     impact: 1.35
     weight: 1
+  heavyHoldThreshold: 0.35
+  heavyAttacks:
+  - context: 0
+    chargeAnimation: Main_Heavy1_Charge
+    holdAnimation: Main_Heavy1_Hold
+    fullChargeTime: 1.2
+    release:
+      animationName: Main_Heavy1_Release
+      damage: 45
+      stamina: 20
+      range: 2
+      arc: 160
+      animationSpeed: 1
+      impact: 1.7
+      weight: 1
+    releaseFull:
+      animationName: Main_Heavy1_ReleaseFull
+      damage: 67.5
+      stamina: 20
+      range: 2.3
+      arc: 180
+      animationSpeed: 1
+      impact: 2.2
+      weight: 1
+  - context: 1
+    chargeAnimation: Main_Heavy2_Charge
+    holdAnimation: Main_Heavy2_Hold
+    fullChargeTime: 1.2
+    release:
+      animationName: Main_Heavy2_Release
+      damage: 45
+      stamina: 20
+      range: 2.1
+      arc: 170
+      animationSpeed: 1
+      impact: 1.7
+      weight: 1
+    releaseFull:
+      animationName: Main_Heavy2_ReleaseFull
+      damage: 67.5
+      stamina: 20
+      range: 2.4149997
+      arc: 190
+      animationSpeed: 1
+      impact: 2.2
+      weight: 1
+  - context: 2
+    chargeAnimation: Main_Heavy3_Charge
+    holdAnimation: Main_Heavy3_Hold
+    fullChargeTime: 1.2
+    release:
+      animationName: Main_Heavy3_Release
+      damage: 50
+      stamina: 24
+      range: 2.3
+      arc: 150
+      animationSpeed: 1
+      impact: 1.7
+      weight: 1
+    releaseFull:
+      animationName: Main_Heavy3_ReleaseFull
+      damage: 75
+      stamina: 24
+      range: 2.645
+      arc: 170
+      animationSpeed: 1
+      impact: 2.2
+      weight: 1
   runningAttack:
     animationName: Main_Run_Attack_01
     damage: 25
@@ -50,4 +118,35 @@ MonoBehaviour:
     animationSpeed: 1.1
     impact: 1.3
     weight: 1
+  backstepAnimation: Backstep_Main
+  backstepAttack:
+    animationName: Main_Backstep_Attack_01
+    damage: 30
+    stamina: 15
+    range: 2.4
+    arc: 120
+    animationSpeed: 1
+    impact: 1.3
+    weight: 1
+  guard:
+    canGuard: 1
+    animationSet: Off
+    blockArc: 120
+    blockedDamageRatio: 1
+    staminaPerBlockedPoint: 0.8
+    moveSpeedMultiplier: 0.5
+    blockInvulnerability: 0.12
+    mediumBlockPoints: 15
+    heavyBlockPoints: 30
+    guardBreakStun: 1
+    guardStunThreshold: 1
+    guardStunDuration: 0.6
+    canParry: 1
+    parryWindow: 0.15
+    parryStaminaCost: 10
+    parryCooldown: 0.4
+    parryStaggerDuration: 1.5
+    parrySlowScale: 0.2
+    parrySlowDuration: 0.1
+  counterMultiplier: 3
   feelProfile: {fileID: 11400000, guid: d76d2ab4375a4e5438d866b205349f6a, type: 2}

@@ -29,22 +29,59 @@ public class PlayerState : CharacterStateBase
         ReceiveDamage(in info);
     }
 
+    private PlayerGuard guard;
+
+    public override void Initialize(CharacterControllerBase owner)
+    {
+        base.Initialize(owner);
+        guard = (owner as PlayerController)?.GetGuard;
+    }
+
+    protected override bool AbsorbIncoming(ref DamageInfo info, out DamageResult absorbed)
+    {
+        absorbed = default;
+        return guard != null && guard.TryAbsorb(ref info, out absorbed);
+    }
+
+    protected override void PlayHitReaction(in DamageInfo info)
+    {
+        if (guard != null && guard.IsBroken) return;
+        base.PlayHitReaction(in info);
+    }
+
+    public bool ApplyChipDamage(float points)
+    {
+        if (points <= 0f || isDead) return false;
+
+        ReduceHearts(points);
+        PlayDamageFeedback();
+
+        if (currentHearts > 0) return false;
+
+        Die();
+        return true;
+    }
+
+    private void ReduceHearts(float points)
+    {
+        float pointsPerHeart = Mathf.Max(MinPointsPerHeart, playerStats.pointsPerHeart);
+        damageRemainder += points;
+        int hearts = Mathf.FloorToInt(damageRemainder / pointsPerHeart);
+        damageRemainder -= hearts * pointsPerHeart;
+
+        if (hearts <= 0) return;
+
+        currentHearts = Mathf.Max(0, currentHearts - hearts);
+        currentHp = currentHearts;
+        RaiseHeartsChanged();
+        RaiseHpChanged();
+    }
+
     protected override DamageResult ApplyDamage(in DamageInfo info)
     {
         if (info.points <= 0f) return default;
 
-        float pointsPerHeart = Mathf.Max(MinPointsPerHeart, playerStats.pointsPerHeart);
-        damageRemainder += info.points;
-        int hearts = Mathf.FloorToInt(damageRemainder / pointsPerHeart);
-        damageRemainder -= hearts * pointsPerHeart;
-
-        if (hearts > 0)
-        {
-            currentHearts = Mathf.Max(0, currentHearts - hearts);
-            currentHp = currentHearts;
-            RaiseHeartsChanged();
-            RaiseHpChanged();
-        }
+        ReduceHearts(info.points);
 
         InterruptAttack();
         PlayDamageFeedback();
@@ -112,6 +149,7 @@ public class PlayerState : CharacterStateBase
     public bool HasEnoughStamina(float amount) => currentStamina >= amount;
 
     public float RollStaminaCost => playerStats.rollStaminaCost;
+    public float BackstepStaminaCost => playerStats.backstepStaminaCost;
     public float RunStaminaDrainRate => playerStats.runStaminaDrainRate;
 
     public bool CanRun
@@ -137,6 +175,7 @@ public class PlayerState : CharacterStateBase
     protected virtual void RegenerateStamina()
     {
         if (playerStats == null) return;
+        if (guard != null && guard.IsGuardActive) return;
         if (currentStamina >= playerStats.maxStamina) return;
         if (Time.time - lastStaminaUseTime < playerStats.staminaRegenDelay) return;
 

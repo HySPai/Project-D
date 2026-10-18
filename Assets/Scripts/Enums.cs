@@ -5,5 +5,7 @@ public enum AttackType
     ChargedAttack01,
     ChargedAttack02,
     RunningAttack01,
-    RollingAttack01
+    RollingAttack01,
+    HeavyRelease,
+    BackstepAttack
 }

@@ -26,5 +26,6 @@ public class ResetActionFlag : StateMachineBehaviour
 
         character.GetCombat.DisableCanDoCombo();
         character.GetCombat.DisableCanDoRollingAttack();
+        character.GetCombat.DisableCanDoBackstepAttack();
     }
 }

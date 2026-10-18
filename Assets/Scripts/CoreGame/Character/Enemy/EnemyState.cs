@@ -76,6 +76,22 @@ public class EnemyState : CharacterStateBase
     }
     #endregion
 
+    public override void OnParried(float staggerDuration)
+    {
+        if (isDead) return;
+
+        var combat = owner != null ? owner.GetCombat : null;
+        if (combat != null)
+            combat.DisableAllDamageColliders();
+
+        var animation = owner != null ? owner.GetAnimation : null;
+        if (animation != null)
+            animation.Play(HitReaction);
+
+        MarkOffBalance(staggerDuration);
+        (owner as EnemyController)?.OnParried(staggerDuration);
+    }
+
     protected override void InitializeStats()
     {
         base.InitializeStats();

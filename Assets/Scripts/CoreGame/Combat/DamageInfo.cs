@@ -33,4 +33,11 @@ public readonly struct DamageInfo
         this.unblockable = unblockable;
         this.staggerAmount = staggerAmount;
     }
+
+    public DamageInfo WithPoints(float newPoints)
+    {
+        return new DamageInfo(
+            newPoints, attacker, sourcePosition, element, source,
+            unblockable, staggerAmount, knockbackScale, stunScale);
+    }
 }
