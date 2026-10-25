@@ -105,7 +105,7 @@ public class PlayerMovement : CharacterMovementBase
     {
         if (state == null || state.IsDead) return;
         if (state.IsRolling) return;
-        if (state.IsAttacking && !combat.IsCharging) return;
+        if (state.IsAttacking) return;
         if (!state.HasStamina) return;
 
         Vector3 moveDirection = playerCamera.GetMoveDirection(input);
@@ -115,7 +115,6 @@ public class PlayerMovement : CharacterMovementBase
             return;
         }
 
-        combat.CancelCharge();
         moveDirection.Normalize();
 
         transform.rotation = Quaternion.LookRotation(moveDirection);
@@ -132,7 +131,6 @@ public class PlayerMovement : CharacterMovementBase
             ? weapon.backstepAnimation
             : DefaultBackstepAnimation;
 
-        combat.CancelCharge();
         combat.DisableCanDoBackstepAttack();
         state.DrainStamina(state.BackstepStaminaCost);
         anim.Play(new AnimationAction(animationName, true, true, false, false));

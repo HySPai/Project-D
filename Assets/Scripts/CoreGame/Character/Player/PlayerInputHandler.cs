@@ -22,7 +22,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     [Header("Action Input")]
     [SerializeField] private bool isFire;
-    [SerializeField] private bool isFireReleased;
     [SerializeField] private bool isGuardHeld;
     [SerializeField] private bool isGuardPressed;
     [SerializeField] private bool isRunPressed;
@@ -82,7 +81,6 @@ public class PlayerInputHandler : MonoBehaviour
         cameraAction.action.canceled += OnCameraCanceled;
 
         fire.action.performed += OnFirePerformed;
-        fire.action.canceled += OnFireCanceled;
 
         run_Roll.action.started += OnRunStarted;
         run_Roll.action.canceled += OnRunCanceled;
@@ -102,7 +100,6 @@ public class PlayerInputHandler : MonoBehaviour
         cameraAction.action.canceled -= OnCameraCanceled;
 
         fire.action.performed -= OnFirePerformed;
-        fire.action.canceled -= OnFireCanceled;
 
         if (guard != null)
         {
@@ -173,11 +170,6 @@ public class PlayerInputHandler : MonoBehaviour
         isFire = true;
     }
 
-    private void OnFireCanceled(InputAction.CallbackContext ctx)
-    {
-        isFireReleased = true;
-    }
-
     private void OnGuardStarted(InputAction.CallbackContext ctx)
     {
         isGuardHeld = true;
@@ -229,15 +221,6 @@ public class PlayerInputHandler : MonoBehaviour
             return false;
 
         isFire = false;
-        return true;
-    }
-
-    public bool ConsumeFireReleased()
-    {
-        if (!isFireReleased)
-            return false;
-
-        isFireReleased = false;
         return true;
     }
 

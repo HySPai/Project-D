@@ -75,8 +75,7 @@ public class PlayerController : CharacterControllerBase
         }
 
         // 4) Action.
-        if (input.ConsumeFirePressed()) combat.AttackPressed();
-        if (input.ConsumeFireReleased()) combat.AttackReleased();
+        if (input.ConsumeFirePressed()) combat.Attack();
         if (input.IsRolling()) movement.Roll();
 
         // 5) Di chuyển (CharacterController) + cập nhật animation.

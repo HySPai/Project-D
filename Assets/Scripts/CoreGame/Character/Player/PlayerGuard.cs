@@ -210,7 +210,6 @@ public class PlayerGuard : MonoBehaviour
         brokenUntil = Time.time + duration;
         parryWindowEnd = float.NegativeInfinity;
 
-        combat.CancelCharge();
         combat.DisableAllDamageColliders();
 
         anim.Play(new AnimationAction(StateName(data, stateSuffix), true, true, false, false));

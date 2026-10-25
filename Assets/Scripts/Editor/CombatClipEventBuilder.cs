@@ -18,7 +18,6 @@ public static class CombatClipEventBuilder
     {
         Attack,
         LightAttack,
-        Hold,
         Backstep
     }
 
@@ -64,12 +63,6 @@ public static class CombatClipEventBuilder
             string path = AssetDatabase.GUIDToAssetPath(guid);
             string file = System.IO.Path.GetFileNameWithoutExtension(path);
 
-            if (file.EndsWith("_hold"))
-            {
-                list.Add(new ClipEntry(path, ClipKind.Hold));
-                continue;
-            }
-
             if (file.StartsWith("core_") && file.Contains("back_step"))
             {
                 list.Add(new ClipEntry(path, ClipKind.Backstep));
@@ -78,7 +71,7 @@ public static class CombatClipEventBuilder
 
             bool dual = file.StartsWith("straight_sword_dw_");
             bool isLight = file.Contains("_light_attack_") && !file.Contains("jump");
-            bool isRelease = file.Contains("_release") && (file.Contains("charged_attack") || file.Contains("back_step_attack") || file.Contains("roll_attack"));
+            bool isRelease = file.Contains("_release") && (file.Contains("back_step_attack") || file.Contains("roll_attack"));
             bool isRun = file.Contains("_run_attack_");
 
             if (file.StartsWith("straight_sword_off_")) continue;
@@ -109,10 +102,6 @@ public static class CombatClipEventBuilder
 
         switch (entry.kind)
         {
-            case ClipKind.Hold:
-                target.loopTime = true;
-                break;
-
             case ClipKind.Backstep:
                 events.Add(MakeEvent(0.04f, "EnableIsInvulnerable"));
                 events.Add(MakeEvent(0.38f, "DisableIsInvulnerable"));

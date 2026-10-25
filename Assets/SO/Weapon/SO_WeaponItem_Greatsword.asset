@@ -40,52 +40,6 @@ MonoBehaviour:
     animationSpeed: 1.15
     impact: 1.5
     weight: 1
-  heavyHoldThreshold: 0.35
-  heavyAttacks:
-  - context: 0
-    chargeAnimation: Th_Heavy1_Charge
-    holdAnimation: Th_Heavy1_Hold
-    fullChargeTime: 1.4
-    release:
-      animationName: Th_Heavy1_Release
-      damage: 90
-      stamina: 40
-      range: 2.5
-      arc: 220
-      animationSpeed: 1
-      impact: 1.7
-      weight: 1
-    releaseFull:
-      animationName: Th_Heavy1_ReleaseFull
-      damage: 135
-      stamina: 40
-      range: 2.875
-      arc: 240
-      animationSpeed: 1
-      impact: 2.2
-      weight: 1
-  - context: 1
-    chargeAnimation: Th_Heavy2_Charge
-    holdAnimation: Th_Heavy2_Hold
-    fullChargeTime: 1.4
-    release:
-      animationName: Th_Heavy2_Release
-      damage: 90
-      stamina: 40
-      range: 2.5
-      arc: 220
-      animationSpeed: 1
-      impact: 1.7
-      weight: 1
-    releaseFull:
-      animationName: Th_Heavy2_ReleaseFull
-      damage: 135
-      stamina: 40
-      range: 2.875
-      arc: 240
-      animationSpeed: 1
-      impact: 2.2
-      weight: 1
   runningAttack:
     animationName: Th_Run_Attack
     damage: 50

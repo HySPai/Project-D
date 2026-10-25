@@ -14,8 +14,18 @@ public static class CombatAnimatorBuilder
 
     private static readonly string[] ManagedActionPrefixes =
     {
-        "Main_Heavy", "Main_Backstep", "Backstep_", "Th_", "Dw_", "Guard_"
+        "Main_Backstep", "Backstep_", "Th_", "Dw_", "Guard_"
     };
+
+    private static readonly string[] ActionColumns = { "Common", "Hit_", "Main_", "Th_", "Dw_", "Guard_" };
+
+    private static readonly string[] GuardRowSuffixes =
+    {
+        "Loco", "Up", "Down", "Parry", "BlockLight", "BlockMedium", "BlockHeavy"
+    };
+
+    private const float ColumnSpacing = 260f;
+    private const float RowSpacing = 60f;
 
     private static readonly string[] GuardSets = { "Off", "Th", "Dw" };
 
@@ -49,6 +59,8 @@ public static class CombatAnimatorBuilder
 
         BuildActionLayer(controller);
         BuildGuardLayer(controller);
+        LayoutActionLayer(controller.layers[FindLayer(controller, ActionLayerName)].stateMachine);
+        LayoutGuardLayer(controller.layers[FindLayer(controller, GuardLayerName)].stateMachine);
 
         EditorUtility.SetDirty(controller);
         AssetDatabase.SaveAssets();
@@ -67,29 +79,19 @@ public static class CombatAnimatorBuilder
         AddAction(machine, empty, "Backstep_Main", "core_main_back_step_medium_01", 0.9f, 0.15f);
         AddAction(machine, empty, "Backstep_Th", "core_th_back_step_medium_01", 0.9f, 0.15f);
 
-        for (int i = 1; i <= 3; i++)
-            AddHeavy(machine, empty, "Main_Heavy" + i, "straight_sword_main_charged_attack_0" + i, 0.85f);
-
         AddAction(machine, empty, "Main_Backstep_Attack_01", "straight_sword_main_back_step_attack_01_release", 0.85f, 0.2f);
-        AddAction(machine, empty, "Main_Backstep_Attack_02", "straight_sword_main_back_step_attack_02_release", 0.85f, 0.2f);
 
         for (int i = 1; i <= 3; i++)
             AddAction(machine, empty, "Th_Light_0" + i, "straight_sword_th_light_attack_0" + i, 0.85f, 0.15f);
         AddAction(machine, empty, "Th_Run_Attack", "straight_sword_th_run_attack_01", 0.85f, 0.2f);
         AddAction(machine, empty, "Th_Roll_Attack_01", "straight_sword_th_roll_attack_01_release", 0.85f, 0.2f);
-        AddAction(machine, empty, "Th_Roll_Attack_02", "straight_sword_th_roll_attack_02_release", 0.85f, 0.2f);
-        AddHeavy(machine, empty, "Th_Heavy1", "straight_sword_th_charged_attack_01", 0.85f);
-        AddHeavy(machine, empty, "Th_Heavy2", "straight_sword_th_charged_attack_02", 0.85f);
         AddAction(machine, empty, "Th_Backstep_Attack_01", "straight_sword_th_back_step_attack_01_release", 0.85f, 0.2f);
-        AddAction(machine, empty, "Th_Backstep_Attack_02", "straight_sword_th_back_step_attack_02_release", 0.85f, 0.2f);
 
         for (int i = 1; i <= 2; i++)
             AddAction(machine, empty, "Dw_Light_0" + i, "straight_sword_dw_light_attack_0" + i, 0.85f, 0.15f);
         AddAction(machine, empty, "Dw_Run_Attack", "straight_sword_dw_run_attack_01", 0.85f, 0.2f);
         AddAction(machine, empty, "Dw_Roll_Attack_01", "straight_sword_dw_roll_attack_01_release", 0.85f, 0.2f);
-        AddAction(machine, empty, "Dw_Roll_Attack_02", "straight_sword_dw_roll_attack_02_release", 0.85f, 0.2f);
-        for (int i = 1; i <= 4; i++)
-            AddAction(machine, empty, "Dw_Backstep_Attack_0" + i, "straight_sword_dw_back_step_attack_0" + i + "_release", 0.85f, 0.2f);
+        AddAction(machine, empty, "Dw_Backstep_Attack_01", "straight_sword_dw_back_step_attack_01_release", 0.85f, 0.2f);
 
         foreach (string set in GuardSets)
         {
@@ -189,20 +191,67 @@ public static class CombatAnimatorBuilder
         Link(state, empty, exitTime, duration);
     }
 
-    private static void AddHeavy(AnimatorStateMachine machine, AnimatorState empty, string baseName, string clipBase, float releaseExit)
+    private static void LayoutActionLayer(AnimatorStateMachine machine)
     {
-        AnimatorState charge = machine.AddState(baseName + "_Charge");
-        charge.motion = Clip(clipBase + "_charge");
-        charge.writeDefaultValues = true;
+        ChildAnimatorState[] states = machine.states;
+        System.Array.Sort(states, (a, b) => string.CompareOrdinal(a.state.name, b.state.name));
 
-        AnimatorState hold = machine.AddState(baseName + "_Hold");
-        hold.motion = Clip(clipBase + "_hold");
-        hold.writeDefaultValues = true;
+        int[] rowByColumn = new int[ActionColumns.Length];
+        float width = ColumnSpacing * (ActionColumns.Length - 1);
 
-        Link(charge, hold, 0.98f, 0.05f);
+        for (int i = 0; i < states.Length; i++)
+        {
+            string name = states[i].state.name;
+            if (name == EmptyStateName)
+            {
+                states[i].position = new Vector3(width * 0.5f, -2f * RowSpacing, 0f);
+                continue;
+            }
 
-        AddAction(machine, empty, baseName + "_Release", clipBase + "_release", releaseExit, 0.2f);
-        AddAction(machine, empty, baseName + "_ReleaseFull", clipBase + "_release_full", releaseExit, 0.2f);
+            int column = ActionColumnOf(name);
+            states[i].position = new Vector3(column * ColumnSpacing, rowByColumn[column] * RowSpacing, 0f);
+            rowByColumn[column]++;
+        }
+
+        machine.states = states;
+        machine.entryPosition = new Vector3(width * 0.5f - ColumnSpacing, -3.5f * RowSpacing, 0f);
+        machine.anyStatePosition = new Vector3(width * 0.5f, -3.5f * RowSpacing, 0f);
+        machine.exitPosition = new Vector3(width * 0.5f + ColumnSpacing, -3.5f * RowSpacing, 0f);
+    }
+
+    private static int ActionColumnOf(string stateName)
+    {
+        for (int i = 1; i < ActionColumns.Length; i++)
+        {
+            if (stateName.StartsWith(ActionColumns[i])) return i;
+        }
+
+        return 0;
+    }
+
+    private static void LayoutGuardLayer(AnimatorStateMachine machine)
+    {
+        ChildAnimatorState[] states = machine.states;
+        float width = ColumnSpacing * (GuardSets.Length - 1);
+
+        for (int i = 0; i < states.Length; i++)
+        {
+            string name = states[i].state.name;
+            if (name == GuardEmptyStateName)
+            {
+                states[i].position = new Vector3(width * 0.5f, -2f * RowSpacing, 0f);
+                continue;
+            }
+
+            int column = System.Array.FindIndex(GuardSets, set => name.StartsWith("Guard_" + set + "_"));
+            int row = System.Array.FindIndex(GuardRowSuffixes, suffix => name.EndsWith("_" + suffix));
+            states[i].position = new Vector3(Mathf.Max(column, 0) * ColumnSpacing, Mathf.Max(row, 0) * RowSpacing, 0f);
+        }
+
+        machine.states = states;
+        machine.entryPosition = new Vector3(width * 0.5f - ColumnSpacing, -3.5f * RowSpacing, 0f);
+        machine.anyStatePosition = new Vector3(width * 0.5f, -3.5f * RowSpacing, 0f);
+        machine.exitPosition = new Vector3(width * 0.5f + ColumnSpacing, -3.5f * RowSpacing, 0f);
     }
 
     private static void Link(AnimatorState from, AnimatorState to, float exitTime, float duration)

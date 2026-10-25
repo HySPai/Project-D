@@ -30,14 +30,6 @@ public static class CombatWeaponBuilder
 
     private static void ConfigureSword(WeaponItem weapon)
     {
-        weapon.heavyHoldThreshold = 0.35f;
-        weapon.heavyAttacks = new[]
-        {
-            Heavy(HeavyContext.Standing, "Main_Heavy1", 45f, 20f, 2f, 160f, 1.2f),
-            Heavy(HeavyContext.AfterCombo, "Main_Heavy2", 45f, 20f, 2.1f, 170f, 1.2f),
-            Heavy(HeavyContext.Running, "Main_Heavy3", 50f, 24f, 2.3f, 150f, 1.2f)
-        };
-
         weapon.backstepAnimation = "Backstep_Main";
         weapon.backstepAttack = Attack("Main_Backstep_Attack_01", 30f, 15f, 2.4f, 120f, 1f, 1.3f, AttackWeight.Heavy);
 
@@ -67,13 +59,6 @@ public static class CombatWeaponBuilder
         weapon.runningAttack = Attack("Th_Run_Attack", 50f, 26f, 2.4f, 170f, 1.1f, 1.5f, AttackWeight.Heavy);
         weapon.rollingAttack = Attack("Th_Roll_Attack_01", 50f, 26f, 2.3f, 200f, 1.1f, 1.4f, AttackWeight.Heavy);
 
-        weapon.heavyHoldThreshold = 0.35f;
-        weapon.heavyAttacks = new[]
-        {
-            Heavy(HeavyContext.Standing, "Th_Heavy1", 90f, 40f, 2.5f, 220f, 1.4f),
-            Heavy(HeavyContext.AfterCombo, "Th_Heavy2", 90f, 40f, 2.5f, 220f, 1.4f)
-        };
-
         weapon.backstepAnimation = "Backstep_Th";
         weapon.backstepAttack = Attack("Th_Backstep_Attack_01", 55f, 24f, 2.5f, 120f, 1f, 1.4f, AttackWeight.Heavy);
 
@@ -102,9 +87,6 @@ public static class CombatWeaponBuilder
         weapon.runningAttack = Attack("Dw_Run_Attack", 20f, 10f, 1.9f, 160f, 1.2f, 1f, AttackWeight.Light);
         weapon.rollingAttack = Attack("Dw_Roll_Attack_01", 20f, 10f, 1.8f, 200f, 1.2f, 1f, AttackWeight.Light);
 
-        weapon.heavyHoldThreshold = 0.35f;
-        weapon.heavyAttacks = new HeavyAttackData[0];
-
         weapon.backstepAnimation = "Backstep_Main";
         weapon.backstepAttack = Attack("Dw_Backstep_Attack_01", 24f, 10f, 1.9f, 140f, 1.1f, 1f, AttackWeight.Light);
 
@@ -116,19 +98,6 @@ public static class CombatWeaponBuilder
             canParry = false,
             blockedDamageRatio = 0.5f,
             staminaPerBlockedPoint = 1f
-        };
-    }
-
-    private static HeavyAttackData Heavy(HeavyContext context, string stateBase, float damage, float stamina, float range, float arc, float fullChargeTime)
-    {
-        return new HeavyAttackData
-        {
-            context = context,
-            chargeAnimation = stateBase + "_Charge",
-            holdAnimation = stateBase + "_Hold",
-            fullChargeTime = fullChargeTime,
-            release = Attack(stateBase + "_Release", damage, stamina, range, arc, 1f, 1.7f, AttackWeight.Heavy),
-            releaseFull = Attack(stateBase + "_ReleaseFull", damage * 1.5f, stamina, range * 1.15f, arc + 20f, 1f, 2.2f, AttackWeight.Heavy)
         };
     }
 

@@ -45,17 +45,10 @@ public class PlayerCombat : CharacterCombatBase
     private bool hitWindowOpen;
     private float hitWindowExpireTime;
 
-    private bool attackHeld;
-    private float attackPressTime;
-    private bool heavyCharging;
-    private float chargeStartTime;
-    private HeavyAttackData activeHeavy;
-
     [Header("Debug Weapons")]
     [SerializeField] private WeaponItem[] debugWeapons;
     private int debugWeaponIndex;
 
-    public bool IsCharging => heavyCharging;
     public WeaponItem CurrentWeapon => currentWeapon;
 
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
@@ -79,33 +72,11 @@ public class PlayerCombat : CharacterCombatBase
 
         if (state == null) return;
 
-        TickHeavyHold();
         ConsumeBufferedAttack();
         SweepHitWindow();
     }
 
     #region Attack Input
-    public void AttackPressed()
-    {
-        attackHeld = true;
-        attackPressTime = Time.time;
-    }
-
-    public void AttackReleased()
-    {
-        if (!attackHeld) return;
-
-        attackHeld = false;
-
-        if (heavyCharging)
-        {
-            ReleaseHeavy();
-            return;
-        }
-
-        Attack();
-    }
-
     public override void Attack()
     {
         if (TryStartAttack())
@@ -186,59 +157,6 @@ public class PlayerCombat : CharacterCombatBase
         return true;
     }
 
-    #region Heavy Attack
-    private void TickHeavyHold()
-    {
-        if (!attackHeld || heavyCharging) return;
-        if (currentWeapon == null || currentWeapon.heavyAttacks == null || currentWeapon.heavyAttacks.Length == 0) return;
-        if (Time.time - attackPressTime < currentWeapon.heavyHoldThreshold) return;
-
-        TryBeginHeavy();
-    }
-
-    private void TryBeginHeavy()
-    {
-        if (state == null || state.IsDead || state.IsRolling) return;
-        if (playerState != null && !playerState.HasStamina) return;
-
-        bool inComboWindow = state.IsAttacking && canDoCombo;
-        if (state.IsAttacking && !inComboWindow) return;
-
-        HeavyContext context = inComboWindow ? HeavyContext.AfterCombo
-            : state.IsRunning ? HeavyContext.Running
-            : HeavyContext.Standing;
-
-        HeavyAttackData heavy = currentWeapon.GetHeavyAttack(context);
-        if (heavy == null || string.IsNullOrEmpty(heavy.chargeAnimation)) return;
-
-        DisableCanDoCombo();
-        EndHitWindow();
-        bufferedAttackTime = NoBufferedAttack;
-
-        activeHeavy = heavy;
-        heavyCharging = true;
-        chargeStartTime = Time.time;
-
-        AimAttack();
-        PlayAttackAnimation(heavy.chargeAnimation, character);
-        character.GetAnimation.SetPlaybackSpeed(1f);
-    }
-
-    private void ReleaseHeavy()
-    {
-        HeavyAttackData heavy = activeHeavy;
-        heavyCharging = false;
-        activeHeavy = null;
-
-        if (heavy == null) return;
-
-        bool fullyCharged = Time.time - chargeStartTime >= heavy.fullChargeTime;
-        bool hasFull = heavy.releaseFull != null && !string.IsNullOrEmpty(heavy.releaseFull.animationName);
-
-        currentAttackType = AttackType.HeavyRelease;
-        DoAttack(fullyCharged && hasFull ? heavy.releaseFull : heavy.release);
-    }
-
     public override void ResetCombat()
     {
         base.ResetCombat();
@@ -247,20 +165,11 @@ public class PlayerCombat : CharacterCombatBase
         bufferedAttackTime = NoBufferedAttack;
     }
 
-    public void CancelCharge()
-    {
-        heavyCharging = false;
-        activeHeavy = null;
-        attackHeld = false;
-    }
-    #endregion
-
     #region Weapon
     public void EquipWeapon(WeaponItem weapon)
     {
         if (weapon == null) return;
 
-        CancelCharge();
         currentWeapon = weapon;
         comboIndex = 0;
     }
@@ -391,7 +300,6 @@ public class PlayerCombat : CharacterCombatBase
     {
         base.DisableAllDamageColliders();
         EndHitWindow();
-        CancelCharge();
     }
 
     private void BeginHitWindow()

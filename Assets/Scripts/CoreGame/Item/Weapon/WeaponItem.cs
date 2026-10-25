@@ -13,13 +13,6 @@ public enum AttackWeight
     Heavy
 }
 
-public enum HeavyContext
-{
-    Standing,
-    AfterCombo,
-    Running
-}
-
 [System.Serializable]
 public class AttackData
 {
@@ -35,17 +28,6 @@ public class AttackData
     public float animationSpeed = 1f;
     public float impact = 1f;
     public AttackWeight weight = AttackWeight.Light;
-}
-
-[System.Serializable]
-public class HeavyAttackData
-{
-    public HeavyContext context = HeavyContext.Standing;
-    public string chargeAnimation;
-    public string holdAnimation;
-    public float fullChargeTime = 1.2f;
-    public AttackData release;
-    public AttackData releaseFull;
 }
 
 [System.Serializable]
@@ -89,10 +71,6 @@ public class WeaponItem : ScriptableObject
     [Header("Light Combo")]
     public AttackData[] lightAttacks;
 
-    [Header("Heavy Attack (hold)")]
-    public float heavyHoldThreshold = 0.35f;
-    public HeavyAttackData[] heavyAttacks;
-
     [Header("Running Attack")]
     public AttackData runningAttack;
 
@@ -109,17 +87,4 @@ public class WeaponItem : ScriptableObject
 
     [Header("Feel")]
     public WeaponFeelProfile feelProfile;
-
-    public HeavyAttackData GetHeavyAttack(HeavyContext context)
-    {
-        if (heavyAttacks == null || heavyAttacks.Length == 0) return null;
-
-        for (int i = 0; i < heavyAttacks.Length; i++)
-        {
-            if (heavyAttacks[i].context == context)
-                return heavyAttacks[i];
-        }
-
-        return heavyAttacks[0];
-    }
 }
