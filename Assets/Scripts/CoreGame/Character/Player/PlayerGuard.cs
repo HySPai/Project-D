@@ -60,6 +60,15 @@ public class PlayerGuard : MonoBehaviour
         KillSlowMotion();
     }
 
+    public void ResetGuard()
+    {
+        KillSlowMotion();
+        guardIntent = false;
+        parryWindowEnd = float.NegativeInfinity;
+        nextParryTime = 0f;
+        brokenUntil = 0f;
+    }
+
     public void Tick(bool held, bool pressed)
     {
         GuardData data = Data;

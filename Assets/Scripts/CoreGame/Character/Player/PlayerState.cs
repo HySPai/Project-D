@@ -248,6 +248,26 @@ public class PlayerState : CharacterStateBase
         base.Die();
         GameEvent.OnPlayerDied?.Invoke();
     }
+
+    public override void ResetState()
+    {
+        base.ResetState();
+
+        damageRemainder = 0f;
+        currentHearts = playerStats.maxHearts;
+        currentHp = currentHearts;
+
+        currentStamina = playerStats.maxStamina;
+        lastStaminaUseTime = 0f;
+        runExhausted = false;
+
+        currentInput = Vector2.zero;
+        currentCameraInput = Vector2.zero;
+
+        RaiseHeartsChanged();
+        RaiseHpChanged();
+        RaiseStaminaChanged();
+    }
     #endregion
 
     #region Animation Test Buttons

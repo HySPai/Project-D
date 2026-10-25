@@ -20,6 +20,50 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     public abstract CharacterCombatBase GetCombat { get; }
     public abstract CharacterAnimationBase GetAnimation { get; }
 
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+
+    public Vector3 SpawnPosition => spawnPosition;
+    public Quaternion SpawnRotation => spawnRotation;
+
+    protected virtual void Awake() => SetSpawnPoint(transform.position, transform.rotation);
+
+    /// <summary>Changes where this character comes back after a world reset, e.g. a lit rest point.</summary>
+    public void SetSpawnPoint(Vector3 position, Quaternion rotation)
+    {
+        spawnPosition = position;
+        spawnRotation = rotation;
+    }
+
+    /// <summary>Brings the character back to its spawn point alive, with full vitals and no leftover actions.</summary>
+    public void ResetToSpawn()
+    {
+        BeforeReset();
+        TeleportTo(spawnPosition, spawnRotation);
+
+        CharacterStateBase state = GetState;
+        if (state != null) state.ResetState();
+
+        CharacterCombatBase combat = GetCombat;
+        if (combat != null) combat.ResetCombat();
+
+        CharacterAnimationBase animation = GetAnimation;
+        if (animation != null) animation.ResetAnimator();
+
+        OnReset();
+    }
+
+    protected virtual void BeforeReset() { }
+
+    protected virtual void TeleportTo(Vector3 position, Quaternion rotation)
+    {
+        characterController.enabled = false;
+        transform.SetPositionAndRotation(position, rotation);
+        characterController.enabled = true;
+    }
+
+    protected virtual void OnReset() { }
+
     protected virtual void OnEnable()
     {
         CombatTargetRegistry.Register(characterController, this);

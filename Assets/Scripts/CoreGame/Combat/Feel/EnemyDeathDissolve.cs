@@ -26,6 +26,7 @@ public class EnemyDeathDissolve : MonoBehaviour
     [SerializeField] private GameObject hideOnComplete;
 
     private Material[][] dissolveMaterials;
+    private Material[][] originalMaterials;
     private MaterialPropertyBlock particleBlock;
     private Sequence sequence;
     private bool prepared;
@@ -37,9 +38,11 @@ public class EnemyDeathDissolve : MonoBehaviour
         prepared = true;
 
         dissolveMaterials = new Material[renderers.Length][];
+        originalMaterials = new Material[renderers.Length][];
         for (int i = 0; i < renderers.Length; i++)
         {
             Material[] source = renderers[i] != null ? renderers[i].sharedMaterials : new Material[0];
+            originalMaterials[i] = source;
             Material[] target = new Material[source.Length];
             for (int j = 0; j < source.Length; j++)
                 target[j] = CreateDissolveMaterial(source[j]);
@@ -65,6 +68,31 @@ public class EnemyDeathDissolve : MonoBehaviour
             .AppendInterval(profile.ParticleLifetimeRange.y)
             .OnComplete(Finish)
             .SetLink(gameObject);
+    }
+
+    /// <summary>Undoes the dissolve so a respawned enemy looks untouched.</summary>
+    public void ResetVisual()
+    {
+        sequence?.Kill();
+        sequence = null;
+
+        if (dissolveParticles != null)
+            dissolveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (dissolveMaterials != null)
+            SetDissolveAmount(0f);
+
+        for (int i = 0; renderers != null && i < renderers.Length; i++)
+        {
+            if (renderers[i] == null) continue;
+
+            renderers[i].enabled = true;
+            if (originalMaterials != null)
+                renderers[i].sharedMaterials = originalMaterials[i];
+        }
+
+        if (hideOnComplete != null)
+            hideOnComplete.SetActive(true);
     }
 
     private void OnDestroy()

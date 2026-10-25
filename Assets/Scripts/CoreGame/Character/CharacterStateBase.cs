@@ -319,6 +319,32 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
             feedback.PlayFeedbacks(transform.position);
     }
 
+    /// <summary>Restores the character to a fresh, alive state with full health.</summary>
+    public virtual void ResetState()
+    {
+        isDead = false;
+        isAttacking = false;
+        isRunning = false;
+        isRolling = false;
+        isInvulnerable = false;
+
+        canMove = true;
+        canRotate = true;
+        applyRootMotion = false;
+
+        currentMoveSpeed = 0f;
+        targetMoveSpeed = 0f;
+
+        yVelocity = Vector3.zero;
+        fallingVelocityHasBeenSet = false;
+        inAirTimer = 0f;
+        isGrounded = true;
+
+        currentHp = maxHp;
+        ClearOffBalance();
+        RaiseHpChanged();
+    }
+
     public virtual void EnableIsInvulnerable() => isInvulnerable = true;
     public virtual void DisableIsInvulnerable() => isInvulnerable = false;
 

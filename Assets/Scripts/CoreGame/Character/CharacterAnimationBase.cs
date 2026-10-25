@@ -104,6 +104,16 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         animator.speed = speed;
     }
 
+    /// <summary>Returns the animator to its default state with neutral playback speed.</summary>
+    public void ResetAnimator()
+    {
+        if (animator == null) return;
+
+        animator.speed = 1f;
+        animator.Rebind();
+        animator.Update(0f);
+    }
+
     public void Play(in AnimationAction action)
     {
         PlayTargetAnimation(

@@ -34,6 +34,15 @@ public class EnemyCombat : CharacterCombatBase
             state.OnHpChanged -= HandleHpChanged;
     }
 
+    public override void ResetCombat()
+    {
+        telegraphActive = false;
+        attackSerial++;
+        base.ResetCombat();
+        lastAttackTime = -enemyState.AttackCooldown;
+        lastKnownHp = state.CurrentHp;
+    }
+
     public bool CanAttack => Time.time - lastAttackTime >= enemyState.AttackCooldown;
 
     public override void Attack()

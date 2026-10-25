@@ -13,8 +13,9 @@ public class DummyController : CharacterControllerBase
     public override CharacterCombatBase GetCombat => null;
     public override CharacterAnimationBase GetAnimation => null;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         state.Initialize(this);
     }
 }

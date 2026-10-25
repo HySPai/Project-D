@@ -107,6 +107,13 @@ public class EnemyState : CharacterStateBase
         homeRotation = transform.rotation;
     }
 
+    public override void ResetState()
+    {
+        base.ResetState();
+        stunEndTime = 0f;
+        ClearTarget();
+    }
+
     protected override void Die()
     {
         base.Die();

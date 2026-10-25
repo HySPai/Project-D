@@ -107,6 +107,19 @@ public class EnemyMovement : CharacterMovementBase
     }
     #endregion
 
+    public void ResetMovement()
+    {
+        StopAllCoroutines();
+        knockbackRoutine = null;
+        autoRotateToMovement = true;
+
+        if (agent == null) return;
+        agent.updatePosition = true;
+        if (!agent.isOnNavMesh) return;
+        agent.isStopped = false;
+        agent.ResetPath();
+    }
+
     #region Rotation thủ công
     // Bật/tắt việc tự xoay về hướng đi. Tắt khi state muốn tự ngoảnh (kite/đứng chờ).
     public void SetAutoRotation(bool enabled)

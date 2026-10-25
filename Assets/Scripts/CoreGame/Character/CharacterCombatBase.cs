@@ -193,6 +193,17 @@ public abstract class CharacterCombatBase : MonoBehaviour
 
     public virtual void ResetCombo() => comboIndex = 0;
 
+    /// <summary>Drops every in-flight attack, combo window and lock-on.</summary>
+    public virtual void ResetCombat()
+    {
+        DisableAllDamageColliders();
+        canDoCombo = false;
+        canPerformRollingAttack = false;
+        canPerformBackstepAttack = false;
+        comboIndex = 0;
+        ClearLockTarget();
+    }
+
     protected void PlayAttackAnimation(string animationName, CharacterControllerBase character)
     {
         state.SetAttacking(true);

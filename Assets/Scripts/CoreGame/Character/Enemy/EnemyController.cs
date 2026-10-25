@@ -35,8 +35,9 @@ public class EnemyController : CharacterControllerBase
     public IEnemyState AttackState { get; protected set; }
     private IEnemyState currentState;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (agent == null) agent = GetComponent<NavMeshAgent>();
 
         state.Initialize(this);
@@ -50,6 +51,36 @@ public class EnemyController : CharacterControllerBase
 
         if (deathDissolve != null)
             deathDissolve.Prepare(state.DeathDissolve);
+    }
+
+    protected override void BeforeReset()
+    {
+        if (deathDissolve != null)
+            deathDissolve.ResetVisual();
+
+        currentState?.Exit();
+        currentState = null;
+
+        movement.ResetMovement();
+    }
+
+    protected override void TeleportTo(Vector3 position, Quaternion rotation)
+    {
+        characterController.enabled = false;
+        if (agent.isOnNavMesh)
+            agent.Warp(position);
+        else
+            transform.position = position;
+        transform.rotation = rotation;
+        characterController.enabled = true;
+    }
+
+    protected override void OnReset()
+    {
+        if (legsAnim != null)
+            legsAnim.enabled = true;
+
+        ChangeState(IdleState);
     }
 
     /// <summary>Starts the dissolve and disintegrate effect; called from EnemyState.Die.</summary>

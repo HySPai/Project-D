@@ -148,6 +148,13 @@ public class Turret : MonoBehaviour
         _isBursting = false;
     }
 
+    public void ResetTurret()
+    {
+        CancelFiring();
+        _state = State.Idle;
+        _target = null;
+    }
+
     private void OnDestroy()
     {
         CancelFiring();

@@ -19,8 +19,9 @@ public class PlayerController : CharacterControllerBase
     public override CharacterAnimationBase GetAnimation => anim;
     public PlayerGuard GetGuard => guard;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         state.Initialize(this);
         movement.Initialize(state, anim, combat, playerCamera, guard);
         combat.Initialize(state, this, playerCamera);
@@ -79,6 +80,12 @@ public class PlayerController : CharacterControllerBase
         // 5) Di chuyển (CharacterController) + cập nhật animation.
         movement.Move();
         anim.UpdateAnimation(state.AnimationMoveAmount);
+    }
+
+    protected override void OnReset()
+    {
+        guard.ResetGuard();
+        movement.SetInput(Vector2.zero);
     }
 
     private void OnDestroy()

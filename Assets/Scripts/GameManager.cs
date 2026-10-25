@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    private bool isRestarting;
+    [SerializeField] private WorldResetController worldReset;
 
     private void Start()
     {
@@ -21,11 +20,5 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     private void HandlePlayerDied() => TinySauceSDKController.Instance.OnLose();
 
-    private void HandleRestartRequested()
-    {
-        if (isRestarting) return;
-        isRestarting = true;
-        Time.timeScale = 1f;
-        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
-    }
+    private void HandleRestartRequested() => worldReset.ResetWorld();
 }

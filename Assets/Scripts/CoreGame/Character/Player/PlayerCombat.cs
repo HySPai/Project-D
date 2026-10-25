@@ -239,6 +239,14 @@ public class PlayerCombat : CharacterCombatBase
         DoAttack(fullyCharged && hasFull ? heavy.releaseFull : heavy.release);
     }
 
+    public override void ResetCombat()
+    {
+        base.ResetCombat();
+        hitTargets.Clear();
+        currentAttack = null;
+        bufferedAttackTime = NoBufferedAttack;
+    }
+
     public void CancelCharge()
     {
         heavyCharging = false;
