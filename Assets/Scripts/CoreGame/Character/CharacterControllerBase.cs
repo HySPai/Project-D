@@ -53,6 +53,9 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
         OnReset();
     }
 
+    /// <summary>Moves the character to a new place without touching its vitals, e.g. when changing area.</summary>
+    public void Teleport(Vector3 position, Quaternion rotation) => TeleportTo(position, rotation);
+
     protected virtual void BeforeReset() { }
 
     protected virtual void TeleportTo(Vector3 position, Quaternion rotation)
