@@ -8,62 +8,91 @@ public class AreaTransitionController : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
     [SerializeField] private CinemachineCamera virtualCamera;
+    [SerializeField] private Camera sceneCamera;
     [SerializeField] private Volume fadeVolume;
-    [SerializeField] private float fadeOutDuration = 0.35f;
-    [SerializeField] private float holdDuration = 0.15f;
-    [SerializeField] private float fadeInDuration = 0.5f;
-    [SerializeField] private Ease fadeOutEase = Ease.InSine;
-    [SerializeField] private Ease fadeInEase = Ease.OutSine;
+    [SerializeField] private AreaRoom startRoom;
+    [SerializeField] private AreaRoom[] rooms;
+    [SerializeField] private float fadeOutDuration = 0.1f;
+    [SerializeField] private float fadeInDuration = 0.1f;
+    [SerializeField] private Ease fadeOutEase = Ease.InQuad;
+    [SerializeField] private Ease fadeInEase = Ease.OutQuad;
 
     private Tween fadeTween;
+    private AreaRoom currentRoom;
 
     public bool IsTransitioning { get; private set; }
     public PlayerController Player => player;
+    public AreaRoom CurrentRoom => currentRoom;
 
-    private void Awake() => fadeVolume.weight = 0f;
+    private void Awake()
+    {
+        fadeVolume.weight = 0f;
+        currentRoom = startRoom;
+
+        for (int i = 0; i < rooms.Length; i++)
+            rooms[i].SetVisible(rooms[i] == startRoom);
+
+        ApplyBackdrop(startRoom);
+    }
 
     private void OnDestroy() => fadeTween?.Kill();
 
-    /// <summary>Fades out, moves the player to the destination, snaps the camera and fades back in.</summary>
-    public void RequestTransition(Transform destination, bool setAsSpawn)
+    /// <summary>
+    /// Carries the player through a doorway into the linked one behind a short fade, keeping their
+    /// offset, heading and control, so the two rooms read as one connected space.
+    /// </summary>
+    public void RequestTransition(AreaPortal source)
     {
         if (IsTransitioning) return;
+        if (source.LinkedPortal == null) return;
         if (player.GetState.IsDead) return;
 
-        TransitionAsync(destination, setAsSpawn).Forget();
+        TransitionAsync(source).Forget();
     }
 
-    private async UniTaskVoid TransitionAsync(Transform destination, bool setAsSpawn)
+    private async UniTaskVoid TransitionAsync(AreaPortal source)
     {
         var token = this.GetCancellationTokenOnDestroy();
         IsTransitioning = true;
 
-        player.GetMovement.SetInput(Vector2.zero);
-        player.GetAnimation.UpdateAnimation(0f);
-        player.enabled = false;
-
-        await FadeTo(1f, fadeOutDuration, fadeOutEase, token);
+        await FadeTo(1f, fadeOutDuration, fadeOutEase);
         if (token.IsCancellationRequested) return;
 
-        Vector3 delta = destination.position - player.transform.position;
-        player.Teleport(destination.position, destination.rotation);
+        AreaPortal target = source.LinkedPortal;
+        source.MapThrough(player.transform.position, player.transform.rotation, out Vector3 position, out Quaternion rotation);
+
+        ShowRoom(target.Room);
+
+        Vector3 delta = position - player.transform.position;
+        player.Teleport(position, rotation);
         if (virtualCamera != null) virtualCamera.OnTargetObjectWarped(player.transform, delta);
-        if (setAsSpawn) player.SetSpawnPoint(destination.position, destination.rotation);
 
-        bool canceled = await UniTask.Delay(
-                System.TimeSpan.FromSeconds(holdDuration),
-                DelayType.UnscaledDeltaTime,
-                cancellationToken: token)
-            .SuppressCancellationThrow();
-        if (canceled) return;
+        Transform spawn = target.ArrivalSpawn;
+        if (spawn != null) player.SetSpawnPoint(spawn.position, spawn.rotation);
 
-        player.enabled = true;
-        await FadeTo(0f, fadeInDuration, fadeInEase, token);
-
+        await FadeTo(0f, fadeInDuration, fadeInEase);
         IsTransitioning = false;
     }
 
-    private async UniTask FadeTo(float weight, float duration, Ease ease, System.Threading.CancellationToken token)
+    private void ShowRoom(AreaRoom room)
+    {
+        if (room == null || room == currentRoom) return;
+
+        room.SetVisible(true);
+        if (currentRoom != null) currentRoom.SetVisible(false);
+        currentRoom = room;
+        ApplyBackdrop(room);
+    }
+
+    private void ApplyBackdrop(AreaRoom room)
+    {
+        if (sceneCamera == null || room == null) return;
+
+        sceneCamera.clearFlags = room.DarkOutside ? CameraClearFlags.SolidColor : CameraClearFlags.Skybox;
+        sceneCamera.backgroundColor = Color.black;
+    }
+
+    private async UniTask FadeTo(float weight, float duration, Ease ease)
     {
         fadeTween?.Kill();
         fadeTween = DOTween.To(() => fadeVolume.weight, v => fadeVolume.weight = v, weight, duration)
