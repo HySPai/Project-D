@@ -30,11 +30,19 @@ public class PlayerState : CharacterStateBase
     }
 
     private PlayerGuard guard;
+    private GamepadRumble rumble;
 
     public override void Initialize(CharacterControllerBase owner)
     {
         base.Initialize(owner);
         guard = (owner as PlayerController)?.GetGuard;
+        rumble = (owner as PlayerController)?.GetRumble;
+    }
+
+    private void PlayDamageRumble()
+    {
+        if (rumble != null)
+            rumble.PlayDamageTaken(currentHearts <= 0);
     }
 
     protected override bool AbsorbIncoming(ref DamageInfo info, out DamageResult absorbed)
@@ -55,6 +63,7 @@ public class PlayerState : CharacterStateBase
 
         ReduceHearts(points);
         PlayDamageFeedback();
+        PlayDamageRumble();
 
         if (currentHearts > 0) return false;
 
@@ -85,6 +94,7 @@ public class PlayerState : CharacterStateBase
 
         InterruptAttack();
         PlayDamageFeedback();
+        PlayDamageRumble();
 
         if (currentHearts <= 0)
         {

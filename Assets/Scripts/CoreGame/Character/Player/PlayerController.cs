@@ -10,6 +10,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerCombat combat;
     [SerializeField] private PlayerGuard guard;
     [SerializeField] private PlayerCamera playerCamera;
+    [SerializeField] private GamepadRumble rumble;
 
     private GamePlayView gamePlayView;
 
@@ -18,6 +19,7 @@ public class PlayerController : CharacterControllerBase
     public override CharacterCombatBase GetCombat => combat;
     public override CharacterAnimationBase GetAnimation => anim;
     public PlayerGuard GetGuard => guard;
+    public GamepadRumble GetRumble => rumble;
 
     protected override void Awake()
     {
@@ -86,6 +88,7 @@ public class PlayerController : CharacterControllerBase
     {
         guard.ResetGuard();
         movement.SetInput(Vector2.zero);
+        if (rumble != null) rumble.Stop();
     }
 
     private void OnDestroy()

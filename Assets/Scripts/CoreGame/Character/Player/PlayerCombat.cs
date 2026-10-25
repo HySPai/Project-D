@@ -517,7 +517,7 @@ public class PlayerCombat : CharacterCombatBase
 
         HitFeelTier tier = CombatFeelPlayer.ResolveTier(currentAttack, killedAny);
         WeaponFeelProfile profile = currentWeapon != null ? currentWeapon.feelProfile : null;
-        combatFeel.PlayHit(profile, tier, currentAttack.impact, transform.position);
+        combatFeel.PlayHit(profile, tier, currentAttack.impact, transform.position, killedAny);
     }
 
     private bool TryResolveTarget(Collider targetCollider, out CharacterControllerBase target)

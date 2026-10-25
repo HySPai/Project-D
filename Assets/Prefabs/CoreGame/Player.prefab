@@ -2590,6 +2590,7 @@ MonoBehaviour:
   combat: {fileID: 8004906126929870345}
   guard: {fileID: 1248100729388574410}
   playerCamera: {fileID: 7694672649410949249}
+  rumble: {fileID: 5915662762651994874}
 --- !u!114 &6237013157365418999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3315,6 +3316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2447414553949586640}
   - component: {fileID: 6354327488156036788}
+  - component: {fileID: 5915662762651994874}
   m_Layer: 0
   m_Name: Feedbacks
   m_TagString: Untagged
@@ -3356,6 +3358,40 @@ MonoBehaviour:
   hitFeedback: {fileID: 1987881308303024513}
   killFeedback: {fileID: 4605510643443736066}
   swingFeedback: {fileID: 6180768872781505372}
+  rumble: {fileID: 5915662762651994874}
+--- !u!114 &5915662762651994874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6745443518896372635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 043744a47635de2468319bf0c32a6458, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GamepadRumble
+  rumbleEnabled: 1
+  hitLight:
+    lowFrequency: 0.15
+    highFrequency: 0.35
+    duration: 0.08
+  hitHeavy:
+    lowFrequency: 0.3
+    highFrequency: 0.5
+    duration: 0.12
+  hitKill:
+    lowFrequency: 0.45
+    highFrequency: 0.6
+    duration: 0.18
+  damageTaken:
+    lowFrequency: 0.6
+    highFrequency: 0.4
+    duration: 0.2
+  death:
+    lowFrequency: 0.9
+    highFrequency: 0.6
+    duration: 0.45
 --- !u!1 &6816793165107160804
 GameObject:
   m_ObjectHideFlags: 0

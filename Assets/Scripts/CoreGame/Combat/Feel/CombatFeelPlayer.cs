@@ -12,6 +12,9 @@ public class CombatFeelPlayer : MonoBehaviour
     [SerializeField] private MMF_Player killFeedback;
     [SerializeField] private MMF_Player swingFeedback;
 
+    [Header("Gamepad")]
+    [SerializeField] private GamepadRumble rumble;
+
     private MMF_FreezeFrame hitFreeze;
     private MMF_CinemachineImpulse hitImpulse;
     private MMF_FreezeFrame killFreeze;
@@ -34,20 +37,27 @@ public class CombatFeelPlayer : MonoBehaviour
         swingSound = CacheSound(swingFeedback);
     }
 
-    public void PlayHit(WeaponFeelProfile profile, HitFeelTier tier, float attackImpact, Vector3 position)
+    /// <summary>Plays hit feel for a tier; cameraShake false mutes the camera impulse. Example: PlayHit(profile, HitFeelTier.Kill, 1f, pos, true)</summary>
+    public void PlayHit(WeaponFeelProfile profile, HitFeelTier tier, float attackImpact, Vector3 position, bool cameraShake = true)
     {
         Initialize();
+
+        if (rumble != null)
+            rumble.PlayHit(tier);
 
         bool useKill = tier == HitFeelTier.Kill && killFeedback != null;
         MMF_Player player = useKill ? killFeedback : hitFeedback;
         if (player == null) return;
 
         float intensity = attackImpact;
+        MMF_CinemachineImpulse impulse = useKill ? killImpulse : hitImpulse;
+
+        if (impulse != null)
+            impulse.Active = cameraShake;
 
         if (profile != null)
         {
             MMF_FreezeFrame freeze = useKill ? killFreeze : hitFreeze;
-            MMF_CinemachineImpulse impulse = useKill ? killImpulse : hitImpulse;
 
             if (freeze != null)
                 freeze.FreezeFrameDuration = profile.GetHitStop(tier);

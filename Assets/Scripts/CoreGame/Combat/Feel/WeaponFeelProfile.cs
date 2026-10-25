@@ -18,7 +18,7 @@ public class WeaponFeelProfile : ScriptableObject
     [Header("Camera Shake Velocity")]
     [SerializeField] private Vector3 shakeVelocityLight = new Vector3(0.08f, -0.1f, 0f);
     [SerializeField] private Vector3 shakeVelocityHeavy = new Vector3(0.08f, -0.1f, 0f);
-    [SerializeField] private Vector3 shakeVelocityKill = new Vector3(0.16f, -0.2f, 0f);
+    [SerializeField] private Vector3 shakeVelocityKill = new Vector3(0.08f, -0.1f, 0f);
 
     [Header("Hit Weight (scales SO_EnemyStats knockback / stun)")]
     [SerializeField, Range(0f, 3f)] private float knockbackScaleLight = 1f;

@@ -17,7 +17,7 @@ MonoBehaviour:
   hitStopKill: 0.1
   shakeVelocityLight: {x: 0.08, y: -0.1, z: 0}
   shakeVelocityHeavy: {x: 0.12, y: -0.15, z: 0}
-  shakeVelocityKill: {x: 0.16, y: -0.2, z: 0}
+  shakeVelocityKill: {x: 0.08, y: -0.1, z: 0}
   knockbackScaleLight: 1
   knockbackScaleHeavy: 1.6
   stunScaleLight: 1
