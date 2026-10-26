@@ -16,6 +16,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     [SerializeField] protected float currentHp;
 
     public event Action<float, float> OnHpChanged;
+    public event Action OnDied;
 
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
@@ -362,6 +363,8 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
             animation.Play(DeathAnimation);
         else
             Debug.LogWarning($"{name}: Die() nhưng thiếu owner/Animation để play death anim", this);
+
+        OnDied?.Invoke();
     }
     #endregion
 

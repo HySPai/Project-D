@@ -232,6 +232,22 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Lifecycle
+    /// <summary>Fills hearts and stamina without moving or reviving the character, as resting at a rest point does.</summary>
+    public void RestoreVitals()
+    {
+        if (isDead) return;
+
+        damageRemainder = 0f;
+        currentHearts = playerStats.maxHearts;
+        currentHp = currentHearts;
+        currentStamina = playerStats.maxStamina;
+        runExhausted = false;
+
+        RaiseHeartsChanged();
+        RaiseHpChanged();
+        RaiseStaminaChanged();
+    }
+
     protected override void InitializeStats()
     {
         base.InitializeStats();

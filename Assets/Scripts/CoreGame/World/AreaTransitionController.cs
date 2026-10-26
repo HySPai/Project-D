@@ -23,6 +23,7 @@ public class AreaTransitionController : MonoBehaviour
     public bool IsTransitioning { get; private set; }
     public PlayerController Player => player;
     public AreaRoom CurrentRoom => currentRoom;
+    public AreaRoom StartRoom => startRoom;
 
     private void Awake()
     {
@@ -67,11 +68,16 @@ public class AreaTransitionController : MonoBehaviour
         player.Teleport(position, rotation);
         if (virtualCamera != null) virtualCamera.OnTargetObjectWarped(player.transform, delta);
 
-        Transform spawn = target.ArrivalSpawn;
-        if (spawn != null) player.SetSpawnPoint(spawn.position, spawn.rotation);
-
         await FadeTo(0f, fadeInDuration, fadeInEase);
         IsTransitioning = false;
+    }
+
+    /// <summary>Shows a room at once and tells the camera the player was already moved there from previousPosition.</summary>
+    public void SnapToRoom(AreaRoom room, Vector3 previousPosition)
+    {
+        ShowRoom(room);
+        if (virtualCamera != null)
+            virtualCamera.OnTargetObjectWarped(player.transform, player.transform.position - previousPosition);
     }
 
     private void ShowRoom(AreaRoom room)

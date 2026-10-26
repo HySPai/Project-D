@@ -11,6 +11,7 @@ public class PlayerInputHandler : MonoBehaviour
     public InputActionReference walk;
     public InputActionReference lockTarget;
     public InputActionReference guard;
+    public InputActionReference interact;
 
     [Header("Movement Input")]
     [SerializeField] private Vector2 movementInput;
@@ -24,6 +25,7 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private bool isFire;
     [SerializeField] private bool isGuardHeld;
     [SerializeField] private bool isGuardPressed;
+    [SerializeField] private bool isInteractPressed;
     [SerializeField] private bool isRunPressed;
     [SerializeField] private bool isWalkPressed;
     [SerializeField] private bool isDash;
@@ -74,6 +76,12 @@ public class PlayerInputHandler : MonoBehaviour
             guard.action.canceled += OnGuardCanceled;
         }
 
+        if (interact != null)
+        {
+            interact.action.Enable();
+            interact.action.started += OnInteractStarted;
+        }
+
         moveAction.action.performed += OnMovePerformed;
         moveAction.action.canceled += OnMoveCanceled;
 
@@ -106,6 +114,12 @@ public class PlayerInputHandler : MonoBehaviour
             guard.action.started -= OnGuardStarted;
             guard.action.canceled -= OnGuardCanceled;
             guard.action.Disable();
+        }
+
+        if (interact != null)
+        {
+            interact.action.started -= OnInteractStarted;
+            interact.action.Disable();
         }
 
         run_Roll.action.started -= OnRunStarted;
@@ -179,6 +193,29 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnGuardCanceled(InputAction.CallbackContext ctx)
     {
         isGuardHeld = false;
+    }
+
+    private void OnInteractStarted(InputAction.CallbackContext ctx)
+    {
+        isInteractPressed = true;
+    }
+
+    public void DiscardBufferedActions()
+    {
+        isFire = false;
+        isGuardPressed = false;
+        isInteractPressed = false;
+        rollRequested = false;
+        isLockTargetRequested = false;
+    }
+
+    public bool ConsumeInteractPressed()
+    {
+        if (!isInteractPressed)
+            return false;
+
+        isInteractPressed = false;
+        return true;
     }
 
     private void OnRunStarted(InputAction.CallbackContext ctx)

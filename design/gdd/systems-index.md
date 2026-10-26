@@ -57,6 +57,7 @@ Project-D là soulslike + metroidvania + giải đố, camera isometric cố đ�
 | 36 | Âm thanh và nhạc | Audio | Vertical Slice | Implemented | — | — |
 | 37 | Feedback combat (Feel/VFX) | Audio | MVP | Implemented | — | Combat cận chiến, AI quái côn trùng |
 | 38 | Trợ năng | Meta | Alpha | Not Started | — | Tim và kênh sát thương |
+| 39 | Ngày đêm | Core | MVP | Implemented | design/gdd/day-night-cycle.md | Ngưỡng, Lưu và tải |
 
 Ghi chú trạng thái: "Implemented" = đã có code nhưng chưa có GDD (viết ngược bằng `/reverse-document` nếu cần). #35 hiện có màn Game Over/Restart, chưa có vòng hồi sinh ở Ngưỡng.
 

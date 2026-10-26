@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    [SerializeField] private WorldResetController worldReset;
+    [SerializeField] private SaveController saveController;
 
     private void Start()
     {
@@ -20,5 +20,5 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     private void HandlePlayerDied() => TinySauceSDKController.Instance.OnLose();
 
-    private void HandleRestartRequested() => worldReset.ResetWorld();
+    private void HandleRestartRequested() => saveController.Respawn();
 }

@@ -13,6 +13,10 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private GamepadRumble rumble;
 
     private GamePlayView gamePlayView;
+    private bool controlLocked;
+
+    /// <summary>While locked the character stands still and ignores every action input, e.g. during a rest.</summary>
+    public void SetControlLocked(bool locked) => controlLocked = locked;
 
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
@@ -20,6 +24,9 @@ public class PlayerController : CharacterControllerBase
     public override CharacterAnimationBase GetAnimation => anim;
     public PlayerGuard GetGuard => guard;
     public GamepadRumble GetRumble => rumble;
+    public PlayerState GetPlayerState => state;
+    public PlayerInputHandler GetInput => input;
+    public PlayerCombat GetPlayerCombat => combat;
 
     protected override void Awake()
     {
@@ -50,6 +57,15 @@ public class PlayerController : CharacterControllerBase
         // 1) Cập nhật grounded + gravity trước mọi di chuyển.
         state.HandleGroundCheckAndGravity();
         if (state.IsDead) return;
+
+        if (controlLocked)
+        {
+            input.DiscardBufferedActions();
+            movement.SetInput(Vector2.zero);
+            movement.Move();
+            anim.UpdateAnimation(0f);
+            return;
+        }
 
         guard.Tick(input.IsGuardHeld(), input.ConsumeGuardPressed());
 

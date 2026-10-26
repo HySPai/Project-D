@@ -26,12 +26,12 @@ Hệ Feature, là nhịp thở của vòng Souls: đi xa khỏi Ngưỡng là r�
 
 ### Core Rules
 
-1. **Thắp:** lần đầu tương tác với một Ngưỡng là thắp nó và nghỉ luôn. Cờ "đã thắp" lưu trong Trạng thái thế giới, xếp vào loại Lối tắt (Ngưỡng là điểm nối của thế giới), một chiều.
-2. **Nghỉ** (mỗi lần tương tác với Ngưỡng đã thắp), theo thứ tự:
+1. **Thắp** (bấm lần đầu, sửa 2026-10-26): Ngưỡng là một đống lửa âm ỉ; bấm lần đầu thì lửa bùng cháy, Ngưỡng thành **Ngưỡng nghỉ gần nhất** và game lưu ngay. Thắp **không** nghỉ: không hồi phục, không reset quái, không tua giờ. Cờ "đã thắp" lưu trong Trạng thái thế giới, xếp vào loại Lối tắt (Ngưỡng là điểm nối của thế giới), một chiều.
+2. **Nghỉ** (mỗi lần tương tác với Ngưỡng đã thắp) là chuỗi tua giờ trong `day-night-cycle.md` luật 8: trong 2 giây màn hình tối dần tới 00:00, đen hẳn, sáng dần tới 09:00. Lúc màn hình đen:
    - (a) đầy tim, đầy stamina, đầy thanh nguyên tố; xóa hiệu ứng bất lợi;
    - (b) quái thường hồi sinh và đố dở reset (lệnh gửi Trạng thái thế giới);
-   - (c) Ngưỡng này thành **Ngưỡng nghỉ gần nhất**;
-   - (d) Lưu và tải ghi snapshot (D).
+   - (c) người chơi đứng ở chỗ cạnh đống lửa; Ngưỡng này thành **Ngưỡng nghỉ gần nhất**;
+   - (d) khi sáng hẳn lúc 09:00, Lưu và tải ghi snapshot (D) cùng giờ 09:00.
 
    Mũi tên **không** hồi, theo `weapons.md`.
 3. **Không nghỉ được** khi có quái đang truy đuổi người chơi trong bán kính 10m. Ngưỡng hiện trạng thái "Lạnh" và không phản hồi.

@@ -31,6 +31,7 @@ Hệ nền (Persistence) ghi và đọc dữ liệu của một lần chơi. Ng�
    - **(B) Trạng thái thế giới:** boss đã hạ, lối tắt đã mở, câu đố đã giải, rương đã mở, bí mật đã tìm. Hệ Trạng thái thế giới sở hữu nội dung; hệ này chỉ ghi. **Ghi ngay khi thay đổi.**
    - **(C) Tài nguyên đang mang:** tàn ý, mũi tên, Mảnh Sắt Cũ. **Ghi chậm nhất 1 giây** sau lần thay đổi cuối.
    - **(D) Snapshot Ngưỡng:** Ngưỡng nghỉ gần nhất. **Chỉ ghi khi nghỉ ở Ngưỡng.**
+   - **Giờ trong ngày** (`hourOfDay`, thêm 2026-10-26): ghi kèm mọi lần lưu; tải thì đồng hồ chạy tiếp từ giờ đó. Xem `day-night-cycle.md`.
 3. **Tàn ý rơi:** khi chết, ghi ngay vị trí và số tàn ý rơi, thay cho bản rơi cũ (bản cũ mất). Nhặt lại thì ghi ngay: xóa bản rơi và cộng vào tàn ý đang mang trong cùng một lần ghi.
 4. **Không lưu:** vị trí chính xác của người chơi ngoài Ngưỡng, máu hiện tại, quái đang sống hay đã chết, trạng thái giữa chừng của một trận đấu.
 5. **Tải slot:** người chơi xuất hiện ở Ngưỡng trong snapshot (D), như vừa nghỉ xong: đầy tim, đầy thanh nguyên tố, quái hồi sinh. Áp (A), (B), (C) và đặt lại đống tàn ý rơi nếu có.

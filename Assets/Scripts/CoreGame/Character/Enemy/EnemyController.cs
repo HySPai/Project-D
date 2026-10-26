@@ -35,6 +35,9 @@ public class EnemyController : CharacterControllerBase
     public IEnemyState AttackState { get; protected set; }
     private IEnemyState currentState;
 
+    /// <summary>True while the enemy is alive and hunting or fighting rather than idle or heading home.</summary>
+    public bool IsPursuing => !state.IsDead && currentState != null && currentState != IdleState && currentState != ReturnState;
+
     protected override void Awake()
     {
         base.Awake();

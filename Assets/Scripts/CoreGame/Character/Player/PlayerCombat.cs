@@ -51,6 +51,8 @@ public class PlayerCombat : CharacterCombatBase
 
     public WeaponItem CurrentWeapon => currentWeapon;
 
+    public event System.Action<WeaponItem> OnWeaponEquipped;
+
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
     {
         base.Initialize(state);
@@ -172,6 +174,7 @@ public class PlayerCombat : CharacterCombatBase
 
         currentWeapon = weapon;
         comboIndex = 0;
+        OnWeaponEquipped?.Invoke(weapon);
     }
 
     [Button]
