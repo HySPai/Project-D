@@ -27504,7 +27504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightCycle
   startHour: 9
-  dayDurationSeconds: 840
+  dayDurationSeconds: 5
   sunriseHour: 6
   sunsetHour: 18
   sunLight: {fileID: 2097596694}

@@ -2,7 +2,7 @@
 
 > **Status**: In Design
 > **Author**: người dùng + Claude (solo, không có specialist)
-> **Last Updated**: 2026-10-17
+> **Last Updated**: 2026-10-28
 > **Last Verified**: 2026-10-17
 > **Implements Pillar**: không có file pillar ở tier `minimal`; phục vụ "Combat Souls" và metroidvania trong `design/game-brief.md`
 
@@ -106,7 +106,7 @@ Vũ khí chính chỉ đổi được ở Ngưỡng. Chọn vũ khí là chọn 
 
     | Tên | Chiến đấu | Giải đố ở xa |
     |---|---|---|
-    | Tên Lửa | Bỏng | Thắp đèn, đuốc ở xa; đốt tơ nhện ở xa |
+    | Tên Lửa | Bỏng | Thắp đèn, đuốc ở xa; đốt tường tơ ở xa |
     | Tên Nước | Chậm | Tưới mầm cây ở xa; dập lửa ở xa |
     | Tên Đá | Choáng 0.5s, không phá giáp | Kích nút nhấn ở xa |
     | Tên Gió | Xuyên tối đa 3 mục tiêu | Xoay cánh quạt ở xa |
@@ -120,11 +120,19 @@ Vũ khí chính chỉ đổi được ở Ngưỡng. Chọn vũ khí là chọn 
 | Vũ khí | Duyên | Tăng cường |
 |---|---|---|
 | Kiếm | Nước | Vòng Nước: bán kính +30%, Chậm kéo dài 4s thay vì 3s |
-| Giáo | Gió | Lướt Gió: dài hơn 30%, cuối lướt có một đòn đâm 20 sát thương |
-| Búa | Đá | Giậm Đất: nón rộng hơn 30%, Choáng 1.5s thay vì 1s |
-| Song kiếm | Lửa | Than Hồng kéo dài 9s thay vì 6s |
+| Giáo | Gió | Lốc Xoáy: bán kính rộng hơn 30% và tồn tại 4s thay vì 3s |
+| Búa | Đá | Đá Văng: vòng cung rộng hơn 30%, Choáng 1.5s thay vì 1s |
+| Song kiếm | Lửa | Yểm Than Hồng kéo dài 9s thay vì 6s |
 
 Cung không có duyên với nguyên tố nào.
+
+16b. **Yểm nguyên tố** (luật 11b của `elemental-magic.md`): khi thanh nguyên tố đầy, giữ nút phép để yểm nguyên tố đang trang bị lên vũ khí chính; yểm tiêu hết cả thanh. Yểm áp cho mọi vũ khí chính, không áp cho Cung.
+   - Than Hồng: đòn trúng gây Bỏng.
+   - Nước: đòn trúng gây Chậm.
+   - Gió: tốc đánh ×1.25.
+   - Đá: lớp đá bọc lưỡi vũ khí; đòn đầu tiên trúng quái làm lớp đá vỡ, gây ×2 sát thương và ×3 mất thế. Vung trượt thì lớp đá còn nguyên.
+
+   Trên đòn nhiều nhát (combo Song kiếm, Xoáy), lớp đá vỡ ở nhát đầu tiên trúng quái và chỉ nhát đó được nhân. Búa yểm Đá thì hệ số mất thế nhân dồn thành ×6.
 
 **Nạp thanh nguyên tố** (thay luật 7 cũ của `elemental-magic.md`)
 
@@ -188,7 +196,7 @@ Cung không có duyên với nguyên tố nào.
 | Combat (`PlayerCombat`, `CharacterCombatBase`) | Input đánh, nhắm, chặn; trạng thái tấn công | Dữ liệu đòn đánh (`AttackData`) của vũ khí đang cầm | Weapons cung cấp dữ liệu; Combat thực thi |
 | Stamina (`PlayerState`) | Stamina hiện có | Trừ stamina khi ra đòn, chặn, parry, né ngắn, bắn | Stamina |
 | Lock-on | Mục tiêu đang khóa | Tự nhắm cho Cung | Lock-on |
-| Elemental Magic | Nguyên tố đang trang bị; thanh nguyên tố | Nạp thanh theo sát thương (luật 17); tăng cường do duyên (luật 16); tên nguyên tố (luật 14) | Elemental Magic giữ thanh và kỹ năng; Weapons cung cấp hệ số duyên |
+| Elemental Magic | Nguyên tố đang trang bị; thanh nguyên tố | Nạp thanh theo sát thương (luật 17); tăng cường do duyên (luật 16); tên nguyên tố (luật 14); vũ khí mang lớp yểm (luật 16b) | Elemental Magic giữ thanh và kỹ năng; Weapons cung cấp hệ số duyên |
 | Ngưỡng | Sự kiện nghỉ, menu nghỉ | Đổi vũ khí chính và Khiên; lưu danh sách vũ khí, cấp nâng cấp, số tên | Ngưỡng |
 | Thợ rèn (Bác Gai) | Tàn ý, Mảnh Sắt Cũ | Cấp vũ khí mới | Thợ rèn / kinh tế |
 | Cửa hàng (Bà Hạt) | Tàn ý | Mũi tên | Kinh tế |
@@ -213,7 +221,7 @@ Cung không có duyên với nguyên tố nào.
 - **Nếu tên nguyên tố trúng vật giải đố ở xa:** vật nhận tác động như khi tương tác gần (luật 9 elemental-magic), thanh không bị trừ. Chỉ khi tên trúng quái thì thanh mới bị trừ 33, trừ lúc bắn.
 - **Nếu đang cầm Búa hoặc Song kiếm mà gặp câu đố cần Khiên:** không được có câu đố như vậy, vì Khiên không có vai trò giải đố.
 - **Nếu người chơi chưa có Giáo, Búa hay Song kiếm:** mọi đường chính vẫn đi được. Bí mật của vũ khí đó đứng yên và có gợi ý hình dạng (vách gỗ mục, đất mềm, gai dày) để người chơi nhớ quay lại.
-- **Nếu Búa đánh vào giáp Bọ Giáp:** ×0.5, thay vì ×0.25 như các vũ khí khác. Giáp vẫn chỉ vỡ bởi Giậm Đất.
+- **Nếu Búa đánh vào giáp Bọ Giáp:** ×0.5, thay vì ×0.25 như các vũ khí khác. Giáp vẫn chỉ vỡ bởi Đá Văng; yểm Đá không phá giáp.
 - **Nếu Song kiếm né ngắn trùng lúc lăn:** không cho; né ngắn và lăn dùng chung khóa hành động.
 - **Nếu đổi vũ khí ở Ngưỡng sang Búa hoặc Song kiếm khi đang có Khiên:** Khiên tự gỡ ra và nằm trong kho.
 - **Nếu nâng cấp đã ở +5:** thợ rèn không cho nâng thêm; nút nâng mờ đi.
@@ -259,7 +267,8 @@ Cung không có duyên với nguyên tố nào.
 - **GIVEN** trang bị Lửa, thanh 40, đang nhắm vào quái, **WHEN** nhấn nút phép rồi bắn trúng, **THEN** quái bị Bỏng và thanh còn 7.
 - **GIVEN** trang bị Lửa, thanh 0, nhắm vào đèn ở xa, **WHEN** phủ tên rồi bắn trúng đèn, **THEN** đèn sáng và thanh vẫn là 0.
 - **GIVEN** công tắc ở trên cao chỉ chạm được bằng tên, **WHEN** bắn trúng, **THEN** công tắc kích hoạt; câu đố này giải được với mọi vũ khí chính.
-- **GIVEN** cầm Búa, trang bị Đá, **WHEN** dùng Giậm Đất, **THEN** nón rộng hơn 30% và Choáng 1.5s; **GIVEN** cầm Kiếm, **THEN** nón và Choáng như mặc định.
+- **GIVEN** cầm Búa, trang bị Đá, **WHEN** dùng Đá Văng, **THEN** vòng cung rộng hơn 30% và Choáng 1.5s; **GIVEN** cầm Kiếm, **THEN** vòng cung và Choáng như mặc định.
+- **GIVEN** cầm Song kiếm, **WHEN** yểm Than Hồng, **THEN** lớp yểm kéo dài 9s; **GIVEN** cầm Kiếm, **THEN** 6s.
 - **GIVEN** chưa có Búa, **WHEN** đi hết đường chính của mọi vùng, **THEN** không có chỗ nào bị chặn vì thiếu Búa (tương tự cho Giáo và Song kiếm).
 - **GIVEN** Kiếm +2, 450 tàn ý và 3 Mảnh Sắt Cũ, **WHEN** nâng lên +3 ở Bác Gai, **THEN** tàn ý còn 0, Mảnh Sắt Cũ còn 0, đòn nhẹ gây 32 (25 × 1.3, làm tròn xuống).
 - **GIVEN** vũ khí đã +5, **WHEN** mở menu thợ rèn, **THEN** không nâng thêm được.
@@ -330,7 +339,7 @@ Cung không có duyên với nguyên tố nào.
 |---|---|---|
 | Ai trao Cung ở Làng Mái Vá (Lão Mật hay Chị Mỏ) và qua tình huống nào | Người dùng | Khi viết story Cung |
 | Giáo nằm ở tàn tích nào; Búa rơi từ boss nào; Song kiếm thuộc nền văn minh nào | Người dùng + level-designer | Khi lên bản đồ thế giới |
-| Quái nào có đòn `unblockable` (vd. Spider King tóm) | Người dùng + thiết kế quái | Trước story parry |
+| Quái nào có đòn `unblockable` (vd. đòn tóm của boss vùng; tạm, chờ thiết kế quái thật) | Người dùng + thiết kế quái | Trước story parry |
 | Mọi con số (sát thương, stamina, parry 0.15s, giá nâng cấp 150×n) chưa qua cân bằng; economy-designer chưa xem giá | Người dùng, sau playtest | Sau bản combat Kiếm + Khiên chơi được |
 | Có Khiên thứ hai (khiên nặng hoặc nhẹ) không | Người dùng | Sau MVP |
 | Tên nằm lại trên bản đồ có giới hạn số lượng không (hiệu năng) | Lập trình | Khi làm story Cung |

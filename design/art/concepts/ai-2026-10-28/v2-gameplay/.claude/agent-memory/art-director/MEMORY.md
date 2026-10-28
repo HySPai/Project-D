@@ -1,0 +1,1 @@
+- [Image prompt wording](feedback_image_prompt_wording.md) — avoid "hand-painted"/"art"; tiny hero + HUD + ortho; generic insects, no spiders

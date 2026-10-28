@@ -79,11 +79,11 @@ Hệ nền (Persistence) ghi và đọc dữ liệu của một lần chơi. Ng�
 | Hệ thống | Hướng | Loại | Ghi chú |
 |---|---|---|---|
 | (không có) | Lưu và tải phụ thuộc vào | — | Tầng Foundation |
-| Trạng thái thế giới | Phụ thuộc vào Lưu và tải | Cứng | Chưa có GDD |
-| Ngưỡng | Phụ thuộc vào Lưu và tải | Cứng | Chưa có GDD |
+| Trạng thái thế giới (`design/gdd/world-state.md`) | Phụ thuộc vào Lưu và tải | Cứng | Đã có GDD |
+| Ngưỡng (`design/gdd/rest-point.md`) | Phụ thuộc vào Lưu và tải | Cứng | Đã có GDD |
 | Tàn ý rơi/nhặt | Phụ thuộc vào Lưu và tải | Cứng | Chưa có GDD |
-| Vũ khí (`design/gdd/weapons.md`) | Phụ thuộc vào Lưu và tải | Mềm | `weapons.md` hiện chỉ ghi "lưu ở Ngưỡng"; cần thêm dòng phụ thuộc |
-| Nguyên tố (`design/gdd/elemental-magic.md`) | Phụ thuộc vào Lưu và tải | Mềm | Tương tự, cần thêm dòng phụ thuộc |
+| Vũ khí (`design/gdd/weapons.md`) | Phụ thuộc vào Lưu và tải | Mềm | `weapons.md` đã ghi chiều ngược lại |
+| Nguyên tố (`design/gdd/elemental-magic.md`) | Phụ thuộc vào Lưu và tải | Mềm | `elemental-magic.md` đã ghi chiều ngược lại; thanh và lớp yểm không lưu |
 | Nâng cấp ở làng | Phụ thuộc vào Lưu và tải | Mềm | Chưa có GDD |
 | Menu chính / tạm dừng | Phụ thuộc vào Lưu và tải | Mềm | Chưa có GDD |
 
@@ -92,7 +92,7 @@ Hệ nền (Persistence) ghi và đọc dữ liệu của một lần chơi. Ng�
 Không có mục Formulas ở tier `minimal`; các tiêu chí dưới đây kiểm luật trong Core Rules.
 
 - **GIVEN** menu chính, **WHEN** mở danh sách slot, **THEN** thấy đúng 3 slot, mỗi slot có dữ liệu hiện tên Ngưỡng, thời gian chơi, tàn ý và ngày giờ.
-- **GIVEN** đã hạ Spider King, chưa nghỉ, **WHEN** thoát game rồi tải lại slot, **THEN** Spider King vẫn đã hạ và người chơi đứng ở Ngưỡng cuối.
+- **GIVEN** đã hạ một boss vùng, chưa nghỉ, **WHEN** thoát game rồi tải lại slot, **THEN** boss đó vẫn đã hạ và người chơi đứng ở Ngưỡng cuối.
 - **GIVEN** đã mở một lối tắt, **WHEN** tắt hẳn tiến trình game rồi tải lại, **THEN** lối tắt vẫn mở.
 - **GIVEN** mở rương có 50 tàn ý, **WHEN** chờ 2 giây rồi tắt tiến trình, **THEN** tải lại thấy rương đã mở và tàn ý đã cộng 50.
 - **GIVEN** chết khi mang 300 tàn ý, **WHEN** thoát rồi tải lại, **THEN** đống 300 tàn ý vẫn nằm ở chỗ chết và tàn ý đang mang là 0.

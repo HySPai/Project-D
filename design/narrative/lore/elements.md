@@ -152,7 +152,7 @@ Cả bốn nơi đều thuộc phạm vi sau MVP. Xem mục 7 về MVP.
   - Ong Chúa Rỗng muốn lấp tổ bằng Nước.
   - Bọ Giáp muốn lấy Đá làm vỏ.
   - Ngài Đèn quanh trạm phát sóng, đưa Hắc Tàn tới Gió.
-- ĐỀ XUẤT: Seed, Spider và Spider King chưa gắn vào nguyên tố nào. Xem mục 7.
+- ĐỀ XUẤT: Seed chưa gắn vào nguyên tố nào. Xem mục 7.
 
 ### 3.3 Giới hạn
 
@@ -174,7 +174,7 @@ Cả bốn nơi đều thuộc phạm vi sau MVP. Xem mục 7 về MVP.
 | Ong Chúa Rỗng (boss) | Nước | Muốn lấp tổ bằng nước trong ở Đầm Sen |
 | Bọ Giáp | Đá | Gặm tường và phá ruộng ở Thung Rùa |
 | Ngài Đèn | Gió | Bay theo ánh đèn lên chóp trạm Đỉnh Hạc |
-| Seed, Spider, Spider King | [CHƯA XÁC ĐỊNH] | Chưa gắn |
+| Seed | [CHƯA XÁC ĐỊNH] | Chưa gắn |
 
 ---
 
@@ -243,7 +243,7 @@ Số dòng theo `design/narrative/lore/world-foundation.md`.
 - Mục 4.4 dòng 125-130 (Đầm Sen): thêm "Đáy đầm có Cụ Sen Cổ giữ Nước."
 - Mục 4.6 dòng 141-146 (Thung Rùa): thêm "Đỉnh đồi có Đá Canh giữ Đá."
 - Mục 4.8 dòng 157-162 (Đỉnh Hạc): thêm "Chóp trạm phát sóng có Tiếng Vọng giữ Gió."
-- Mục 5 dòng 191-197 (quái): thêm dòng nguyên tố nhắm tới cho Kiến Thợ (dòng 194), Ngài Đèn (dòng 195), Bọ Giáp (dòng 196), Ong Chúa Rỗng (dòng 197). Lưu ý mục 5 đang đánh nhãn CANON, nên cần người dùng duyệt.
+- Mục 5 dòng 191-195 (quái): thêm dòng nguyên tố nhắm tới cho Kiến Thợ (dòng 192), Ngài Đèn (dòng 193), Bọ Giáp (dòng 194), Ong Chúa Rỗng (dòng 195). Lưu ý mục 5 đang đánh nhãn CANON, nên cần người dùng duyệt.
 - Mục 6 dòng 210 (nội tâm hiệp sĩ): đổi "bản năng" thành "bản tính" cho khớp với CANON "phẩm chất".
 - Mục 7 dòng 216-224 (bảng bí ẩn): thêm các hàng ở mục 5 của tài liệu này.
 - Mục 8 dòng 238-243: thêm các câu hỏi ở mục 7 của tài liệu này.
@@ -255,7 +255,7 @@ Số dòng theo `design/narrative/lore/world-foundation.md`.
 - CANON: MVP không có nguyên tố nào; cả bốn thuộc phạm vi sau MVP.
 - [CHƯA XÁC ĐỊNH] Thứ tự thu thập bốn nguyên tố.
 - [CHƯA XÁC ĐỊNH] Thực thể là boss, thử thách hay đối thoại? Thuộc quyền game-designer.
-- [CHƯA XÁC ĐỊNH] Spider, Seed, Spider King có liên quan nguyên tố không?
+- [CHƯA XÁC ĐỊNH] Seed có liên quan nguyên tố không?
 - [CHƯA XÁC ĐỊNH] Tên gọi chung trong thế giới cho bốn nguyên tố (hay chỉ gọi "nguyên tố")?
 - [CHƯA XÁC ĐỊNH] Nguyên tố ô nhiễm: Hắc Tàn làm được tới mức nào?
 - [CHƯA XÁC ĐỊNH] Nếu hiệp sĩ gục thì nguyên tố ra sao?

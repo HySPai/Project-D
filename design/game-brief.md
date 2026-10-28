@@ -22,7 +22,7 @@
 3. Tiền tệ và nâng cấp ở làng (tối thiểu: tim tối đa, stamina).
 4. Một kỹ năng di chuyển (ví dụ lướt) mở ít nhất một lối tắt hoặc đường bị chặn.
 5. Ba dạng giải đố, mỗi dạng ít nhất 1 câu: máy móc tàn tích, đẩy khối/môi trường, lợi dụng quái.
-6. Quái côn trùng: Seed, Spider, Turret *(đã có code)*, mỗi vùng 1 boss (vùng 1: Spider King).
+6. Quái côn trùng: Seed, Turret *(đã có code, bản demo)*, mỗi vùng 1 boss (boss vùng 1: chưa thiết kế).
 7. Hai vùng liên thông và một làng động vật (NPC, cửa hàng nâng cấp).
 
 ## Ngoài phạm vi — không làm
@@ -36,7 +36,7 @@
 ## Thứ tự xây
 1. Điểm nghỉ và cái chết kiểu Souls (hồi sinh, rơi/nhặt tiền), xây tiếp trên luồng chết → restart đã có.
 2. Kỹ năng di chuyển và một lối tắt bị chặn, để thử sớm nhất xem vòng metroidvania có hoạt động ở góc nhìn isometric không.
-3. Vùng 1 liên thông: 3 câu đố, Seed/Spider/Turret, boss Spider King.
+3. Vùng 1 liên thông: 3 câu đố, quái côn trùng (Seed/Turret demo), boss vùng 1 (chưa thiết kế).
 4. Làng động vật: NPC, cửa hàng, nâng cấp bằng tiền.
 5. Vùng 2 và boss 2 (quái côn trùng mới đầu tiên).
 6. Đánh bóng âm thanh, VFX và hit feel.

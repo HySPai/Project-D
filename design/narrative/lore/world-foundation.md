@@ -84,7 +84,7 @@ CANON: Làng Mái Vá (gồm 7 cư dân và tên NPC) cùng 9 nền văn minh d�
 - Kiểu: làng tị nạn nhiều loài, dựng trong một nhà ga xe lửa cũ của loài người. Nhà làm từ toa tàu, mái vá bằng ván, vải và lá. Ấm áp, chắp vá. Ai ở đây cũng đã mất một thứ gì đó.
 - Tín ngưỡng: mỗi loài mang theo một vị thần riêng. Bàn thờ chung đặt ở sân ga.
 - Ký ức về loài người: "những kẻ đi trước đã làm ra con đường sắt dẫn tới mọi nơi". Dân làng tin đường ray sẽ đưa họ về quê.
-- Quan hệ với côn trùng: Spider và Seed tràn ra từ khu rừng quanh làng. Dân làng tự vệ được nhưng không đủ sức chiến đấu.
+- Quan hệ với côn trùng: Seed và các quái côn trùng khác tràn ra từ khu rừng quanh làng. Dân làng tự vệ được nhưng không đủ sức chiến đấu.
 - Hợp với hiệp sĩ lưu lạc vì cả làng là những kẻ không còn quê.
 - Cư dân:
   - Dê: Ông Râu, trưởng làng kiêm người kể chuyện. Mất cả đàn trên núi.
@@ -165,7 +165,7 @@ CANON: Làng Mái Vá (gồm 7 cư dân và tên NPC) cùng 9 nền văn minh d�
 - Loài: khỉ. Kiểu: làng trên cây, gồm cầu treo và nhà sàn trên tán rừng cổ thụ mọc xuyên tàn tích.
 - Văn hóa: tò mò, nghịch ngợm, mê tháo lắp máy móc của loài người.
 - Bị các nơi khác coi là bất kính vì không thờ thần nào. Họ coi loài người là "những thợ giỏi nhất" và muốn làm được như họ.
-- Côn trùng: Spider giăng lưới giữa các cành. Đôi khi chính khỉ vô tình đánh thức Turret.
+- Côn trùng: quái côn trùng lẩn giữa các cành. Đôi khi chính khỉ vô tình đánh thức Turret.
 - Móc gameplay: cần gạt, ròng rọc, nối Mạch Ngầm; NPC thợ máy.
 - Phạm vi: sau MVP.
 
@@ -189,14 +189,13 @@ CANON: Làng Mái Vá (gồm 7 cư dân và tên NPC) cùng 9 nền văn minh d�
 ## 5. Quái côn trùng (CANON)
 
 - Seed: con non bất thành, "hạt ý chí" nứt trước khi nở. Hành vi: bám theo, lao vào, vỡ. Là mảnh nhỏ nhất của khoảng rỗng mà Hắc Tàn lấp vào.
-- Spider: cố dệt văn minh nhưng chỉ dệt ra bẫy. Hành vi: giăng bẫy, tấn công từ trên cao. Hắc Tàn ưa bẫy vì hủy diệt cần kiên nhẫn.
-- Spider King (boss): con nhện nhận nhiều ý chí nhất nhưng vẫn không đủ, nên bắt chước ngai vàng và triều đình. Hành vi: gọi Spider, chuyển phase. Là "vua giả" mà Hắc Tàn mượn.
 - Kiến Thợ: ý chí thất bại thành bản năng lao động, xây mãi một thứ vô nghĩa. Hành vi: đi thành bầy, yếu khi lẻ, mạnh khi đông. Hắc Tàn dùng chúng để phá và tích tụ.
 - Ngài Đèn: bị ánh sáng hút tới, như một khao khát trí khôn méo mó. Hành vi: bay vòng, tấn công tầm xa nhẹ, lao về nguồn sáng. Hắc Tàn dùng chúng để tìm nơi có sự sống.
 - Bọ Giáp: ý chí thất bại thành việc tự bọc kín mình. Hành vi: chậm, đỡ đòn nặng, có điểm yếu lộ ra. Lớp vỏ giữ chặt thứ ở bên trong.
 - Ong Chúa Rỗng (boss): cố dựng một tổ như một nền văn minh, nhưng bên trong tổ chỉ có tiếng vo ve. Hành vi: phát sóng kêu, triệu ong, đổi phase theo độ "đầy" của tổ. Là boss gần Hắc Tàn nhất.
 - Turret không phải côn trùng mà là máy móc của loài người (xem mục 1.1).
 - Ghi chú: hành vi combat/AI ở trên chỉ là gợi ý. Thiết kế cụ thể thuộc quyền game-designer.
+- Ghi chú 2026-10-28: các quái đang có trong project Unity là bản demo; danh sách quái thật sẽ thiết kế lại sau.
 
 ---
 
@@ -218,7 +217,7 @@ CANON: Làng Mái Vá (gồm 7 cư dân và tên NPC) cùng 9 nền văn minh d�
 |---|---|---|
 | Thảm họa nào đã xóa sổ loài người? | Loài người tự gây ra (CANON). | Mỗi nền văn minh giữ một phiên bản sai lệch (mục 4). Bài kể của Thung Rùa và kho lưu trữ của Tháp Đêm gần sự thật nhất. Vũ khí và tường cháy trong tàn tích là chứng cứ. |
 | Quái côn trùng từ đâu ra? | Côn trùng thất bại với ý chí, rồi Hắc Tàn lấp vào khoảng rỗng (CANON). | Xác Seed chưa nở; tranh vẽ côn trùng ở Tháp Đêm; lời NPC "chúng cũng từng được tặng quà". |
-| Hắc Tàn là ai? | Sinh ra từ sự hủy diệt của loài người (CANON). | Hoa văn chiến tranh trong tàn tích giống hoa văn trên Spider King và Ong Chúa Rỗng. |
+| Hắc Tàn là ai? | Sinh ra từ sự hủy diệt của loài người (CANON). | Hoa văn chiến tranh trong tàn tích giống hoa văn trên các boss côn trùng (ví dụ Ong Chúa Rỗng). |
 | Vì sao máy móc còn chạy? | Máy quân sự tự sửa chữa, ngủ chờ, và chạy bằng Mạch Ngầm (CANON). | Tí Lục ở Làng Mái Vá giải thích một nửa, phần còn lại do thợ máy ở Vòm Cành giải thích. Biển cảnh báo cũ cạnh Turret. |
 | Mẫu Địa ở đâu? | Đã tan vào đất để trái đất sống lại (CANON). | Cây cổ thụ, nguồn nước, hơi ấm ở nơi thiêng. Nữ thần không xuất hiện thành nhân vật. |
 | Đàn Lạc vì sao tan rã? | [CHƯA XÁC ĐỊNH — cần hỏi người dùng] | Chỉ đặt dấu vết sau khi người dùng chốt. |

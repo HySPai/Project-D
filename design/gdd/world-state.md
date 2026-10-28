@@ -89,8 +89,8 @@ Cho mỗi vật bền vững:
 Không có mục Formulas ở tier `minimal`; các tiêu chí dưới đây kiểm luật trong Core Rules.
 
 - **GIVEN** đã mở cổng then cài từ phía sau, **WHEN** đi vòng ra phía trước, **THEN** cổng đang mở và không chạy lại hoạt cảnh mở.
-- **GIVEN** đã hạ Spider King, **WHEN** nghỉ ở Ngưỡng rồi quay lại đấu trường, **THEN** không có boss và cửa đấu trường đang mở.
-- **GIVEN** đã giết 5 Spider và mở 1 rương, **WHEN** nghỉ ở Ngưỡng rồi quay lại, **THEN** 5 Spider đã hồi sinh, rương vẫn mở và trống.
+- **GIVEN** đã hạ boss vùng, **WHEN** nghỉ ở Ngưỡng rồi quay lại đấu trường, **THEN** không có boss và cửa đấu trường đang mở.
+- **GIVEN** đã giết 5 quái thường và mở 1 rương, **WHEN** nghỉ ở Ngưỡng rồi quay lại, **THEN** 5 quái đó đã hồi sinh, rương vẫn mở và trống.
 - **GIVEN** đã kéo 2 trên 3 cần gạt, **WHEN** nghỉ ở Ngưỡng hoặc rời vùng rồi quay lại, **THEN** cả 3 cần gạt về vị trí ban đầu.
 - **GIVEN** đã giải xong đố Mạch Ngầm, **WHEN** tải lại slot, **THEN** cửa do đố mở vẫn mở.
 - **GIVEN** Lão Mật đã dạy parry, **WHEN** nói chuyện lại, **THEN** Lão Mật không dạy lại từ đầu (hệ Hội thoại đọc cờ NPC).

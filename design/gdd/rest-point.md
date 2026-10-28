@@ -28,7 +28,7 @@ Hệ Feature, là nhịp thở của vòng Souls: đi xa khỏi Ngưỡng là r�
 
 1. **Thắp** (bấm lần đầu, sửa 2026-10-26): Ngưỡng là một đống lửa âm ỉ; bấm lần đầu thì lửa bùng cháy, Ngưỡng thành **Ngưỡng nghỉ gần nhất** và game lưu ngay. Thắp **không** nghỉ: không hồi phục, không reset quái, không tua giờ. Cờ "đã thắp" lưu trong Trạng thái thế giới, xếp vào loại Lối tắt (Ngưỡng là điểm nối của thế giới), một chiều.
 2. **Nghỉ** (mỗi lần tương tác với Ngưỡng đã thắp) là chuỗi tua giờ trong `day-night-cycle.md` luật 8: trong 2 giây màn hình tối dần tới 00:00, đen hẳn, sáng dần tới 09:00. Lúc màn hình đen:
-   - (a) đầy tim, đầy stamina, đầy thanh nguyên tố; xóa hiệu ứng bất lợi;
+   - (a) đầy tim, đầy stamina, đầy thanh nguyên tố; xóa hiệu ứng bất lợi; gỡ lớp yểm nguyên tố trên vũ khí (`elemental-magic.md` luật 11b);
    - (b) quái thường hồi sinh và đố dở reset (lệnh gửi Trạng thái thế giới);
    - (c) người chơi đứng ở chỗ cạnh đống lửa; Ngưỡng này thành **Ngưỡng nghỉ gần nhất**;
    - (d) khi sáng hẳn lúc 09:00, Lưu và tải ghi snapshot (D) cùng giờ 09:00.
@@ -95,7 +95,7 @@ Cho mỗi Ngưỡng:
 | Chết và hồi sinh | Phụ thuộc vào Ngưỡng | Cứng | Chưa có GDD |
 | Menu Ngưỡng | Phụ thuộc vào Ngưỡng | Cứng | Chưa có GDD |
 | Vũ khí (`design/gdd/weapons.md`) | Phụ thuộc vào Ngưỡng | Cứng | Đổi vũ khí chỉ ở Ngưỡng |
-| Nguyên tố (`design/gdd/elemental-magic.md`) | Phụ thuộc vào Ngưỡng | Mềm | Hồi đầy thanh khi nghỉ |
+| Nguyên tố (`design/gdd/elemental-magic.md`) | Phụ thuộc vào Ngưỡng | Cứng | Hồi đầy thanh và gỡ lớp yểm khi nghỉ |
 
 ## Acceptance Criteria
 
@@ -103,10 +103,10 @@ Không có mục Formulas ở tier `minimal`; các tiêu chí dưới đây ki�
 
 - **GIVEN** Ngưỡng chưa thắp, **WHEN** tương tác, **THEN** Ngưỡng sáng lên, người chơi nghỉ và Ngưỡng này thành nơi hồi sinh.
 - **GIVEN** 1 tim, thanh nguyên tố 10, đang Bỏng, **WHEN** nghỉ, **THEN** đầy tim, thanh 100, hết Bỏng, số tên không đổi.
-- **GIVEN** đã giết 5 Spider, **WHEN** nghỉ rồi quay lại, **THEN** 5 Spider đã hồi sinh.
+- **GIVEN** đã giết 5 quái thường, **WHEN** nghỉ rồi quay lại, **THEN** 5 quái đó đã hồi sinh.
 - **GIVEN** nghỉ ở Ngưỡng A rồi đi qua Ngưỡng B (đã thắp, không nghỉ), **WHEN** chết, **THEN** hồi sinh ở A.
-- **GIVEN** một Spider đang đuổi trong 10m, **WHEN** tương tác với Ngưỡng, **THEN** không nghỉ được và Ngưỡng hiện trạng thái Lạnh.
+- **GIVEN** một quái thường đang đuổi trong 10m, **WHEN** tương tác với Ngưỡng, **THEN** không nghỉ được và Ngưỡng hiện trạng thái Lạnh.
 - **GIVEN** đã thắp Ngưỡng A và B, **WHEN** nghỉ ở A và chọn dịch chuyển tới B, **THEN** xuất hiện ở B đã nghỉ xong, và chết sau đó thì hồi sinh ở B.
 - **GIVEN** Ngưỡng C chưa thắp, **WHEN** mở danh sách dịch chuyển, **THEN** C không có trong danh sách.
-- **GIVEN** Spider King còn sống, **WHEN** vào đấu trường, **THEN** không thấy Ngưỡng; **WHEN** hạ boss, **THEN** Ngưỡng hiện ra và thắp được.
+- **GIVEN** boss vùng còn sống, **WHEN** vào đấu trường, **THEN** không thấy Ngưỡng; **WHEN** hạ boss, **THEN** Ngưỡng hiện ra và thắp được.
 - **GIVEN** slot mới chưa nghỉ lần nào, **WHEN** chết, **THEN** hồi sinh ở Ngưỡng khởi đầu.
