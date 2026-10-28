@@ -11,9 +11,13 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     [SerializeField] protected MMF_Player damageFeedback;
     [SerializeField] protected MMF_Player deathFeedback;
 
+    [Header("Status")]
+    [SerializeField] protected BurnEffect burnEffect;
+
     public CharacterController CharacterController => characterController;
     public MMF_Player DamageFeedback => damageFeedback;
     public MMF_Player DeathFeedback => deathFeedback;
+    public BurnEffect GetBurn => burnEffect;
 
     public abstract CharacterStateBase GetState { get; }
     public abstract CharacterMovementBase GetMovement { get; }
@@ -26,7 +30,11 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     public Vector3 SpawnPosition => spawnPosition;
     public Quaternion SpawnRotation => spawnRotation;
 
-    protected virtual void Awake() => SetSpawnPoint(transform.position, transform.rotation);
+    protected virtual void Awake()
+    {
+        SetSpawnPoint(transform.position, transform.rotation);
+        if (burnEffect != null) burnEffect.Initialize(this);
+    }
 
     /// <summary>Changes where this character comes back after a world reset, e.g. a lit rest point.</summary>
     public void SetSpawnPoint(Vector3 position, Quaternion rotation)
@@ -39,6 +47,7 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     public void ResetToSpawn()
     {
         BeforeReset();
+        if (burnEffect != null) burnEffect.Stop();
         TeleportTo(spawnPosition, spawnRotation);
 
         CharacterStateBase state = GetState;

@@ -52,6 +52,7 @@ public class PlayerCombat : CharacterCombatBase
     public WeaponItem CurrentWeapon => currentWeapon;
 
     public event System.Action<WeaponItem> OnWeaponEquipped;
+    public event System.Action<float> OnWeaponHit;
 
     public void Initialize(CharacterStateBase state, CharacterControllerBase character, PlayerCamera playerCamera)
     {
@@ -383,6 +384,8 @@ public class PlayerCombat : CharacterCombatBase
                 ElementType.None, DamageSource.Weapon, false, 0f,
                 knockbackScale, stunScale);
             DamageResult result = targetState.ReceiveDamage(in info);
+            if (result.appliedPoints > 0f)
+                OnWeaponHit?.Invoke(result.appliedPoints);
 
             hitCount++;
             killedAny |= result.targetDied;

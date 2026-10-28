@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3e9108d9562684f9a8bf77d553efcf, type: 3}
+  m_Name: SO_ElementCasterData
+  m_EditorClassIdentifier: Assembly-CSharp::SO_ElementCasterData
+  maxMana: 100
+  chargePerDamage: 0.24
+  minChargePerHit: 1
+  skillCost: 33
+  windCooldown: 2
+  fireCooldown: 1
+  waterCooldown: 1.5
+  stoneCooldown: 1.5

@@ -136,10 +136,10 @@ Cung không có duyên với nguyên tố nào.
 
 **Nạp thanh nguyên tố** (thay luật 7 cũ của `elemental-magic.md`)
 
-17. Mỗi đòn trúng quái nạp **0.48 × sát thương gây ra**, làm tròn xuống, tối thiểu 1. Ví dụ:
-    - Kiếm 25 sát thương nạp 12, như cũ;
-    - một nhát Song kiếm 12 nạp 5;
-    - Búa 50 nạp 24.
+17. Mỗi đòn trúng quái nạp **0.24 × sát thương gây ra**, làm tròn xuống, tối thiểu 1 (giảm từ 0.48 ngày 2026-10-28). Ví dụ:
+    - Kiếm 25 sát thương nạp 6;
+    - một nhát Song kiếm 12 nạp 2;
+    - Búa 50 nạp 12.
 
     Áp dụng cho mọi đòn vũ khí, kể cả mũi tên thường. Sát thương từ kỹ năng nguyên tố không nạp thanh.
 
@@ -249,8 +249,8 @@ Cung không có duyên với nguyên tố nào.
 
 - **GIVEN** người chơi đang ở ngoài Ngưỡng, **WHEN** mở bất kỳ menu nào, **THEN** không có lựa chọn đổi vũ khí chính; **WHEN** nghỉ ở Ngưỡng, **THEN** đổi được giữa các vũ khí đã nhận.
 - **GIVEN** đang cầm Búa, **WHEN** mở menu đổi ở Ngưỡng, **THEN** ô Khiên bị khóa; **WHEN** đổi từ Kiếm có Khiên sang Búa, **THEN** Khiên tự gỡ.
-- **GIVEN** Kiếm +0 và quái 100 máu, **WHEN** ra 1 đòn nhẹ trúng, **THEN** quái còn 75 máu, stamina giảm 10, thanh nguyên tố tăng 12.
-- **GIVEN** Song kiếm +0, **WHEN** 1 nhát trúng quái, **THEN** quái mất 12 máu và thanh nguyên tố tăng 5.
+- **GIVEN** Kiếm +0 và quái 100 máu, **WHEN** ra 1 đòn nhẹ trúng, **THEN** quái còn 75 máu, stamina giảm 10, thanh nguyên tố tăng 6.
+- **GIVEN** Song kiếm +0, **WHEN** 1 nhát trúng quái, **THEN** quái mất 12 máu và thanh nguyên tố tăng 2.
 - **GIVEN** Búa +0, **WHEN** đòn nhẹ trúng Bọ Giáp còn giáp, **THEN** sát thương là 25 (×0.5) và giáp không vỡ.
 - **GIVEN** giữ nút đánh 0.2s rồi thả, **WHEN** đang cầm Kiếm, **THEN** ra đòn nhẹ; **GIVEN** giữ 0.4s rồi thả, **THEN** ra đòn nặng gây 45 và tốn 20 stamina.
 - **GIVEN** Búa đang vung đòn nặng, **WHEN** bị quái đánh trúng, **THEN** đòn không bị ngắt và người chơi vẫn nhận sát thương.

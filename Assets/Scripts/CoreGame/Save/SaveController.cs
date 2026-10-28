@@ -237,6 +237,7 @@ public class SaveController : MonoBehaviour
         Vector3 previousPosition = player.transform.position;
 
         player.GetPlayerState.RestoreVitals();
+        if (player.GetCaster != null) player.GetCaster.RestoreMana();
         player.Teleport(point.SpawnPoint.position, point.SpawnPoint.rotation);
         player.SetSpawnPoint(point.SpawnPoint.position, point.SpawnPoint.rotation);
 

@@ -12,6 +12,9 @@ public class PlayerInputHandler : MonoBehaviour
     public InputActionReference lockTarget;
     public InputActionReference guard;
     public InputActionReference interact;
+    public InputActionReference cast;
+    public InputActionReference elementPrev;
+    public InputActionReference elementNext;
 
     [Header("Movement Input")]
     [SerializeField] private Vector2 movementInput;
@@ -33,6 +36,14 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private bool isRunHeld;
     [SerializeField] private bool rollRequested;
     [SerializeField] private bool isLockTargetRequested;
+
+    [Header("Cast")]
+    [SerializeField] private float castHoldThreshold = 0.35f;
+    [SerializeField] private bool castTapRequested;
+    [SerializeField] private bool castHoldRequested;
+    [SerializeField] private int elementSwitchStep;
+    private float castStartTime;
+    private bool castHeld;
 
     [Header("Lock Switch")]
     [SerializeField] private float lockSwitchThreshold = 0.5f;
@@ -82,6 +93,25 @@ public class PlayerInputHandler : MonoBehaviour
             interact.action.started += OnInteractStarted;
         }
 
+        if (cast != null)
+        {
+            cast.action.Enable();
+            cast.action.started += OnCastStarted;
+            cast.action.canceled += OnCastCanceled;
+        }
+
+        if (elementPrev != null)
+        {
+            elementPrev.action.Enable();
+            elementPrev.action.started += OnElementPrevStarted;
+        }
+
+        if (elementNext != null)
+        {
+            elementNext.action.Enable();
+            elementNext.action.started += OnElementNextStarted;
+        }
+
         moveAction.action.performed += OnMovePerformed;
         moveAction.action.canceled += OnMoveCanceled;
 
@@ -120,6 +150,25 @@ public class PlayerInputHandler : MonoBehaviour
         {
             interact.action.started -= OnInteractStarted;
             interact.action.Disable();
+        }
+
+        if (cast != null)
+        {
+            cast.action.started -= OnCastStarted;
+            cast.action.canceled -= OnCastCanceled;
+            cast.action.Disable();
+        }
+
+        if (elementPrev != null)
+        {
+            elementPrev.action.started -= OnElementPrevStarted;
+            elementPrev.action.Disable();
+        }
+
+        if (elementNext != null)
+        {
+            elementNext.action.started -= OnElementNextStarted;
+            elementNext.action.Disable();
         }
 
         run_Roll.action.started -= OnRunStarted;
@@ -200,8 +249,64 @@ public class PlayerInputHandler : MonoBehaviour
         isInteractPressed = true;
     }
 
+    private void OnCastStarted(InputAction.CallbackContext ctx)
+    {
+        castHeld = true;
+        castStartTime = Time.time;
+    }
+
+    private void OnCastCanceled(InputAction.CallbackContext ctx)
+    {
+        if (!castHeld) return;
+
+        castHeld = false;
+        if (Time.time - castStartTime >= castHoldThreshold)
+            castHoldRequested = true;
+        else
+            castTapRequested = true;
+    }
+
+    private void OnElementPrevStarted(InputAction.CallbackContext ctx)
+    {
+        elementSwitchStep = -1;
+    }
+
+    private void OnElementNextStarted(InputAction.CallbackContext ctx)
+    {
+        elementSwitchStep = 1;
+    }
+
+    public bool ConsumeCastTap()
+    {
+        if (!castTapRequested)
+            return false;
+
+        castTapRequested = false;
+        return true;
+    }
+
+    public bool ConsumeCastHold()
+    {
+        if (!castHoldRequested)
+            return false;
+
+        castHoldRequested = false;
+        return true;
+    }
+
+    public int ConsumeElementSwitch()
+    {
+        int step = elementSwitchStep;
+        elementSwitchStep = 0;
+        return step;
+    }
+
     public void DiscardBufferedActions()
     {
+        castHeld = false;
+        castTapRequested = false;
+        castHoldRequested = false;
+        elementSwitchStep = 0;
         isFire = false;
         isGuardPressed = false;
         isInteractPressed = false;

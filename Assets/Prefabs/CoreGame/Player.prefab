@@ -2461,6 +2461,7 @@ GameObject:
   - component: {fileID: 8004906126929870345}
   - component: {fileID: 7694672649410949249}
   - component: {fileID: 1248100729388574410}
+  - component: {fileID: 561877462928896521}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -2591,6 +2592,7 @@ MonoBehaviour:
   guard: {fileID: 1248100729388574410}
   playerCamera: {fileID: 7694672649410949249}
   rumble: {fileID: 5915662762651994874}
+  caster: {fileID: 561877462928896521}
 --- !u!114 &6237013157365418999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2658,21 +2660,31 @@ MonoBehaviour:
   lockTarget: {fileID: -2039787737568666376, guid: 2c636c9043481824590cd8fa1da81a5c,
     type: 3}
   guard: {fileID: 3094690999857176187, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  interact: {fileID: 0}
+  cast: {fileID: -2702644578458274135, guid: 2c636c9043481824590cd8fa1da81a5c, type: 3}
+  elementPrev: {fileID: -2319422616513022743, guid: 2c636c9043481824590cd8fa1da81a5c,
+    type: 3}
+  elementNext: {fileID: -9199696993911037205, guid: 2c636c9043481824590cd8fa1da81a5c,
+    type: 3}
   movementInput: {x: 0, y: 0}
   cameraInput: {x: 0, y: 0}
   horizontalInput: 0
   verticalInput: 0
   moveAmount: 0
   isFire: 0
-  isFireReleased: 0
   isGuardHeld: 0
   isGuardPressed: 0
+  isInteractPressed: 0
   isRunPressed: 0
   isWalkPressed: 0
   isDash: 0
   isRunHeld: 0
   rollRequested: 0
   isLockTargetRequested: 0
+  castHoldThreshold: 0.35
+  castTapRequested: 0
+  castHoldRequested: 0
+  elementSwitchStep: 0
   lockSwitchThreshold: 0.5
   lockSwitchReleaseThreshold: 0.2
 --- !u!114 &3904609994375877722
@@ -2776,6 +2788,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28c7dceb8249696468f551f62187ab90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGuard
+--- !u!114 &561877462928896521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6101746182165348096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 856c532fe3313ea45accfc083af72f59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerElementCaster
+  currentElement: 1
+  casterData: {fileID: 11400000, guid: 73faf71d427fbb94fac42d01b862b856, type: 2}
+  fireballData: {fileID: 11400000, guid: 86b1b17400e03bc48a83f6e0fe40bd2f, type: 2}
+  fireballPrefab: {fileID: 1665427750355801533, guid: 102ed2bc859040b4186b75ce3a87a4b7,
+    type: 3}
 --- !u!1 &6488567137440690503
 GameObject:
   m_ObjectHideFlags: 0

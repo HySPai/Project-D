@@ -5732,6 +5732,7 @@ GameObject:
   - component: {fileID: 1167514114083993360}
   - component: {fileID: 5383284833089598184}
   - component: {fileID: 6733637963620728668}
+  - component: {fileID: 1695986397137179767}
   m_Layer: 8
   m_Name: Seed
   m_TagString: Untagged
@@ -5861,6 +5862,7 @@ MonoBehaviour:
   hurtboxes: []
   damageFeedback: {fileID: 7030704087307580568}
   deathFeedback: {fileID: 4473281421480534745}
+  burnEffect: {fileID: 1695986397137179767}
   state: {fileID: 4152142513742203383}
   movement: {fileID: 1848777892433412432}
   combat: {fileID: 3926143807828471171}
@@ -6001,6 +6003,23 @@ MonoBehaviour:
   dissolveShader: {fileID: 4800000, guid: f36c19641d73ec74dafdd2f569bfff9b, type: 3}
   dissolveParticles: {fileID: 4485084044236242330}
   hideOnComplete: {fileID: 4224781658059092692}
+--- !u!114 &1695986397137179767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4224781658059092692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb70e3d51e148c42b9237a0492afc02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BurnEffect
+  data: {fileID: 11400000, guid: 0dc4845ce3582db4ba18a593645a3ef7, type: 2}
+  flashRenderers:
+  - {fileID: 8147170848691426895}
+  burnVfxPrefab: {fileID: 0}
+  vfxAnchor: {fileID: 0}
 --- !u!1 &4345817160307826237
 GameObject:
   m_ObjectHideFlags: 0

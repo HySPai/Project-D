@@ -288,12 +288,13 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
             currentHp = 0f;
             Die();
         }
-        else
+        else if (info.source != DamageSource.Status)
         {
             PlayHitReaction(in info);
         }
 
-        PlayDamageFeedback();
+        if (isDead || info.source != DamageSource.Status)
+            PlayDamageFeedback();
         RaiseHpChanged();
 
         return new DamageResult(info.points, false, false, isDead);

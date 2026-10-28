@@ -1494,6 +1494,7 @@ GameObject:
   - component: {fileID: 4359499379119431139}
   - component: {fileID: 4668666595840199457}
   - component: {fileID: 7164253264023133281}
+  - component: {fileID: 348956220422641613}
   m_Layer: 8
   m_Name: Spider King
   m_TagString: Untagged
@@ -2294,6 +2295,7 @@ MonoBehaviour:
   hurtboxes: []
   damageFeedback: {fileID: 2597721706610757808}
   deathFeedback: {fileID: 4747353512128310323}
+  burnEffect: {fileID: 348956220422641613}
   state: {fileID: 4974993047601184332}
   movement: {fileID: 131468092968485471}
   combat: {fileID: 2664900806905825255}
@@ -2435,6 +2437,23 @@ MonoBehaviour:
   dissolveShader: {fileID: 4800000, guid: f36c19641d73ec74dafdd2f569bfff9b, type: 3}
   dissolveParticles: {fileID: 6645390399355414730}
   hideOnComplete: {fileID: 4434736665686606893}
+--- !u!114 &348956220422641613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434736665686606893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb70e3d51e148c42b9237a0492afc02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BurnEffect
+  data: {fileID: 11400000, guid: 0dc4845ce3582db4ba18a593645a3ef7, type: 2}
+  flashRenderers:
+  - {fileID: 5792614067023474420}
+  burnVfxPrefab: {fileID: 0}
+  vfxAnchor: {fileID: 0}
 --- !u!1 &4511459962958731242
 GameObject:
   m_ObjectHideFlags: 0

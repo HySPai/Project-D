@@ -11,6 +11,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerGuard guard;
     [SerializeField] private PlayerCamera playerCamera;
     [SerializeField] private GamepadRumble rumble;
+    [SerializeField] private PlayerElementCaster caster;
 
     private GamePlayView gamePlayView;
     private bool controlLocked;
@@ -27,6 +28,7 @@ public class PlayerController : CharacterControllerBase
     public PlayerState GetPlayerState => state;
     public PlayerInputHandler GetInput => input;
     public PlayerCombat GetPlayerCombat => combat;
+    public PlayerElementCaster GetCaster => caster;
 
     protected override void Awake()
     {
@@ -37,6 +39,7 @@ public class PlayerController : CharacterControllerBase
         anim.Initialize(state);
         guard.Initialize(state, anim, combat);
         input.Initialize(state);
+        if (caster != null) caster.Initialize(state, this, combat);
     }
 
     private void Start()
@@ -50,6 +53,16 @@ public class PlayerController : CharacterControllerBase
         gamePlayView.BuildHearts(state.MaxHearts);
         gamePlayView.UpdateHearts(state.CurrentHearts, state.MaxHearts);
         gamePlayView.UpdateStamina(state.CurrentStamina, state.Stamina);
+
+        if (caster == null) return;
+
+        caster.OnManaChanged += gamePlayView.UpdateMana;
+        caster.OnElementChanged += gamePlayView.UpdateElement;
+        caster.OnCooldownChanged += gamePlayView.UpdateSpellCooldown;
+
+        gamePlayView.UpdateMana(caster.CurrentMana, caster.MaxMana);
+        gamePlayView.UpdateElement(caster.CurrentElement);
+        gamePlayView.UpdateSpellCooldown(caster.GetCurrentCooldown01());
     }
 
     private void Update()
@@ -94,6 +107,14 @@ public class PlayerController : CharacterControllerBase
         if (input.ConsumeFirePressed()) combat.Attack();
         if (input.IsRolling()) movement.Roll();
 
+        if (caster != null)
+        {
+            int elementStep = input.ConsumeElementSwitch();
+            if (elementStep != 0) caster.CycleElement(elementStep);
+            if (input.ConsumeCastTap()) caster.CastSkill();
+            if (input.ConsumeCastHold()) caster.Imbue();
+        }
+
         // 5) Di chuyển (CharacterController) + cập nhật animation.
         movement.Move();
         anim.UpdateAnimation(state.AnimationMoveAmount);
@@ -102,6 +123,7 @@ public class PlayerController : CharacterControllerBase
     protected override void OnReset()
     {
         guard.ResetGuard();
+        if (caster != null) caster.RestoreMana();
         movement.SetInput(Vector2.zero);
         if (rumble != null) rumble.Stop();
     }
@@ -112,5 +134,11 @@ public class PlayerController : CharacterControllerBase
 
         state.OnHeartsChanged -= gamePlayView.UpdateHearts;
         state.OnStaminaChanged -= gamePlayView.UpdateStamina;
+
+        if (caster == null) return;
+
+        caster.OnManaChanged -= gamePlayView.UpdateMana;
+        caster.OnElementChanged -= gamePlayView.UpdateElement;
+        caster.OnCooldownChanged -= gamePlayView.UpdateSpellCooldown;
     }
 }

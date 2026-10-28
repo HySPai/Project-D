@@ -62,8 +62,9 @@ Người chơi nhận từng nguyên tố bằng cách hạ boss côn trùng đa
 
 7. Có một thanh nguyên tố chung, riêng biệt với stamina. Giá trị khởi điểm:
    - tối đa 100;
-   - mỗi đòn vũ khí trúng quái nạp **0.48 × sát thương gây ra** (làm tròn xuống, tối thiểu 1). Kiếm 25 sát thương nạp 12; Song kiếm 12 nạp 5; Búa 50 nạp 24. Sát thương từ kỹ năng nguyên tố không nạp. Luật này thay cho "12 mỗi đòn" cũ để các vũ khí nạp công bằng (xem `weapons.md` luật 17);
+   - mỗi đòn vũ khí trúng quái nạp **0.24 × sát thương gây ra** (làm tròn xuống, tối thiểu 1). Kiếm 25 sát thương nạp 6, tức khoảng 6 đòn cho một kỹ năng; Song kiếm 12 nạp 2; Búa 50 nạp 12. Sát thương từ kỹ năng nguyên tố không nạp. Hệ số giảm từ 0.48 xuống 0.24 (2026-10-28) vì mana hồi quá nhanh (xem `weapons.md` luật 17);
    - mỗi kỹ năng chiến đấu tốn 33, tức khoảng 3 lần dùng khi đầy;
+   - mỗi kỹ năng có **thời gian hồi riêng** sau khi dùng: Lốc Xoáy 2s, Cầu Lửa 1s, Vòng Nước 1.5s, Đá Văng 1.5s. Đồng hồ hồi của từng nguyên tố chạy độc lập, kể cả khi đang trang bị nguyên tố khác. Yểm không có thời gian hồi (đã bị giới hạn bởi thanh đầy);
    - yểm chỉ dùng được khi thanh **đầy (100)** và tiêu hết cả thanh. Người chơi chọn giữa 3 kỹ năng hoặc 1 lần yểm;
    - nghỉ ở Ngưỡng thì hồi đầy.
 8. Thanh nguyên tố **không** tự hồi theo thời gian, và **không** nạp khi đánh trúng vật vô tri.
@@ -194,6 +195,8 @@ Cách triển khai kỹ thuật (event hay controller trung tâm, ScriptableObje
 ## Edge Cases
 
 - **Nếu thanh nguyên tố không đủ 33 mà nhấn phép:** không cast. Thanh rung nhẹ và phát âm báo; không trừ thanh.
+- **Nếu nhấn phép khi kỹ năng của nguyên tố đang trang bị còn đang hồi:** không cast, không trừ thanh. Đổi sang nguyên tố khác đã hồi xong thì bắn được ngay.
+- **Nếu nghỉ ở Ngưỡng hoặc hồi sinh:** mọi đồng hồ hồi về 0.
 - **Nếu nhấn nút tương tác trước một vật nguyên tố nhưng nguyên tố đang trang bị không hợp với vật:** không có gì xảy ra với vật; vật chỉ phát một phản hồi nhỏ (âm "trượt", hoa văn trên vật lóe nhẹ). Người chơi tự đọc hoa văn màu trên vật để biết cần nguyên tố nào. Không dùng kỹ năng chiến đấu thay thế. Biểu tượng gợi ý chỉ hiện khi bật tùy chọn trợ năng.
 - **Nếu đứng trước vật giải đố mà nhấn nút phép:** bắn kỹ năng như bình thường, tốn thanh. Kỹ năng không thay cho tương tác: Cầu Lửa nổ vào đèn không thắp đèn. Muốn tác động lên vật phải dùng nút tương tác (luật 6).
 - **Nếu vật nguyên tố đứng cạnh Ngưỡng hoặc NPC:** nút tương tác ưu tiên vật nằm gần hướng nhìn nhất. Thiết kế màn không đặt vật nguyên tố sát Ngưỡng hay NPC.
@@ -249,10 +252,11 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
 - **GIVEN** người chơi chưa có nguyên tố nào, **WHEN** nhấn nút phép hoặc nút đổi, **THEN** không có gì xảy ra; nút phép và vòng chọn không hiện trên HUD.
 - **GIVEN** người chơi vừa nhận Gió, **WHEN** mở HUD, **THEN** thanh nguyên tố hiện đầy (100) và biểu tượng Gió đang được trang bị.
 - **GIVEN** người chơi đã có Gió và chưa có nguyên tố nào khác, **WHEN** đi tới từng nơi giữ Lửa, Nước, Đá, **THEN** mỗi nơi vào được và hoàn thành được mà không cần nguyên tố nào ngoài Gió.
-- **GIVEN** thanh nguyên tố là 0, **WHEN** đánh trúng quái 3 lần bằng kiếm, **THEN** thanh là 36.
+- **GIVEN** thanh nguyên tố là 0, **WHEN** đánh trúng quái 3 lần bằng kiếm, **THEN** thanh là 18.
 - **GIVEN** thanh là 50, **WHEN** đánh trúng một bức tường hoặc thùng, **THEN** thanh vẫn là 50.
 - **GIVEN** thanh là 40, **WHEN** nhấn phép, **THEN** kỹ năng ra và thanh còn 7; stamina không đổi.
 - **GIVEN** thanh là 20, **WHEN** nhấn phép, **THEN** kỹ năng không ra, thanh vẫn là 20 và có phản hồi báo thiếu.
+- **GIVEN** thanh là 100 và trang bị Lửa, **WHEN** bắn Cầu Lửa rồi nhấn phép lần nữa trong 1s, **THEN** lần thứ hai không ra và thanh vẫn 67; **WHEN** đổi sang Nước và nhấn phép, **THEN** Vòng Nước ra và thanh còn 34.
 - **GIVEN** thanh là 0, đang trang bị Lửa và đứng trước tường tơ, **WHEN** nhấn nút tương tác, **THEN** tường cháy và lối mở; thanh vẫn là 0.
 - **GIVEN** thanh là 66, trang bị Lửa, đứng trước đèn, **WHEN** nhấn nút phép, **THEN** Cầu Lửa bắn ra, thanh còn 33 và đèn không sáng.
 - **GIVEN** đang trang bị Nước và đứng trước tường tơ (cần Lửa), **WHEN** nhấn nút tương tác, **THEN** tường không đổi và chỉ có phản hồi "trượt", không có popup biểu tượng; **GIVEN** đã bật tùy chọn trợ năng gợi ý, **THEN** hiện biểu tượng Lửa.
@@ -270,7 +274,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
 - **GIVEN** Kiếm đang yểm Than Hồng, **WHEN** đòn nhẹ trúng một quái không kháng Lửa, **THEN** quái mất 25 máu và bị Bỏng 4s; **WHEN** trúng Kiến Thợ (kháng Lửa), **THEN** không bị Bỏng.
 - **GIVEN** Kiếm đang yểm Nước, **WHEN** đòn trúng quái, **THEN** quái bị Chậm 3s.
 - **GIVEN** Kiếm đang yểm Gió, **WHEN** ra combo 3 đòn nhẹ, **THEN** tổng thời gian combo ngắn hơn khoảng 20% so với không yểm (×1/1.25) và stamina tiêu như cũ; **WHEN** hết 6s, **THEN** tốc đánh về 1×.
-- **GIVEN** Kiếm đang yểm Đá, **WHEN** đòn nhẹ kế tiếp trúng quái 100 máu, **THEN** quái mất 50 máu, lượng mất thế gấp 3 đòn thường, thanh nguyên tố tăng 24 và lớp yểm mất; **WHEN** đòn kế tiếp, **THEN** quái mất 25 như thường.
+- **GIVEN** Kiếm đang yểm Đá, **WHEN** đòn nhẹ kế tiếp trúng quái 100 máu, **THEN** quái mất 50 máu, lượng mất thế gấp 3 đòn thường, thanh nguyên tố tăng 12 và lớp yểm mất; **WHEN** đòn kế tiếp, **THEN** quái mất 25 như thường.
 - **GIVEN** Kiếm đang yểm Đá, **WHEN** đòn kế tiếp vung trượt hoặc chém vào tường, **THEN** lớp đá còn nguyên; **WHEN** đòn sau đó trúng quái, **THEN** lớp đá vỡ và đòn đó gây ×2 sát thương, ×3 thế.
 - **GIVEN** Kiếm đang yểm Đá, **WHEN** 6s trôi qua mà không đòn nào trúng quái, **THEN** lớp đá tan và thanh không được hoàn.
 - **GIVEN** đang yểm Gió còn 4s và thanh đã đầy lại, **WHEN** yểm Than Hồng, **THEN** tốc đánh về 1× ngay, Than Hồng có hiệu lực 6s và thanh về 0.
@@ -345,6 +349,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
   - ẩn cho tới khi có Gió.
 - **Lớp yểm:** biểu tượng nhỏ trên ô vũ khí chính, kèm vòng đếm ngược 6s. Với yểm Đá, biểu tượng vỡ ra khi lớp đá vỡ.
 - **Lướt Gió:** biểu tượng nhỏ cạnh thanh stamina, kèm vòng hồi 4s. Hồi xong thì biểu tượng lóe một lần.
+- **Hồi chiêu:** biểu tượng nguyên tố đang trang bị có lớp tối quay tròn, thu dần về 0 khi kỹ năng hồi xong.
 - **Biểu tượng nguyên tố đang trang bị:** đặt cạnh thanh. Khi nhấn nhanh để đổi, biểu tượng chuyển bằng tween (DOTween).
 - **Vòng chọn:**
   - giữa màn hình, 4 ô;
@@ -376,7 +381,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
 | Thiết kế cụ thể boss côn trùng và thử thách thực thể ở mỗi nơi giữ nguyên tố | Người dùng + level-designer | Khi bắt đầu màn Đỉnh Hạc |
 | Yếu/kháng nguyên tố của quái thật (dàn quái chưa thiết kế; quái hiện có trong Unity chỉ là demo, bảng yếu/kháng đang tạm dùng dòng "quái thường" và "boss vùng" yếu Lửa) | Người dùng | Trước khi viết story combat nguyên tố |
 | Luật rơi vực (Lướt Gió ra ngoài mép) chưa được định nghĩa ở đâu | Người dùng | Trước khi làm lướt MVP |
-| Các con số (thanh 100, nạp 0.48 × sát thương, giá 33; sát thương và tầm 4 kỹ năng ở luật 11a; ×1.5 / ×0.5 / ×0.25; thời gian hiệu ứng; yểm 6s, Gió ×1.25, Đá ×2 sát thương / ×3 thế; Lướt Gió hồi 4s) chưa qua cân bằng. Riêng yểm tiêu cả 100 thanh mà chỉ được 6s, có thể quá yếu so với 3 kỹ năng: cần kiểm khi playtest | Người dùng, sau playtest | Sau bản lướt MVP chơi được |
+| Các con số (thanh 100, nạp 0.24 × sát thương, giá 33; sát thương và tầm 4 kỹ năng ở luật 11a; ×1.5 / ×0.5 / ×0.25; thời gian hiệu ứng; yểm 6s, Gió ×1.25, Đá ×2 sát thương / ×3 thế; Lướt Gió hồi 4s; hồi chiêu kỹ năng 1–2s) chưa qua cân bằng. Riêng yểm tiêu cả 100 thanh mà chỉ được 6s, có thể quá yếu so với 3 kỹ năng: cần kiểm khi playtest | Người dùng, sau playtest | Sau bản lướt MVP chơi được |
 | Thanh nguyên tố đặt trong `SO_PlayerStats` hay một ScriptableObject riêng | Lập trình (ADR) | Khi viết story đầu tiên của hệ thống |
 | Có cho nâng cấp thanh nguyên tố ở Làng Mái Vá (brief chỉ nhắc tim tối đa và stamina) không | Người dùng | Khi thiết kế cửa hàng làng |
 | Thứ tự gợi ý cho 3 nguyên tố tự do (để màn chơi tăng độ khó hợp lý) | Người dùng + level-designer | Khi lên bản đồ thế giới |

@@ -12,5 +12,6 @@ public enum DamageSource
     Weapon,
     Arrow,
     Spell,
-    Machine
+    Machine,
+    Status
 }

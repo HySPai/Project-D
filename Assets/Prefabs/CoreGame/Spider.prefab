@@ -5372,6 +5372,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7920236633344092192}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5525937731289795236}
     - targetCorrespondingSourceObject: {fileID: 100072, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
         type: 3}
       insertIndex: -1
@@ -6220,6 +6224,7 @@ MonoBehaviour:
   hurtboxes: []
   damageFeedback: {fileID: 3199898718755902821}
   deathFeedback: {fileID: 202858686278601608}
+  burnEffect: {fileID: 5525937731289795236}
   state: {fileID: 3557596274901029803}
   movement: {fileID: 5302813413040657204}
   combat: {fileID: 5629983921490562998}
@@ -6360,6 +6365,23 @@ MonoBehaviour:
   dissolveShader: {fileID: 4800000, guid: f36c19641d73ec74dafdd2f569bfff9b, type: 3}
   dissolveParticles: {fileID: 8731722194781979059}
   hideOnComplete: {fileID: 4790376868823584877}
+--- !u!114 &5525937731289795236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4790376868823584877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb70e3d51e148c42b9237a0492afc02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BurnEffect
+  data: {fileID: 11400000, guid: 0dc4845ce3582db4ba18a593645a3ef7, type: 2}
+  flashRenderers:
+  - {fileID: 4790376868826766701}
+  burnVfxPrefab: {fileID: 0}
+  vfxAnchor: {fileID: 0}
 --- !u!4 &4790376868823813123 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400078, guid: a6bb4a1e7614f0844999e5c6eb8ff1aa,
