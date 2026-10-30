@@ -303,7 +303,7 @@ public class PlayerElementCaster : MonoBehaviour
         if (waterRingView == null)
             waterRingView = Instantiate(waterRingViewPrefab);
 
-        waterRingView.Play(center, waterRingData.radius);
+        waterRingView.Play(center, waterRingData);
     }
 
     private void PlayStoneBurstView(Vector3 origin, Vector3 direction)
@@ -313,7 +313,7 @@ public class PlayerElementCaster : MonoBehaviour
         if (stoneBurstView == null)
             stoneBurstView = Instantiate(stoneBurstViewPrefab);
 
-        stoneBurstView.Play(origin, direction, stoneBurstData.range, stoneBurstData.arc);
+        stoneBurstView.Play(origin, direction, stoneBurstData);
     }
 
     private bool LaunchVortex()

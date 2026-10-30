@@ -19,3 +19,5 @@ MonoBehaviour:
   projectileRadius: 0.3
   spawnHeight: 1
   spawnForward: 0.8
+  trailTime: 0.25
+  streakFadeTime: 0.6

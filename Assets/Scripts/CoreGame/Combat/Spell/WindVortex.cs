@@ -28,7 +28,7 @@ public class WindVortex : MonoBehaviour
         gameObject.SetActive(true);
 
         if (view != null)
-            view.Play(data.radius, data.lifetime);
+            view.Play(data);
     }
 
     private void Update()

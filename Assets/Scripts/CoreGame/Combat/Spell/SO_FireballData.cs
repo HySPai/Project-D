@@ -15,4 +15,8 @@ public class SO_FireballData : ScriptableObject
     [Header("Spawn")]
     public float spawnHeight = 1f;
     public float spawnForward = 0.8f;
+
+    [Header("Visual")]
+    public float trailTime = 0.25f;
+    public float streakFadeTime = 0.6f;
 }

@@ -1026,13 +1026,6 @@ MonoBehaviour:
   - {fileID: 9074589006070463256}
   - {fileID: 5749212297362585757}
   - {fileID: 4329915048139285182}
-  startRadius: 0.4
-  innerRadiusRatio: 0.6
-  crestHeight: 0.5
-  groundOffset: 0.1
-  spreadTime: 0.4
-  innerDelay: 0.12
-  shrinkTime: 0.15
 --- !u!1 &2147825356476841413
 GameObject:
   m_ObjectHideFlags: 0

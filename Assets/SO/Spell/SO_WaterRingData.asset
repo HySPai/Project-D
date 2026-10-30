@@ -15,3 +15,12 @@ MonoBehaviour:
   damage: 20
   radius: 3
   pushDistance: 2
+  startRadius: 0.4
+  innerRadiusRatio: 0.6
+  crestHeight: 0.5
+  innerCrestRatio: 0.6
+  groundOffset: 0.1
+  spreadTime: 0.4
+  innerDelay: 0.12
+  growRatio: 0.3
+  shrinkTime: 0.15

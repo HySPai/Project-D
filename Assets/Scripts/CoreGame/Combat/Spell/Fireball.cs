@@ -15,7 +15,6 @@ public class Fireball : MonoBehaviour
     [SerializeField] private Transform streak;
     [SerializeField] private TrailRenderer[] streakTrails;
     [SerializeField] private ParticleSystem[] streakParticles;
-    [SerializeField] private float streakFadeTime = 0.6f;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly HashSet<CharacterStateBase> hitStates = new HashSet<CharacterStateBase>();
@@ -108,8 +107,8 @@ public class Fireball : MonoBehaviour
 
         Debug.Log($"[Phép] Cầu Lửa nổ tại {center}, trúng {hitStates.Count} mục tiêu");
 
+        DetachStreak(data.streakFadeTime);
         data = null;
-        DetachStreak();
         gameObject.SetActive(false);
     }
 
@@ -117,6 +116,7 @@ public class Fireball : MonoBehaviour
     {
         foreach (TrailRenderer trail in streakTrails)
         {
+            trail.time = data.trailTime;
             trail.Clear();
             trail.emitting = true;
         }
@@ -141,14 +141,14 @@ public class Fireball : MonoBehaviour
             system.Stop(false, behavior);
     }
 
-    private void DetachStreak()
+    private void DetachStreak(float fadeTime)
     {
         if (streak == null) return;
 
         StopStreak(ParticleSystemStopBehavior.StopEmitting);
         streak.SetParent(null, true);
         streakDetached = true;
-        ReattachStreakAsync(++streakVersion).Forget();
+        ReattachStreakAsync(++streakVersion, fadeTime).Forget();
     }
 
     private void AttachStreak()
@@ -161,9 +161,9 @@ public class Fireball : MonoBehaviour
         streak.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
     }
 
-    private async UniTaskVoid ReattachStreakAsync(int version)
+    private async UniTaskVoid ReattachStreakAsync(int version, float fadeTime)
     {
-        bool canceled = await UniTask.Delay(TimeSpan.FromSeconds(streakFadeTime),
+        bool canceled = await UniTask.Delay(TimeSpan.FromSeconds(fadeTime),
                 cancellationToken: this.GetCancellationTokenOnDestroy())
             .SuppressCancellationThrow();
         if (canceled || version != streakVersion) return;

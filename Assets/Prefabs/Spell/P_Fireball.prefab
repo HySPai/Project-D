@@ -208,7 +208,6 @@ MonoBehaviour:
   streakTrails:
   - {fileID: 7438175933065014558}
   streakParticles: []
-  streakFadeTime: 0.7
 --- !u!1 &5829858224792822594
 GameObject:
   m_ObjectHideFlags: 0

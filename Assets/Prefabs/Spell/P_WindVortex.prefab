@@ -1215,13 +1215,6 @@ MonoBehaviour:
   - {fileID: 4945480718765641241}
   - {fileID: 7354139672900307191}
   - {fileID: 671529005057948011}
-  height: 3
-  baseRadiusRatio: 0.25
-  spinSpeed: 420
-  bobAmplitude: 0.15
-  bobSpeed: 3
-  growTime: 0.2
-  shrinkTime: 0.25
 --- !u!1 &6900417005986321216
 GameObject:
   m_ObjectHideFlags: 0

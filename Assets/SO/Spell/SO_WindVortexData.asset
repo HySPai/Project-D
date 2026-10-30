@@ -19,3 +19,11 @@ MonoBehaviour:
   lifetime: 3
   pullSpeed: 2
   holdRefresh: 0.15
+  visualHeight: 3
+  baseRadiusRatio: 0.25
+  spinSpeed: 420
+  bobAmplitude: 0.15
+  bobSpeed: 3
+  trailTime: 0.4
+  growTime: 0.2
+  shrinkTime: 0.25

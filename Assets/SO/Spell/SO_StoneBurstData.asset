@@ -18,3 +18,22 @@ MonoBehaviour:
   windup: 0.35
   stunDuration: 1
   breaksArmor: 1
+  rowCounts: 030000000500000007000000
+  rowDistances:
+  - 0.35
+  - 0.68
+  - 1
+  outwardTilt: 18
+  exposedRatio: 0.7
+  rowDelay: 0.06
+  riseTime: 0.12
+  holdTime: 0.5
+  sinkTime: 0.3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  maxRise: 1
+  maxDrop: 1.5
+  probeRadius: 0.05
+  clearanceRadius: 0.15
+  clearanceHeight: 0.35
