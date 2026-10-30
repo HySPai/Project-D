@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class PlayerElementCaster : MonoBehaviour
 {
-    private static readonly int ElementCount = Enum.GetValues(typeof(EElement)).Length;
+    private const ElementType FirstCastable = ElementType.Wind;
+    private static readonly int ElementCount = Enum.GetValues(typeof(ElementType)).Length;
+    private static readonly int CastableCount = ElementCount - (int)FirstCastable;
 
     [Header("Elements")]
-    [SerializeField] private EElement currentElement = EElement.Fire;
+    [SerializeField] private ElementType currentElement = ElementType.Fire;
 
     [Header("Data")]
     [SerializeField] private SO_ElementCasterData casterData;
@@ -24,11 +26,11 @@ public class PlayerElementCaster : MonoBehaviour
     private PlayerCombat combat;
     private float currentMana;
 
-    public EElement CurrentElement => currentElement;
+    public ElementType CurrentElement => currentElement;
     public float CurrentMana => currentMana;
     public float MaxMana => casterData != null ? casterData.maxMana : 0f;
 
-    public event Action<EElement> OnElementChanged;
+    public event Action<ElementType> OnElementChanged;
     public event Action<float, float> OnManaChanged;
     public event Action<float> OnCooldownChanged;
 
@@ -64,16 +66,23 @@ public class PlayerElementCaster : MonoBehaviour
             RaiseCooldownChanged();
     }
 
-    /// <summary>Moves to the next (step 1) or previous (step -1) element in EElement order, wrapping at both ends.</summary>
+    /// <summary>Moves to the next (step 1) or previous (step -1) castable element in ElementType order, skipping None and wrapping at both ends.</summary>
     public void CycleElement(int step)
     {
         if (step == 0) return;
 
-        int next = ((int)currentElement + step % ElementCount + ElementCount) % ElementCount;
-        currentElement = (EElement)next;
+        currentElement = NextCastable(currentElement, step);
         Debug.Log($"[Phép] Đổi nguyên tố: {currentElement}");
         OnElementChanged?.Invoke(currentElement);
         RaiseCooldownChanged();
+    }
+
+    /// <summary>The castable element step places away from current, never None; a None input counts as the slot before the first castable.</summary>
+    public static ElementType NextCastable(ElementType current, int step)
+    {
+        int index = Mathf.Max(-1, (int)current - (int)FirstCastable);
+        int next = ((index + step) % CastableCount + CastableCount) % CastableCount;
+        return (ElementType)(next + (int)FirstCastable);
     }
 
     /// <summary>Tap of the cast button: fires the combat skill of the equipped element if mana and cooldown allow.</summary>
@@ -93,21 +102,7 @@ public class PlayerElementCaster : MonoBehaviour
             return;
         }
 
-        switch (currentElement)
-        {
-            case EElement.Fire:
-                if (!LaunchFireball()) return;
-                break;
-            case EElement.Wind:
-                Debug.Log("[Phép] Lốc Xoáy (chưa làm)");
-                break;
-            case EElement.Water:
-                Debug.Log("[Phép] Vòng Nước (chưa làm)");
-                break;
-            case EElement.Stone:
-                Debug.Log("[Phép] Đá Văng (chưa làm)");
-                break;
-        }
+        if (!LaunchSkill(currentElement)) return;
 
         SetMana(currentMana - casterData.skillCost);
         cooldownRemaining[(int)currentElement] = casterData.GetCooldown(currentElement);
@@ -170,6 +165,18 @@ public class PlayerElementCaster : MonoBehaviour
     {
         if (state == null) return false;
         return !state.IsDead && !state.IsRolling && !state.IsAttacking;
+    }
+
+    private bool LaunchSkill(ElementType element)
+    {
+        switch (element)
+        {
+            case ElementType.Fire:
+                return LaunchFireball();
+            default:
+                Debug.Log($"[Phép] Kỹ năng {element} chưa làm, không tốn mana");
+                return false;
+        }
     }
 
     private bool LaunchFireball()

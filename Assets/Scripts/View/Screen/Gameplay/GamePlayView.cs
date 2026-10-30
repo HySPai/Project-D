@@ -12,7 +12,7 @@ namespace UIGame
         [Serializable]
         private struct ElementDisplay
         {
-            public EElement element;
+            public ElementType element;
             public string label;
             public Color color;
         }
@@ -79,7 +79,7 @@ namespace UIGame
             else if (manaSlider != null) manaSlider.value = value;
         }
 
-        public void UpdateElement(EElement element)
+        public void UpdateElement(ElementType element)
         {
             if (!TryGetDisplay(element, out ElementDisplay display)) return;
 
@@ -101,7 +101,7 @@ namespace UIGame
             if (cooldownOverlay != null) cooldownOverlay.fillAmount = remaining01;
         }
 
-        private bool TryGetDisplay(EElement element, out ElementDisplay display)
+        private bool TryGetDisplay(ElementType element, out ElementDisplay display)
         {
             if (elementDisplays != null)
             {

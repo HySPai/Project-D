@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using Sirenix.OdinInspector;
+﻿using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
@@ -103,8 +102,7 @@ public class PlayerState : CharacterStateBase
         }
 
         PlayHitReaction(in info);
-        EnableIsInvulnerable();
-        InvulnerabilityAsync().Forget();
+        GrantInvulnerability(playerStats.invulnerabilityDuration);
         return new DamageResult(info.points, false, false, false);
     }
 
@@ -133,15 +131,6 @@ public class PlayerState : CharacterStateBase
         }
 
         return healed;
-    }
-
-    private async UniTaskVoid InvulnerabilityAsync()
-    {
-        var token = this.GetCancellationTokenOnDestroy();
-        await UniTask.Delay(
-            TimeSpan.FromSeconds(playerStats.invulnerabilityDuration),
-            cancellationToken: token);
-        DisableIsInvulnerable();
     }
     #endregion
 

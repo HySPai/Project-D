@@ -1534,16 +1534,16 @@ MonoBehaviour:
   cooldownOverlay: {fileID: 1119928028479224817}
   elementLabel: {fileID: 1414715384990060795}
   elementDisplays:
-  - element: 0
+  - element: 1
     label: Wind
     color: {r: 0.96, g: 0.94, b: 0.84, a: 1}
-  - element: 1
+  - element: 2
     label: Fire
     color: {r: 1, g: 0.5, b: 0.15, a: 1}
-  - element: 2
+  - element: 3
     label: Water
     color: {r: 0.2, g: 0.8, b: 0.75, a: 1}
-  - element: 3
+  - element: 4
     label: Stone
     color: {r: 0.55, g: 0.5, b: 0.32, a: 1}
   elementPunchScale: 0.25

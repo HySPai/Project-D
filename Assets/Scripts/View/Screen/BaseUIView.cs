@@ -23,7 +23,7 @@ namespace UIGame
         {
             if (_openViewStopTime)
             {
-                Time.timeScale = 0f;
+                GameTime.SetPaused(true);
             }
             if (_view.IsViewStack)
             {
@@ -37,7 +37,7 @@ namespace UIGame
         {
             if (_openViewStopTime)
             {
-                Time.timeScale = 1f;
+                GameTime.SetPaused(false);
             }
             if (_view.IsViewStack)
             {
