@@ -31,9 +31,10 @@ PlayerController.Update ──► PlayerGuard.Tick(held, pressed)
 | `Item/Weapon/WeaponItem.cs` | Thêm `HeavyAttackData`, `GuardData`, `backstepAttack`, `counterMultiplier` |
 | `CharacterStateBase.cs` | Hook `AbsorbIncoming`, `IsOffBalance`, `OnParried` |
 | `EnemyState/EnemyController` | `OnParried`: dừng đòn, choáng, đẩy lùi nhẹ |
-| `Editor/CombatClipEventBuilder.cs` | Đo tốc độ bàn tay trong clip để đặt anim event (mở/đóng vùng đánh, combo, i-frame) |
-| `Editor/CombatAnimatorBuilder.cs` | Dựng state trong `Humanoid.controller`, thêm layer `Guard` |
-| `Editor/CombatWeaponBuilder.cs` | Ghi số liệu 3 `WeaponItem` |
+| `Animations/Humanoid.controller` | State hành động và layer `Guard`; chỉnh trực tiếp qua Unity MCP |
+| `Animations/Combat/off/ShieldFix/*.anim` | Clip giữ khiên gập khuỷu và Parry hất khiên của bộ Kiếm+Khiên |
+
+Các tool Editor dựng asset (`CombatClipEventBuilder`, `CombatAnimatorBuilder`, `CombatWeaponBuilder`, `CombatFeelSetup`, `ShieldGuardClipFixer`) đã bỏ ngày 2026-10-31; asset chúng tạo ra được giữ nguyên và sửa trực tiếp qua Unity MCP.
 
 ## Quyết định
 
