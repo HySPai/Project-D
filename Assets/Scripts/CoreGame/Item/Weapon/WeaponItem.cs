@@ -85,6 +85,9 @@ public class WeaponItem : ScriptableObject
     public GuardData guard;
     public float counterMultiplier = 3f;
 
+    [Header("Poise")]
+    public float poiseMultiplier = 1f;
+
     [Header("Feel")]
     public WeaponFeelProfile feelProfile;
 }

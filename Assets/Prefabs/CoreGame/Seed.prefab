@@ -5733,6 +5733,7 @@ GameObject:
   - component: {fileID: 5383284833089598184}
   - component: {fileID: 6733637963620728668}
   - component: {fileID: 1695986397137179767}
+  - component: {fileID: 7843610548739721644}
   m_Layer: 8
   m_Name: Seed
   m_TagString: Untagged
@@ -5863,6 +5864,7 @@ MonoBehaviour:
   damageFeedback: {fileID: 7030704087307580568}
   deathFeedback: {fileID: 4473281421480534745}
   burnEffect: {fileID: 1695986397137179767}
+  slowEffect: {fileID: 7843610548739721644}
   state: {fileID: 4152142513742203383}
   movement: {fileID: 1848777892433412432}
   combat: {fileID: 3926143807828471171}
@@ -6020,6 +6022,19 @@ MonoBehaviour:
   - {fileID: 8147170848691426895}
   burnVfxPrefab: {fileID: 0}
   vfxAnchor: {fileID: 0}
+--- !u!114 &7843610548739721644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4224781658059092692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31679f44b8a532f4493efe75d7d6b96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlowEffect
+  data: {fileID: 11400000, guid: 999e293f6b6d9014fa0caccf916c2824, type: 2}
 --- !u!1 &4345817160307826237
 GameObject:
   m_ObjectHideFlags: 0

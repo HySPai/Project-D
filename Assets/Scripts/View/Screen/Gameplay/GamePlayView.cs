@@ -28,7 +28,6 @@ namespace UIGame
         [Header("Element")]
         [SerializeField] private Slider manaSlider;
         [SerializeField] private SliderChangeEffect manaEffect;
-        [SerializeField] private Image manaFill;
         [SerializeField] private Image elementIcon;
         [SerializeField] private Image cooldownOverlay;
         [SerializeField] private TMP_Text elementLabel;
@@ -83,7 +82,6 @@ namespace UIGame
         {
             if (!TryGetDisplay(element, out ElementDisplay display)) return;
 
-            if (manaFill != null) manaFill.color = display.color;
             if (elementIcon != null) elementIcon.color = display.color;
             if (elementLabel != null) elementLabel.text = display.label;
 

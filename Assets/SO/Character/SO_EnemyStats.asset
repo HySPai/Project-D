@@ -32,6 +32,11 @@ MonoBehaviour:
   knockbackDistance: 1.5
   knockbackDuration: 0.25
   stunDuration: 0.5
+  poiseMax: 200
+  poiseRecoverDelay: 2
+  poiseRecoverRate: 30
+  poiseBreakStun: 1.5
+  isBoss: 1
   combatFeel: {fileID: 11400000, guid: 350cc11fb0571ae4e9e83b6f22b0aba5, type: 2}
   hitBlood: {fileID: 11400000, guid: c00e6eab9805e1a4296f0a6151ec2db6, type: 2}
   deathDissolve: {fileID: 11400000, guid: b387a9bef1684564b8030e895cc511fe, type: 2}

@@ -13,11 +13,13 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
 
     [Header("Status")]
     [SerializeField] protected BurnEffect burnEffect;
+    [SerializeField] protected SlowEffect slowEffect;
 
     public CharacterController CharacterController => characterController;
     public MMF_Player DamageFeedback => damageFeedback;
     public MMF_Player DeathFeedback => deathFeedback;
     public BurnEffect GetBurn => burnEffect;
+    public SlowEffect GetSlow => slowEffect;
 
     public abstract CharacterStateBase GetState { get; }
     public abstract CharacterMovementBase GetMovement { get; }
@@ -34,6 +36,7 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     {
         SetSpawnPoint(transform.position, transform.rotation);
         if (burnEffect != null) burnEffect.Initialize(this);
+        if (slowEffect != null) slowEffect.Initialize(this);
     }
 
     /// <summary>Changes where this character comes back after a world reset, e.g. a lit rest point.</summary>
@@ -48,6 +51,7 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
     {
         BeforeReset();
         if (burnEffect != null) burnEffect.Stop();
+        if (slowEffect != null) slowEffect.Stop();
         TeleportTo(spawnPosition, spawnRotation);
 
         CharacterStateBase state = GetState;

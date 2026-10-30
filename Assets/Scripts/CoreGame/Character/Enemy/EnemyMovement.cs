@@ -43,11 +43,41 @@ public class EnemyMovement : CharacterMovementBase
     public override void Move() { }
     public override void Roll() { }
 
+    #region Speed Multiplier
+    private float baseSpeed;
+    private float speedMultiplier = 1f;
+
+    /// <summary>Status factor on every move speed, e.g. 0.6 while slowed; applies at once to the current path.</summary>
+    public void SetSpeedMultiplier(float value)
+    {
+        if (Mathf.Approximately(value, speedMultiplier)) return;
+
+        speedMultiplier = value;
+        if (agent != null)
+            agent.speed = baseSpeed * speedMultiplier;
+    }
+
+    private void ApplySpeed(float speed)
+    {
+        baseSpeed = speed;
+        agent.speed = speed * speedMultiplier;
+    }
+    #endregion
+
+    /// <summary>Drags the enemy by delta along the NavMesh, e.g. toward the centre of a vortex.</summary>
+    public void Pull(Vector3 delta)
+    {
+        if (agent == null || !agent.isOnNavMesh) return;
+
+        delta.y = 0f;
+        agent.Move(delta);
+    }
+
     #region Locomotion cơ bản
     public void Chase(Transform target, float speed, float stoppingDistance)
     {
         if (agent == null || !agent.isOnNavMesh || target == null) return;
-        agent.speed = speed;
+        ApplySpeed(speed);
         agent.stoppingDistance = stoppingDistance;
         agent.isStopped = false;
         agent.SetDestination(target.position);
@@ -56,7 +86,7 @@ public class EnemyMovement : CharacterMovementBase
     public void MoveTo(Vector3 destination, float speed)
     {
         if (agent == null || !agent.isOnNavMesh) return;
-        agent.speed = speed;
+        ApplySpeed(speed);
         agent.stoppingDistance = 0f;
         agent.isStopped = false;
         agent.SetDestination(destination);
@@ -113,6 +143,7 @@ public class EnemyMovement : CharacterMovementBase
         CancelKnockback();
         knockbackActive = false;
         autoRotateToMovement = true;
+        speedMultiplier = 1f;
 
         if (agent == null) return;
         agent.updatePosition = true;
@@ -156,7 +187,7 @@ public class EnemyMovement : CharacterMovementBase
         Vector3 ringPoint = center + radial * preferredDistance;
         Vector3 dest = ringPoint + tangent * lookAhead;
 
-        agent.speed = speed;
+        ApplySpeed(speed);
         agent.stoppingDistance = 0f;
         agent.isStopped = false;
         agent.SetDestination(dest);

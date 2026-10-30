@@ -360,6 +360,7 @@ public class PlayerCombat : CharacterCombatBase
         float stunScale = feelProfile != null ? feelProfile.GetStunScale(currentAttack.weight) : 1f;
 
         float counterMultiplier = currentWeapon != null ? currentWeapon.counterMultiplier : 1f;
+        float poiseMultiplier = currentWeapon != null ? currentWeapon.poiseMultiplier : 1f;
 
         for (int i = 0; i < count; i++)
         {
@@ -381,7 +382,7 @@ public class PlayerCombat : CharacterCombatBase
 
             DamageInfo info = new DamageInfo(
                 points, character, transform.position,
-                ElementType.None, DamageSource.Weapon, false, 0f,
+                ElementType.None, DamageSource.Weapon, false, currentAttack.damage * poiseMultiplier,
                 knockbackScale, stunScale);
             DamageResult result = targetState.ReceiveDamage(in info);
             if (result.appliedPoints > 0f)

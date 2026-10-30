@@ -91,7 +91,7 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     {
         if (state == null) return;
 
-        animator.speed = 1f;
+        SetPlaybackSpeed(1f);
         animator.CrossFade(targetAnimation, 0.2f);
         state.SetAttacking(isPerformingAction);
         state.SetApplyRootMotion(applyRootMotion);
@@ -99,9 +99,23 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         state.SetCanMove(canMove);
     }
 
+    private float playbackSpeed = 1f;
+    private float playbackScale = 1f;
+
     public void SetPlaybackSpeed(float speed)
     {
-        animator.speed = speed;
+        playbackSpeed = speed;
+        animator.speed = playbackSpeed * playbackScale;
+    }
+
+    /// <summary>Status factor on top of every playback speed, e.g. 0.6 while slowed.</summary>
+    public void SetPlaybackScale(float scale)
+    {
+        if (Mathf.Approximately(scale, playbackScale)) return;
+
+        playbackScale = scale;
+        if (animator != null)
+            animator.speed = playbackSpeed * playbackScale;
     }
 
     /// <summary>Returns the animator to its default state with neutral playback speed.</summary>
@@ -109,6 +123,8 @@ public abstract class CharacterAnimationBase : MonoBehaviour
     {
         if (animator == null) return;
 
+        playbackSpeed = 1f;
+        playbackScale = 1f;
         animator.speed = 1f;
         animator.Rebind();
         animator.Update(0f);

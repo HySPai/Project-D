@@ -345,7 +345,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
 - **Thanh nguyên tố trên HUD:**
   - đặt dưới thanh stamina hiện có trong `GamePlayView`;
   - chia 3 nấc, mỗi nấc 33;
-  - mang màu của nguyên tố đang trang bị;
+  - luôn màu xanh lam, không đổi theo nguyên tố (quyết định 2026-10-30); màu nguyên tố chỉ hiện ở biểu tượng nguyên tố;
   - ẩn cho tới khi có Gió.
 - **Lớp yểm:** biểu tượng nhỏ trên ô vũ khí chính, kèm vòng đếm ngược 6s. Với yểm Đá, biểu tượng vỡ ra khi lớp đá vỡ.
 - **Lướt Gió:** biểu tượng nhỏ cạnh thanh stamina, kèm vòng hồi 4s. Hồi xong thì biểu tượng lóe một lần.

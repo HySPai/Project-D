@@ -107,8 +107,11 @@ public class EnemyController : CharacterControllerBase
     {
         if (state.IsDead) { movement.Stop(); return; }
 
-        // Đang choáng -> tạm dừng FSM (không đuổi/đánh), coroutine knockback lo việc đẩy.
-        if (!state.IsStunned)
+        float slow = slowEffect != null ? slowEffect.SpeedMultiplier : 1f;
+        movement.SetSpeedMultiplier(slow);
+        anim.SetPlaybackScale(slow);
+
+        if (!state.IsStunned && !IsDisabledByVortex)
             currentState?.Tick();
 
         // Animation chạy theo tốc độ thực của agent.
@@ -136,9 +139,65 @@ public class EnemyController : CharacterControllerBase
         // Choáng: tạm dừng FSM trong stunDuration -> player dễ chém liên tục.
         state.BeginStun(state.StunDuration * Mathf.Max(0f, stunScale));
 
+        if (state.IsHeld) return;
+
         // Đẩy lùi theo HƯỚNG NGƯỜI CHƠI đang nhìn (không dựa vào vị trí nguồn damage).
         Vector3 pushDir = ResolveKnockbackDirection(sourcePosition);
         movement.Knockback(pushDir, state.KnockbackDistance * Mathf.Max(0f, knockbackScale), state.KnockbackDuration);
+    }
+
+    private bool IsDisabledByVortex => state.IsHeld && !state.IsBoss;
+
+    /// <summary>Poise reached 0: a long stun that also leaves the enemy open to a counter hit.</summary>
+    public void OnPoiseBroken(float duration)
+    {
+        if (state.IsDead) return;
+
+        ChangeState(ChaseState);
+        state.InterruptAction();
+        state.BeginStun(duration);
+        state.MarkOffBalance(duration);
+        Debug.Log($"[Thế] {name} vỡ thế, choáng {duration:0.0}s");
+    }
+
+    /// <summary>Elemental stun, e.g. from Stone Burst: the enemy cannot act for duration seconds.</summary>
+    public void ApplyStun(float duration)
+    {
+        if (state.IsDead || duration <= 0f) return;
+
+        ChangeState(ChaseState);
+        state.InterruptAction();
+        state.BeginStun(duration);
+    }
+
+    /// <summary>Pushes the enemy straight away from origin, e.g. the Water Ring; skipped while held by a vortex.</summary>
+    public void PushAway(Vector3 origin, float distance)
+    {
+        if (state.IsDead || state.IsHeld || distance <= 0f) return;
+
+        Vector3 away = transform.position - origin;
+        away.y = 0f;
+        if (away.sqrMagnitude < 0.0001f) away = -transform.forward;
+
+        movement.Knockback(away.normalized, distance, state.KnockbackDuration);
+    }
+
+    /// <summary>Keeps the enemy inside a vortex for duration and drags it by pull; a non-boss stops attacking.</summary>
+    public void HoldInVortex(float duration, Vector3 pull)
+    {
+        if (state.IsDead) return;
+
+        bool wasDisabled = IsDisabledByVortex;
+        state.Hold(duration);
+
+        if (!wasDisabled && IsDisabledByVortex)
+        {
+            ChangeState(ChaseState);
+            state.InterruptAction();
+            movement.Stop();
+        }
+
+        movement.Pull(pull);
     }
 
     public void OnParried(float staggerDuration)

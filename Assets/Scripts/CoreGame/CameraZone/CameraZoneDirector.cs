@@ -45,6 +45,9 @@ public class CameraZoneDirector : MonoBehaviour
                 nextFraming = zone;
         }
 
+        if (nextBounds == null && boundsZone != null && boundsZone.isActiveAndEnabled)
+            nextBounds = boundsZone;
+
         if (nextBounds != boundsZone)
         {
             boundsZone = nextBounds;

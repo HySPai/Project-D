@@ -55,7 +55,22 @@ public class EnemyState : CharacterStateBase
     // Trong lúc choáng, FSM "đứng im" (không đuổi/đánh) để player dễ chém liên tục.
     // Mỗi lần trúng đòn lại gia hạn -> bị đánh dồn thì choáng kéo dài.
     public bool IsStunned => Time.time < stunEndTime;
-    public void BeginStun(float duration) => stunEndTime = Time.time + duration;
+    public void BeginStun(float duration) => stunEndTime = Mathf.Max(stunEndTime, Time.time + duration);
+    #endregion
+
+    #region Poise
+    private PoiseMeter poise;
+
+    public PoiseMeter Poise => poise;
+    public float PoiseBreakStun => EnemyStats.poiseBreakStun;
+    public bool IsBoss => EnemyStats.isBoss;
+    #endregion
+
+    #region Vortex Hold
+    private float heldUntil;
+
+    public bool IsHeld => Time.time < heldUntil;
+    public void Hold(float duration) => heldUntil = Mathf.Max(heldUntil, Time.time + duration);
     #endregion
 
     #region Animation
@@ -72,11 +87,17 @@ public class EnemyState : CharacterStateBase
     protected override void PlayHitReaction(in DamageInfo info)
     {
         base.PlayHitReaction(in info);
-        (owner as EnemyController)?.OnKnockback(info.sourcePosition, info.knockbackScale, info.stunScale);
+
+        var controller = owner as EnemyController;
+        controller?.OnKnockback(info.sourcePosition, info.knockbackScale, info.stunScale);
+
+        if (poise != null && poise.Hit(info.staggerAmount, Time.time))
+            controller?.OnPoiseBroken(PoiseBreakStun);
     }
     #endregion
 
-    public override void OnParried(float staggerDuration)
+    /// <summary>Cuts the current attack: closes every damage collider and plays the hit reaction.</summary>
+    public void InterruptAction()
     {
         if (isDead) return;
 
@@ -87,7 +108,13 @@ public class EnemyState : CharacterStateBase
         var animation = owner != null ? owner.GetAnimation : null;
         if (animation != null)
             animation.Play(HitReaction);
+    }
 
+    public override void OnParried(float staggerDuration)
+    {
+        if (isDead) return;
+
+        InterruptAction();
         MarkOffBalance(staggerDuration);
         (owner as EnemyController)?.OnParried(staggerDuration);
     }
@@ -105,12 +132,17 @@ public class EnemyState : CharacterStateBase
         // Ghi nhớ điểm spawn để biết đường quay về.
         homePosition = transform.position;
         homeRotation = transform.rotation;
+
+        if (EnemyStats != null)
+            poise = new PoiseMeter(EnemyStats.poiseMax, EnemyStats.poiseRecoverDelay, EnemyStats.poiseRecoverRate);
     }
 
     public override void ResetState()
     {
         base.ResetState();
         stunEndTime = 0f;
+        heldUntil = 0f;
+        poise?.Reset();
         ClearTarget();
     }
 

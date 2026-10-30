@@ -1495,6 +1495,7 @@ GameObject:
   - component: {fileID: 4668666595840199457}
   - component: {fileID: 7164253264023133281}
   - component: {fileID: 348956220422641613}
+  - component: {fileID: 9046801205132963919}
   m_Layer: 8
   m_Name: Spider King
   m_TagString: Untagged
@@ -2296,6 +2297,7 @@ MonoBehaviour:
   damageFeedback: {fileID: 2597721706610757808}
   deathFeedback: {fileID: 4747353512128310323}
   burnEffect: {fileID: 348956220422641613}
+  slowEffect: {fileID: 9046801205132963919}
   state: {fileID: 4974993047601184332}
   movement: {fileID: 131468092968485471}
   combat: {fileID: 2664900806905825255}
@@ -2454,6 +2456,19 @@ MonoBehaviour:
   - {fileID: 5792614067023474420}
   burnVfxPrefab: {fileID: 0}
   vfxAnchor: {fileID: 0}
+--- !u!114 &9046801205132963919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434736665686606893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31679f44b8a532f4493efe75d7d6b96a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlowEffect
+  data: {fileID: 11400000, guid: 999e293f6b6d9014fa0caccf916c2824, type: 2}
 --- !u!1 &4511459962958731242
 GameObject:
   m_ObjectHideFlags: 0

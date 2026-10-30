@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerElementCaster : MonoBehaviour
 {
     private const ElementType FirstCastable = ElementType.Wind;
+    private const int HitBufferSize = 16;
     private static readonly int ElementCount = Enum.GetValues(typeof(ElementType)).Length;
     private static readonly int CastableCount = ElementCount - (int)FirstCastable;
 
@@ -18,7 +21,24 @@ public class PlayerElementCaster : MonoBehaviour
     [SerializeField] private SO_FireballData fireballData;
     [SerializeField] private Fireball fireballPrefab;
 
+    [Header("Water Ring")]
+    [SerializeField] private SO_WaterRingData waterRingData;
+
+    [Header("Stone Burst")]
+    [SerializeField] private SO_StoneBurstData stoneBurstData;
+
+    [Header("Wind Vortex")]
+    [SerializeField] private SO_WindVortexData vortexData;
+    [SerializeField] private WindVortex vortexPrefab;
+
+    [Header("Targets")]
+    [SerializeField] private LayerMask spellHitLayer = 1 << 8;
+
     private readonly List<Fireball> fireballPool = new List<Fireball>();
+    private readonly List<WindVortex> vortexPool = new List<WindVortex>();
+    private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
+    private readonly List<CharacterControllerBase> spellTargets = new List<CharacterControllerBase>();
+    private bool isWindingUp;
     private readonly float[] cooldownRemaining = new float[ElementCount];
 
     private CharacterStateBase state;
@@ -164,19 +184,144 @@ public class PlayerElementCaster : MonoBehaviour
     private bool CanCast()
     {
         if (state == null) return false;
-        return !state.IsDead && !state.IsRolling && !state.IsAttacking;
+        return !state.IsDead && !state.IsRolling && !state.IsAttacking && !isWindingUp;
     }
 
     private bool LaunchSkill(ElementType element)
     {
         switch (element)
         {
+            case ElementType.Wind:
+                return LaunchVortex();
             case ElementType.Fire:
                 return LaunchFireball();
+            case ElementType.Water:
+                return LaunchWaterRing();
+            case ElementType.Stone:
+                return LaunchStoneBurst();
             default:
-                Debug.Log($"[Phép] Kỹ năng {element} chưa làm, không tốn mana");
                 return false;
         }
+    }
+
+    private bool LaunchWaterRing()
+    {
+        if (waterRingData == null) return false;
+
+        Vector3 center = transform.position;
+        SpellTargeting.CollectTargets(center, waterRingData.radius, spellHitLayer, character, hitBuffer, spellTargets);
+
+        foreach (CharacterControllerBase target in spellTargets)
+        {
+            CharacterStateBase targetState = target.GetState;
+            DamageInfo info = new DamageInfo(
+                waterRingData.damage, character, center, ElementType.Water, DamageSource.Spell, false, 0f);
+            targetState.ReceiveDamage(in info);
+
+            if (targetState.IsDead) continue;
+
+            if (target is EnemyController enemy)
+                enemy.PushAway(center, waterRingData.pushDistance);
+
+            if (target.GetSlow != null)
+                target.GetSlow.Apply();
+        }
+
+        Debug.Log($"[Phép] Vòng Nước trúng {spellTargets.Count} mục tiêu");
+        return true;
+    }
+
+    private bool LaunchStoneBurst()
+    {
+        if (stoneBurstData == null) return false;
+
+        Vector3 direction = GetCastDirection();
+        transform.rotation = Quaternion.LookRotation(direction);
+
+        StoneBurstAsync(direction).Forget();
+        return true;
+    }
+
+    private async UniTaskVoid StoneBurstAsync(Vector3 direction)
+    {
+        isWindingUp = true;
+
+        bool canceled = await UniTask.Delay(TimeSpan.FromSeconds(stoneBurstData.windup),
+                cancellationToken: this.GetCancellationTokenOnDestroy())
+            .SuppressCancellationThrow();
+
+        isWindingUp = false;
+        if (canceled) return;
+
+        if (state == null || state.IsDead || state.IsRolling)
+        {
+            Debug.Log("[Phép] Đá Văng bị hủy giữa lúc khởi động");
+            return;
+        }
+
+        ReleaseStoneBurst(direction);
+    }
+
+    private void ReleaseStoneBurst(Vector3 direction)
+    {
+        Vector3 origin = transform.position;
+        SpellTargeting.CollectTargets(origin, stoneBurstData.range, spellHitLayer, character, hitBuffer, spellTargets);
+
+        int hits = 0;
+        foreach (CharacterControllerBase target in spellTargets)
+        {
+            if (!SpellTargeting.IsWithinArc(origin, direction, target.transform.position, stoneBurstData.arc)) continue;
+
+            CharacterStateBase targetState = target.GetState;
+            DamageInfo info = new DamageInfo(
+                stoneBurstData.damage, character, origin, ElementType.Stone, DamageSource.Spell, false, 0f);
+            targetState.ReceiveDamage(in info);
+            hits++;
+
+            if (!targetState.IsDead && target is EnemyController enemy)
+                enemy.ApplyStun(stoneBurstData.stunDuration);
+        }
+
+        Debug.Log($"[Phép] Đá Văng trúng {hits} mục tiêu");
+    }
+
+    private bool LaunchVortex()
+    {
+        if (vortexData == null || vortexPrefab == null) return false;
+
+        Vector3 direction = GetCastDirection();
+        transform.rotation = Quaternion.LookRotation(direction);
+
+        Vector3 position = ResolveVortexPosition(transform.position, direction * vortexData.castDistance);
+        GetFreeVortex().Launch(vortexData, character, position);
+        Debug.Log($"[Phép] Lốc Xoáy tại {position}");
+        return true;
+    }
+
+    private static Vector3 ResolveVortexPosition(Vector3 origin, Vector3 offset)
+    {
+        Vector3 desired = origin + offset;
+
+        if (!NavMesh.SamplePosition(origin, out NavMeshHit start, 2f, NavMesh.AllAreas))
+            return desired;
+
+        return NavMesh.Raycast(start.position, desired, out NavMeshHit hit, NavMesh.AllAreas)
+            ? hit.position
+            : desired;
+    }
+
+    private WindVortex GetFreeVortex()
+    {
+        foreach (WindVortex vortex in vortexPool)
+        {
+            if (!vortex.gameObject.activeSelf)
+                return vortex;
+        }
+
+        WindVortex created = Instantiate(vortexPrefab);
+        created.gameObject.SetActive(false);
+        vortexPool.Add(created);
+        return created;
     }
 
     private bool LaunchFireball()

@@ -29,6 +29,15 @@ public class SO_EnemyStats : CharacterStats
     public float knockbackDuration = 0.25f; // thời gian đẩy lùi (nên ~ độ dài clip hit)
     public float stunDuration = 0.5f;        // thời gian choáng (FSM đứng im) - nên >= knockbackDuration
 
+    [Header("Poise")]
+    public float poiseMax = 0f;
+    public float poiseRecoverDelay = 2f;
+    public float poiseRecoverRate = 30f;
+    public float poiseBreakStun = 1.5f;
+
+    [Header("Boss")]
+    public bool isBoss = false;
+
     [Header("Feel")]
     public EnemyCombatFeelProfile combatFeel;
     public HitBloodProfile hitBlood;

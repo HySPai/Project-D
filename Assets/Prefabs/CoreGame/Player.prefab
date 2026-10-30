@@ -2536,7 +2536,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 0.97999996, z: 0}
 --- !u!114 &3676460191051749661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2584,6 +2584,8 @@ MonoBehaviour:
   hurtboxes: []
   damageFeedback: {fileID: 8912662728325990622}
   deathFeedback: {fileID: 0}
+  burnEffect: {fileID: 0}
+  slowEffect: {fileID: 0}
   input: {fileID: 4935462881444096308}
   state: {fileID: 6237013157365418999}
   movement: {fileID: 3904609994375877722}
@@ -2805,6 +2807,14 @@ MonoBehaviour:
   fireballData: {fileID: 11400000, guid: 86b1b17400e03bc48a83f6e0fe40bd2f, type: 2}
   fireballPrefab: {fileID: 1665427750355801533, guid: 102ed2bc859040b4186b75ce3a87a4b7,
     type: 3}
+  waterRingData: {fileID: 11400000, guid: faf7372ab0268e04aaff1f542a63a21d, type: 2}
+  stoneBurstData: {fileID: 11400000, guid: babcd5f9b8891cf428b98a39910983ad, type: 2}
+  vortexData: {fileID: 11400000, guid: fcf9b56d2b45fc74fba488278534c0ec, type: 2}
+  vortexPrefab: {fileID: 3115097445649033010, guid: 5a41c76b32f20b144855df4a967f9271,
+    type: 3}
+  spellHitLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &6488567137440690503
 GameObject:
   m_ObjectHideFlags: 0
