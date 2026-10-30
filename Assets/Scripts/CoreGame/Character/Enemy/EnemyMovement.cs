@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -109,8 +110,8 @@ public class EnemyMovement : CharacterMovementBase
 
     public void ResetMovement()
     {
-        StopAllCoroutines();
-        knockbackRoutine = null;
+        CancelKnockback();
+        knockbackActive = false;
         autoRotateToMovement = true;
 
         if (agent == null) return;
@@ -162,55 +163,85 @@ public class EnemyMovement : CharacterMovementBase
     }
     #endregion
 
-    #region Knockback (đẩy lùi khi trúng đòn)
-    private Coroutine knockbackRoutine;
+    #region Knockback
+    private CancellationTokenSource knockbackCts;
+    private bool knockbackActive;
+    private bool autoRotateBeforeKnockback;
 
-    // direction = hướng đẩy do controller tính sẵn (dựa trên hướng người chơi).
+    /// <summary>Pushes the enemy along direction over duration with an ease-out; a new push restarts it but keeps the original rotation mode.</summary>
     public void Knockback(Vector3 direction, float distance, float duration)
     {
         if (agent == null) return;
 
         Vector3 dir = direction; dir.y = 0f;
-        if (dir.sqrMagnitude < 0.0001f) dir = -transform.forward; // phòng hờ hướng rỗng
+        if (dir.sqrMagnitude < 0.0001f) dir = -transform.forward;
         dir.Normalize();
 
-        if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
-        knockbackRoutine = StartCoroutine(KnockbackRoutine(dir, distance, Mathf.Max(0.01f, duration)));
+        if (!knockbackActive) autoRotateBeforeKnockback = autoRotateToMovement;
+
+        CancelKnockback();
+        knockbackCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        KnockbackAsync(dir, distance, Mathf.Max(0.01f, duration), knockbackCts.Token).Forget();
     }
 
-    private IEnumerator KnockbackRoutine(Vector3 dir, float distance, float duration)
+    private async UniTaskVoid KnockbackAsync(Vector3 dir, float distance, float duration, CancellationToken token)
     {
-        bool priorAutoRot = autoRotateToMovement;
+        knockbackActive = true;
 
-        if (agent != null && agent.isOnNavMesh)
+        if (agent.isOnNavMesh)
         {
             agent.isStopped = true;
             agent.ResetPath();
             agent.updatePosition = true;
         }
-        autoRotateToMovement = false; // không tự xoay theo hướng bị đẩy
+        autoRotateToMovement = false;
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             float dt = Time.deltaTime;
-            // Ease-out: mạnh lúc đầu, yếu dần. ∫(1-t)*2 dt = 1 -> tổng ~ distance.
             float remaining = 1f - (elapsed / duration);
             float step = distance * (dt / duration) * (remaining * 2f);
 
-            if (agent != null && agent.isOnNavMesh)
-                agent.Move(dir * step); // Move bám NavMesh -> không bị đẩy ra ngoài
+            if (agent.isOnNavMesh)
+                agent.Move(dir * step);
             else
                 transform.position += dir * step;
 
             elapsed += dt;
-            yield return null;
+
+            bool canceled = await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow();
+            if (canceled) return;
         }
+
+        EndKnockback();
+    }
+
+    private void EndKnockback()
+    {
+        if (!knockbackActive) return;
 
         if (agent != null && agent.isOnNavMesh)
             agent.isStopped = false;
-        autoRotateToMovement = priorAutoRot; // trả lại trạng thái xoay trước đó
-        knockbackRoutine = null;
+        autoRotateToMovement = autoRotateBeforeKnockback;
+        knockbackActive = false;
     }
+
+    private void CancelKnockback()
+    {
+        if (knockbackCts == null) return;
+
+        knockbackCts.Cancel();
+        knockbackCts.Dispose();
+        knockbackCts = null;
+    }
+
+    private void OnDisable()
+    {
+        CancelKnockback();
+        EndKnockback();
+    }
+
+    private void OnDestroy() => CancelKnockback();
     #endregion
 }

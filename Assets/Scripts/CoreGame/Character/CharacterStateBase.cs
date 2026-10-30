@@ -65,7 +65,11 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     public bool IsAttacking => isAttacking;
     public bool IsRunning => isRunning;
     public bool IsRolling => isRolling;
-    public bool IsInvulnerable => isInvulnerable;
+    public bool IsInvulnerable =>
+        isInvulnerable || Time.time < invulnerableUntil || Time.unscaledTime < invulnerableUntilUnscaled;
+
+    private float invulnerableUntil;
+    private float invulnerableUntilUnscaled;
     #endregion
 
     #region Permissions
@@ -246,7 +250,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     public DamageResult ReceiveDamage(in DamageInfo info)
     {
         if (isDead) return default;
-        if (isInvulnerable) return default;
+        if (IsInvulnerable) return default;
 
         DamageInfo resolved = ResolveIncoming(in info);
 
@@ -329,6 +333,8 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         isRunning = false;
         isRolling = false;
         isInvulnerable = false;
+        invulnerableUntil = 0f;
+        invulnerableUntilUnscaled = 0f;
 
         canMove = true;
         canRotate = true;
@@ -347,8 +353,22 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         RaiseHpChanged();
     }
 
+    /// <summary>Animation-event window, e.g. roll i-frames; it never cuts short a timed window from GrantInvulnerability.</summary>
     public virtual void EnableIsInvulnerable() => isInvulnerable = true;
+
+    /// <summary>Closes the animation-event window opened by EnableIsInvulnerable.</summary>
     public virtual void DisableIsInvulnerable() => isInvulnerable = false;
+
+    /// <summary>Keeps the character invulnerable for at least duration seconds; overlapping grants extend, never shorten.</summary>
+    public void GrantInvulnerability(float duration, bool unscaledTime = false)
+    {
+        if (duration <= 0f) return;
+
+        if (unscaledTime)
+            invulnerableUntilUnscaled = Mathf.Max(invulnerableUntilUnscaled, Time.unscaledTime + duration);
+        else
+            invulnerableUntil = Mathf.Max(invulnerableUntil, Time.time + duration);
+    }
 
     protected virtual void Die()
     {

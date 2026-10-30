@@ -2800,7 +2800,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 856c532fe3313ea45accfc083af72f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerElementCaster
-  currentElement: 1
+  currentElement: 2
   casterData: {fileID: 11400000, guid: 73faf71d427fbb94fac42d01b862b856, type: 2}
   fireballData: {fileID: 11400000, guid: 86b1b17400e03bc48a83f6e0fe40bd2f, type: 2}
   fireballPrefab: {fileID: 1665427750355801533, guid: 102ed2bc859040b4186b75ce3a87a4b7,

@@ -23,14 +23,14 @@ public class SO_ElementCasterData : ScriptableObject
     }
 
     /// <summary>Seconds a skill of this element waits before it can be cast again.</summary>
-    public float GetCooldown(EElement element)
+    public float GetCooldown(ElementType element)
     {
         switch (element)
         {
-            case EElement.Wind: return windCooldown;
-            case EElement.Fire: return fireCooldown;
-            case EElement.Water: return waterCooldown;
-            case EElement.Stone: return stoneCooldown;
+            case ElementType.Wind: return windCooldown;
+            case ElementType.Fire: return fireCooldown;
+            case ElementType.Water: return waterCooldown;
+            case ElementType.Stone: return stoneCooldown;
             default: return 0f;
         }
     }

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -18,20 +19,37 @@ namespace UIGame
         [SerializeField] private int respawnSkipFrames = 3;
 
         private Tween fadeTween;
+        private CancellationTokenSource runCts;
 
         private void Awake() => deathVolume.weight = 0f;
 
         private void HandleWorldResetCompleted()
         {
-            fadeTween?.Kill();
-            PlayRespawnFadeAsync().Forget();
+            PlayRespawnFadeAsync(BeginRun()).Forget();
         }
 
-        private async UniTaskVoid PlayRespawnFadeAsync()
+        private CancellationToken BeginRun()
+        {
+            fadeTween?.Kill();
+            CancelRun();
+            runCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+            return runCts.Token;
+        }
+
+        private void CancelRun()
+        {
+            if (runCts == null) return;
+
+            runCts.Cancel();
+            runCts.Dispose();
+            runCts = null;
+        }
+
+        private async UniTaskVoid PlayRespawnFadeAsync(CancellationToken token)
         {
             bool canceled = await UniTask.DelayFrame(
                     respawnSkipFrames,
-                    cancellationToken: this.GetCancellationTokenOnDestroy())
+                    cancellationToken: token)
                 .SuppressCancellationThrow();
             if (canceled) return;
 
@@ -56,18 +74,19 @@ namespace UIGame
             GameEvent.OnWorldResetCompleted -= HandleWorldResetCompleted;
         }
 
-        private void OnDestroy() => fadeTween?.Kill();
+        private void OnDestroy()
+        {
+            fadeTween?.Kill();
+            CancelRun();
+        }
 
         private void HandlePlayerDied()
         {
-            fadeTween?.Kill();
-            PlayDeathFadeAsync().Forget();
+            PlayDeathFadeAsync(BeginRun()).Forget();
         }
 
-        private async UniTaskVoid PlayDeathFadeAsync()
+        private async UniTaskVoid PlayDeathFadeAsync(CancellationToken token)
         {
-            var token = this.GetCancellationTokenOnDestroy();
-
             bool canceled = await UniTask.Delay(
                     TimeSpan.FromSeconds(startDelay),
                     DelayType.UnscaledDeltaTime,

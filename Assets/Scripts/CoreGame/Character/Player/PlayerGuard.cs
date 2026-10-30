@@ -1,5 +1,3 @@
-using System;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
@@ -7,6 +5,7 @@ public class PlayerGuard : MonoBehaviour
 {
     private const float GuardFade = 0.1f;
     private const float ReactionFade = 0.05f;
+    private const float MinSlowScale = 0.05f;
 
     private PlayerState state;
     private PlayerAnimation anim;
@@ -185,7 +184,7 @@ public class PlayerGuard : MonoBehaviour
             attackerState.OnParried(data.parryStaggerDuration);
 
         combat.PlayDefenseFeedback(HitFeelTier.Heavy, transform.position);
-        GrantShortInvulnerability(data.blockInvulnerability).Forget();
+        state.GrantInvulnerability(data.blockInvulnerability, true);
         PlaySlowMotion(data);
     }
 
@@ -199,7 +198,7 @@ public class PlayerGuard : MonoBehaviour
 
         HitFeelTier feel = tier == "BlockHeavy" ? HitFeelTier.Heavy : HitFeelTier.Light;
         combat.PlayDefenseFeedback(feel, transform.position);
-        GrantShortInvulnerability(data.blockInvulnerability).Forget();
+        state.GrantInvulnerability(data.blockInvulnerability, true);
 
         if (verdict.guardStunned)
             BreakGuard(data, data.guardStunDuration, "Stun");
@@ -215,32 +214,20 @@ public class PlayerGuard : MonoBehaviour
         anim.Play(new AnimationAction(StateName(data, stateSuffix), true, true, false, false));
     }
 
-    private async UniTaskVoid GrantShortInvulnerability(float duration)
-    {
-        if (duration <= 0f || state == null) return;
-
-        state.EnableIsInvulnerable();
-
-        bool cancelled = await UniTask
-            .Delay(TimeSpan.FromSeconds(duration), true, PlayerLoopTiming.Update, this.GetCancellationTokenOnDestroy())
-            .SuppressCancellationThrow();
-
-        if (cancelled) return;
-        state.DisableIsInvulnerable();
-    }
-
     private void PlaySlowMotion(GuardData data)
     {
         if (data.parrySlowDuration <= 0f) return;
 
         KillSlowMotion();
-        Time.timeScale = Mathf.Clamp(data.parrySlowScale, 0.05f, 1f);
-        slowMotionTween = DOVirtual.DelayedCall(data.parrySlowDuration, RestoreTimeScale).SetUpdate(true);
+        GameTime.SetSlowMotion(Mathf.Max(data.parrySlowScale, MinSlowScale));
+        slowMotionTween = DOVirtual.DelayedCall(data.parrySlowDuration, RestoreTimeScale)
+            .SetUpdate(true)
+            .SetLink(gameObject);
     }
 
     private void RestoreTimeScale()
     {
-        Time.timeScale = 1f;
+        GameTime.ClearSlowMotion();
         slowMotionTween = null;
     }
 
@@ -250,7 +237,7 @@ public class PlayerGuard : MonoBehaviour
 
         slowMotionTween.Kill();
         slowMotionTween = null;
-        Time.timeScale = 1f;
+        GameTime.ClearSlowMotion();
     }
 
     private static string StateName(GuardData data, string suffix) => $"Guard_{data.animationSet}_{suffix}";
