@@ -17,6 +17,9 @@ public class PlayerElementCaster : MonoBehaviour
     [Header("Data")]
     [SerializeField] private SO_ElementCasterData casterData;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugFreeCast;
+
     [Header("Fireball")]
     [SerializeField] private SO_FireballData fireballData;
     [SerializeField] private Fireball fireballPrefab;
@@ -26,6 +29,7 @@ public class PlayerElementCaster : MonoBehaviour
 
     [Header("Stone Burst")]
     [SerializeField] private SO_StoneBurstData stoneBurstData;
+    [SerializeField] private StoneBurstView stoneBurstViewPrefab;
 
     [Header("Wind Vortex")]
     [SerializeField] private SO_WindVortexData vortexData;
@@ -39,6 +43,7 @@ public class PlayerElementCaster : MonoBehaviour
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly List<CharacterControllerBase> spellTargets = new List<CharacterControllerBase>();
     private bool isWindingUp;
+    private StoneBurstView stoneBurstView;
     private readonly float[] cooldownRemaining = new float[ElementCount];
 
     private CharacterStateBase state;
@@ -116,7 +121,7 @@ public class PlayerElementCaster : MonoBehaviour
             return;
         }
 
-        if (currentMana < casterData.skillCost)
+        if (!debugFreeCast && currentMana < casterData.skillCost)
         {
             Debug.Log($"[Phép] Thiếu mana: {currentMana:0}/{casterData.skillCost:0}");
             return;
@@ -124,7 +129,8 @@ public class PlayerElementCaster : MonoBehaviour
 
         if (!LaunchSkill(currentElement)) return;
 
-        SetMana(currentMana - casterData.skillCost);
+        if (!debugFreeCast)
+            SetMana(currentMana - casterData.skillCost);
         cooldownRemaining[(int)currentElement] = casterData.GetCooldown(currentElement);
         RaiseCooldownChanged();
     }
@@ -134,13 +140,14 @@ public class PlayerElementCaster : MonoBehaviour
     {
         if (!CanCast() || casterData == null) return;
 
-        if (currentMana < casterData.maxMana)
+        if (!debugFreeCast && currentMana < casterData.maxMana)
         {
             Debug.Log($"[Phép] Yểm cần đầy mana: {currentMana:0}/{casterData.maxMana:0}");
             return;
         }
 
-        SetMana(0f);
+        if (!debugFreeCast)
+            SetMana(0f);
         Debug.Log($"[Phép] Yểm {currentElement} lên vũ khí (chưa làm)");
     }
 
@@ -265,6 +272,7 @@ public class PlayerElementCaster : MonoBehaviour
     private void ReleaseStoneBurst(Vector3 direction)
     {
         Vector3 origin = transform.position;
+        PlayStoneBurstView(origin, direction);
         SpellTargeting.CollectTargets(origin, stoneBurstData.range, spellHitLayer, character, hitBuffer, spellTargets);
 
         int hits = 0;
@@ -283,6 +291,16 @@ public class PlayerElementCaster : MonoBehaviour
         }
 
         Debug.Log($"[Phép] Đá Văng trúng {hits} mục tiêu");
+    }
+
+    private void PlayStoneBurstView(Vector3 origin, Vector3 direction)
+    {
+        if (stoneBurstViewPrefab == null) return;
+
+        if (stoneBurstView == null)
+            stoneBurstView = Instantiate(stoneBurstViewPrefab);
+
+        stoneBurstView.Play(origin, direction, stoneBurstData.range, stoneBurstData.arc);
     }
 
     private bool LaunchVortex()

@@ -2809,6 +2809,8 @@ MonoBehaviour:
     type: 3}
   waterRingData: {fileID: 11400000, guid: faf7372ab0268e04aaff1f542a63a21d, type: 2}
   stoneBurstData: {fileID: 11400000, guid: babcd5f9b8891cf428b98a39910983ad, type: 2}
+  stoneBurstViewPrefab: {fileID: 8483945155968822460, guid: 1647297c715147246968fe1d4f3d8d03,
+    type: 3}
   vortexData: {fileID: 11400000, guid: fcf9b56d2b45fc74fba488278534c0ec, type: 2}
   vortexPrefab: {fileID: 3115097445649033010, guid: 5a41c76b32f20b144855df4a967f9271,
     type: 3}

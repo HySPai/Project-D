@@ -67362,6 +67362,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 745921715}
     m_Modifications:
+    - target: {fileID: 561877462928896521, guid: 9a661e064f4cd9a4db84a02c16c942e4,
+        type: 3}
+      propertyPath: debugFreeCast
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1987881308303024513, guid: 9a661e064f4cd9a4db84a02c16c942e4,
         type: 3}
       propertyPath: PlayCount
