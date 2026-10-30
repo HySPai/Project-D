@@ -2804,10 +2804,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerElementCaster
   currentElement: 2
   casterData: {fileID: 11400000, guid: 73faf71d427fbb94fac42d01b862b856, type: 2}
+  debugFreeCast: 0
   fireballData: {fileID: 11400000, guid: 86b1b17400e03bc48a83f6e0fe40bd2f, type: 2}
   fireballPrefab: {fileID: 1665427750355801533, guid: 102ed2bc859040b4186b75ce3a87a4b7,
     type: 3}
   waterRingData: {fileID: 11400000, guid: faf7372ab0268e04aaff1f542a63a21d, type: 2}
+  waterRingViewPrefab: {fileID: 8141065581584310490, guid: 2a5509cebeeacb94b8b4e4acfa9b5aae,
+    type: 3}
   stoneBurstData: {fileID: 11400000, guid: babcd5f9b8891cf428b98a39910983ad, type: 2}
   stoneBurstViewPrefab: {fileID: 8483945155968822460, guid: 1647297c715147246968fe1d4f3d8d03,
     type: 3}

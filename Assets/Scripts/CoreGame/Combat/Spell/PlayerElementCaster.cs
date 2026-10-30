@@ -26,6 +26,7 @@ public class PlayerElementCaster : MonoBehaviour
 
     [Header("Water Ring")]
     [SerializeField] private SO_WaterRingData waterRingData;
+    [SerializeField] private WaterRingView waterRingViewPrefab;
 
     [Header("Stone Burst")]
     [SerializeField] private SO_StoneBurstData stoneBurstData;
@@ -44,6 +45,7 @@ public class PlayerElementCaster : MonoBehaviour
     private readonly List<CharacterControllerBase> spellTargets = new List<CharacterControllerBase>();
     private bool isWindingUp;
     private StoneBurstView stoneBurstView;
+    private WaterRingView waterRingView;
     private readonly float[] cooldownRemaining = new float[ElementCount];
 
     private CharacterStateBase state;
@@ -216,6 +218,7 @@ public class PlayerElementCaster : MonoBehaviour
         if (waterRingData == null) return false;
 
         Vector3 center = transform.position;
+        PlayWaterRingView(center);
         SpellTargeting.CollectTargets(center, waterRingData.radius, spellHitLayer, character, hitBuffer, spellTargets);
 
         foreach (CharacterControllerBase target in spellTargets)
@@ -291,6 +294,16 @@ public class PlayerElementCaster : MonoBehaviour
         }
 
         Debug.Log($"[Phép] Đá Văng trúng {hits} mục tiêu");
+    }
+
+    private void PlayWaterRingView(Vector3 center)
+    {
+        if (waterRingViewPrefab == null) return;
+
+        if (waterRingView == null)
+            waterRingView = Instantiate(waterRingViewPrefab);
+
+        waterRingView.Play(center, waterRingData.radius);
     }
 
     private void PlayStoneBurstView(Vector3 origin, Vector3 direction)
