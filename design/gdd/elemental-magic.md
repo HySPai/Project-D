@@ -2,7 +2,7 @@
 
 > **Status**: In Design
 > **Author**: người dùng + Claude (solo, không có specialist)
-> **Last Updated**: 2026-10-28
+> **Last Updated**: 2026-10-31
 > **Last Verified**: 2026-10-28
 > **Implements Pillar**: không có file pillar ở tier `minimal`; phục vụ thể loại trong `design/game-brief.md` (soulslike + metroidvania + giải đố)
 
@@ -77,7 +77,7 @@ Người chơi nhận từng nguyên tố bằng cách hạ boss côn trùng đa
 
 | | Gió (Tiếng Vọng) | Lửa (Lão Than) | Nước (Cụ Sen Cổ) | Đá (Đá Canh) |
 |---|---|---|---|---|
-| **Kỹ năng chiến đấu** | *Lốc Xoáy*: tạo một cơn lốc phía trước, hút nhẹ quái vào tâm và giữ chúng không tấn công được | *Cầu Lửa*: bắn một quả cầu lửa bay thẳng về phía trước, nổ khi chạm quái hoặc vật, gây Bỏng | *Vòng Nước*: sóng quanh người, đẩy lùi và gây Chậm | *Đá Văng*: bắn đá tỏa thành một vùng vòng cung phía trước, phá giáp và gây Choáng 1s |
+| **Kỹ năng chiến đấu** | *Lốc Xoáy*: tạo một cơn lốc phía trước, hút nhẹ quái vào tâm và giữ chúng không tấn công được | *Cầu Lửa*: bắn một quả cầu lửa bay thẳng về phía trước, nổ khi chạm quái hoặc vật, gây Bỏng | *Vòng Nước*: sóng quanh người, đẩy lùi và gây Chậm | *Đá Văng*: làm đất phía trước trồi lên thành các cột đá nhọn xếp theo vòng cung trước mặt, phá giáp và gây Choáng 1s |
 | **Yểm lên vũ khí** (luật 11b) | *Gió*: tăng tốc đánh | *Than Hồng*: đòn trúng gây Bỏng (thiêu đốt) | *Nước*: đòn trúng gây Chậm | *Đá*: lớp đá bọc lưỡi; đòn đầu tiên trúng quái làm đá vỡ, thành một đòn sát thương lớn và tích thanh thế nhanh hơn |
 | **Giải đố** | Xoay cánh quạt, cối xay; thổi vật nhẹ; đưa lửa lan theo gió | Thắp đèn, lò, đuốc; ánh lửa hút Ngài Đèn tới | Đổ đầy hoặc rút nước để nâng hạ vật nổi; tưới mầm cây mọc thành bậc | Dựng cột đá để đè nút nhấn hoặc làm bệ đứng |
 | **Mở lối** | Lướt Gió qua vực rộng (nút lướt, luật 4); cưỡi luồng gió lên cao | Đốt tường tơ, rễ khô | Đi trên mặt nước (lá sen nổi dưới chân) | Phá tường nứt; dựng cột đá lên mỏm cao |
@@ -89,7 +89,7 @@ Người chơi nhận từng nguyên tố bằng cách hạ boss côn trùng đa
 | Lốc Xoáy | 8 mỗi giây, tối đa 24 | Lốc bán kính 2m, đặt cách 3m phía trước, tồn tại 3s | Hút nhẹ quái vào tâm; quái trong lốc không tấn công được | Boss chỉ bị hút, vẫn tấn công được |
 | Cầu Lửa | 30 | Đạn bay thẳng 15 m/s, tầm tối đa 10m. Nổ khi chạm quái hoặc vật, bán kính nổ 1.5m | Bỏng | Để lại vùng cháy bán kính 1.5m trong 3s (dùng cho combo 12, 13) |
 | Vòng Nước | 20 | Vòng tròn quanh người, bán kính 3m | Chậm, đẩy lùi 2m | Để lại vùng ướt 5s (dùng cho combo 14, 15) |
-| Đá Văng | 35 | Vòng cung 90° phía trước, tầm 4m | Choáng 1s, phá giáp | Khởi động 0.35s |
+| Đá Văng | 35 | Vùng đất hình vòng cung 90° phía trước, tầm 4m; đất trồi lên thành cột đá, không có đạn bay ra | Choáng 1s, phá giáp | Khởi động 0.35s. Sát thương tính ngay lúc đòn thả ra (sau khởi động), cho mọi quái trong vùng cung; các cột đá trồi lần lượt chỉ là phần nhìn, không làm sát thương trễ theo hàng |
 
 Đạn Cầu Lửa nổ ngay khi chạm tường. Nếu bay hết 10m mà không chạm gì thì tự nổ tại chỗ.
 
@@ -125,7 +125,7 @@ Lướt Gió không phải kỹ năng của nút phép. Nó là bản nâng cấ
 
 12. Lửa + Gió: Lốc Xoáy chạm vùng cháy của Cầu Lửa hoặc vật đang cháy thì thành **lốc lửa**: quái trong lốc bị Bỏng, và lốc mang lửa theo, đốt các vật có cờ "cháy được" nó đi qua.
 13. Nước + Lửa: Vòng Nước chạm vật hoặc vùng đang cháy thì dập lửa và tạo hơi nước 4s. Quái trong hơi nước mất dấu hiệp sĩ (thoát khỏi việc bị nhắm).
-14. Nước + Đá: Đá Văng rơi xuống vùng ướt tạo bùn 5s, gây Chậm cho quái đứng trong đó.
+14. Nước + Đá: Đá Văng làm cột đá trồi lên trong vùng ướt thì tạo bùn 5s, gây Chậm cho quái đứng trong đó.
 15. Gió + Nước: Lốc Xoáy chạm vùng nước (vùng ướt của Vòng Nước, vũng, mặt hồ) thì hút nước thành mưa bụi, dập mọi đèn và lửa trong bán kính 4m quanh lốc.
 16. Lửa + Đá: cột đá dựng trong lúc vũ khí đang yểm Than Hồng thành đá nung 5s, gây Bỏng khi quái chạm vào.
 
@@ -282,7 +282,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
 - **GIVEN** quái đang Bỏng còn 2s, **WHEN** dính Bỏng lần nữa, **THEN** thời gian Bỏng đặt lại về 4s, không cộng dồn sát thương.
 - **GIVEN** vùng cháy của Cầu Lửa còn cháy, **WHEN** đặt Lốc Xoáy chạm vùng đó, **THEN** lốc thành lốc lửa, quái trong lốc bị Bỏng và tường tơ lốc chạm vào bị đốt (combo 12).
 - **GIVEN** một vùng đang cháy, **WHEN** dùng Vòng Nước trên vùng đó, **THEN** lửa tắt và hơi nước xuất hiện 4s; quái trong hơi nước mất dấu người chơi (combo 13).
-- **GIVEN** một vùng ướt, **WHEN** Đá Văng rơi xuống đó, **THEN** bùn xuất hiện 5s và quái trong bùn bị Chậm (combo 14).
+- **GIVEN** một vùng ướt, **WHEN** dùng Đá Văng và cột đá trồi lên trong vùng đó, **THEN** bùn xuất hiện 5s và quái trong bùn bị Chậm (combo 14).
 - **GIVEN** một vũng nước có đèn đang sáng cách 3m, **WHEN** đặt Lốc Xoáy chạm vũng, **THEN** mưa bụi xuất hiện và mọi đèn, lửa trong bán kính 4m quanh lốc tắt (combo 15).
 - **GIVEN** vũ khí đang yểm Than Hồng, **WHEN** dựng cột đá, **THEN** cột thành đá nung 5s và quái chạm vào bị Bỏng (combo 16).
 - **GIVEN** chưa có Gió, **WHEN** lướt xuyên qua đòn quái, **THEN** người chơi vẫn nhận sát thương.
@@ -306,6 +306,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
   - VFX khi cast;
   - VFX khi trúng;
   - VFX cho hiệu ứng trên quái: Bỏng là đốm than trên thân, Chậm là vệt nước nhỏ giọt, Choáng là vòng bụi đá quanh đầu.
+- **VFX riêng của Đá Văng (đất trồi):** không có đạn đá bay ra. Đất phía trước nứt và trồi lên thành các cột đá nhọn xếp vòng cung, màu nâu rêu, lần lượt từ hàng gần ra hàng xa (hàng xa cao hơn, các cột nghiêng nhẹ ra ngoài), đứng một nhịp ngắn rồi lún lại xuống đất. Có bụi đất bắn lên ở chân cột lúc trồi và lúc lún. Hình hiện tại (15 cột, 3 hàng ở 35% / 68% / 100% tầm, trồi cách nhau 0.06s, bật lên 0.12s, đứng 0.5s) là hình tạm trên `StoneBurstView` của prefab `P_StoneBurst`, chưa phải VFX thật. Vùng cung hiển thị phải khớp vùng trúng thật (90°, 4m) để người chơi đọc được tầm.
 - **Mỗi lớp yểm cần VFX bám lưỡi vũ khí trong suốt thời gian yểm:** Than Hồng là than hồng và tàn lửa, Nước là màng nước chảy, Gió là vệt gió quấn quanh lưỡi, Đá là lớp đá bọc lưỡi, vỡ tung thành mảnh khi đòn trúng quái. Khi lớp yểm còn 1s thì VFX nhấp nháy.
 - **Mỗi combo cần VFX riêng:** lửa lan theo gió, hơi nước, bùn, mưa bụi, đá nung.
 - **Vật giải đố và cổng chặn mang dấu nguyên tố cần dùng:** hoa văn màu của nguyên tố trên vật, đọc được từ góc nhìn isometric. Vật đã được tác động thì đổi trạng thái rõ ràng (đèn sáng, tường tơ cháy rụi, cột đá đứng yên).
@@ -329,7 +330,7 @@ Chiều ngược lại đã có ở `weapons.md`, `rest-point.md` và `save-load
   - Lướt Gió (nút lướt): nhẹ, nhanh, có vệt gió trắng để người chơi biết lần này có i-frame. Lướt thường không có vệt này.
   - Cầu Lửa: phóng nhanh, có lực giật nhẹ khi bắn và tiếng nổ trầm khi trúng.
   - Vòng Nước: tỏa ra mềm.
-  - Đá Văng: nặng, khởi động khoảng 0.35s, có dừng hình ngắn (hitstop) khi trúng.
+  - Đá Văng: nặng, khởi động khoảng 0.35s, có dừng hình ngắn (hitstop) khi trúng. Lúc thả đòn có cảm giác đất rung và trồi lan ra từ chân nhân vật tới rìa tầm, từng hàng cột đá nối nhau như một đợt sóng; rung camera nhẹ đi cùng đợt trồi.
 - **Yểm:**
   - anim yểm ngắn (khoảng 0.3s, vuốt tay dọc lưỡi vũ khí);
   - lăn hủy được phần hồi của anim yểm, giống luật cast;

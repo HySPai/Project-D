@@ -6,6 +6,7 @@ public class WindVortex : MonoBehaviour
     private const int HitBufferSize = 16;
 
     [SerializeField] private LayerMask hitLayer = 1 << 8;
+    [SerializeField] private WindVortexView view;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
     private readonly List<CharacterControllerBase> targets = new List<CharacterControllerBase>();
@@ -25,6 +26,9 @@ public class WindVortex : MonoBehaviour
 
         transform.SetPositionAndRotation(position, Quaternion.identity);
         gameObject.SetActive(true);
+
+        if (view != null)
+            view.Play(data.radius, data.lifetime);
     }
 
     private void Update()
