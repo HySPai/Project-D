@@ -136,7 +136,6 @@ public static class CombatAnimatorBuilder
     {
         string prefix = GuardSetPrefix[set];
         string tag = prefix + "guard_";
-        bool dual = set == "Dw";
 
         BlendTree tree;
         AnimatorState loco = controller.CreateBlendTreeInController("Guard_" + set + "_Loco", out tree, layerIndex);
@@ -162,7 +161,7 @@ public static class CombatAnimatorBuilder
         AnimatorState down = AddGuardState(machine, "Guard_" + set + "_Down", Clip(tag + "down_01"));
         Link(down, empty, 0.9f, 0.1f);
 
-        string pingClip = dual ? tag + "block_ping_01" : tag + "block_ping_01";
+        string pingClip = set == "Off" ? ShieldGuardClipFixer.ParryClipName : tag + "block_ping_01";
         AddReaction(machine, loco, "Guard_" + set + "_Parry", pingClip);
         AddReaction(machine, loco, "Guard_" + set + "_BlockLight", tag + "block_light_01");
         AddReaction(machine, loco, "Guard_" + set + "_BlockMedium", tag + "block_medium_01");
@@ -310,6 +309,13 @@ public static class CombatAnimatorBuilder
     private static AnimationClip Clip(string clipName)
     {
         if (clipCache.TryGetValue(clipName, out AnimationClip cached)) return cached;
+
+        AnimationClip shieldFixed = AssetDatabase.LoadAssetAtPath<AnimationClip>(ShieldGuardClipFixer.OutputFolder + "/" + clipName + ".anim");
+        if (shieldFixed != null)
+        {
+            clipCache[clipName] = shieldFixed;
+            return shieldFixed;
+        }
 
         string[] guids = AssetDatabase.FindAssets(clipName + " t:Model", new[] { SearchRoot });
         foreach (string guid in guids)
