@@ -483,5 +483,10 @@ Phụ: kem #F2E4C4 (mõm, chữ UI, lõi Ngưỡng); xanh áo chẽn = xanh đê
 - Lấy: albedo nét cọ lớn, không PBR; sáng tối và AO vẽ nhẹ, mép trên sáng lên để tách khối dưới camera cao; tileable và trim dùng chung, vật anh hùng vẽ riêng; mỗi vật liệu một swatch gốc.
 - Tránh: không khối phình to, góc vát fantasy (kiến trúc người xưa thẳng, mô-đun); không bão hòa cầu vồng; không vẽ hướng sáng quá mạnh vào albedo; không rune, đá chạm, vàng kim.
 
+**6. Ảnh style hiệp sĩ giữa tàn tích (người dùng gửi, 2026-10-31): `design/art/style/style-ruins-fox-knight.webp`**
+- Kèm bảng thiết kế nhân vật `design/art/style/character-sheet-fox-knight.webp` (model 3D hiện tại dựng từ bảng này).
+- Lấy: không khí và độ mềm của ảnh — tàn tích đá tròn cạnh phủ rêu, sương nhẹ phía sau, nắng ấm xiên, xanh lá ngả ấm, mảng màu lớn mềm; trang phục hiện tại của hiệp sĩ: lông nâu be, mõm kem, áo choàng và khăn đỏ mận sẫm, áo xanh nhạt, đai da nâu.
+- Lưu ý: trang phục này khác mục 5 (khăn xanh navy, lông vàng nâu `#A56F34`); cần chốt lại mục 4–5 theo bảng nhân vật mới.
+
 **Chưa có tham chiếu ngoài**
 - Làng Mái Vá: dựa vào mục 2, 3, 6. Khi cần, tìm ở `/asset-spec` cho làng; tham chiếu đó chỉ về cách xếp vật liệu nhặt nhạnh và ánh sáng nhiều nguồn nhỏ 2700–3200K.
