@@ -11,6 +11,7 @@ public class PlayerMovement : CharacterMovementBase
     private PlayerGuard guard;
 
     private const string DefaultBackstepAnimation = "Backstep_Main";
+    private static readonly int RollStateHash = Animator.StringToHash(CharacterAnimations.RollForward.name);
 
     public void Initialize(PlayerState state, PlayerAnimation animation, PlayerCombat combat, PlayerCamera playerCamera, PlayerGuard guard)
     {
@@ -27,6 +28,12 @@ public class PlayerMovement : CharacterMovementBase
     public override void Move()
     {
         if (state == null || state.IsDead) return;
+
+        if (state.IsRolling && !TryCancelRoll())
+        {
+            SteerRoll();
+            return;
+        }
 
         // Đang diễn action có root motion → OnAnimatorMove lo di chuyển + gravity.
         if (state.ApplyRootMotion) return;
@@ -122,6 +129,30 @@ public class PlayerMovement : CharacterMovementBase
         state.DrainStamina(state.RollStaminaCost);
         state.SetRolling(true);
         anim.Play(CharacterAnimations.RollForward);
+    }
+
+    private bool TryCancelRoll()
+    {
+        if (playerCamera.GetMoveDirection(input).sqrMagnitude <= 0.01f) return false;
+        if (anim.GetActionNormalizedTime(RollStateHash) < state.RollCancelNormalizedTime) return false;
+
+        anim.CancelAction(state.RollCancelBlendTime);
+        state.SetRolling(false);
+        state.SetAttacking(false);
+        state.SetApplyRootMotion(false);
+        state.SetCanRotate(true);
+        state.SetCanMove(true);
+        state.SetCurrentMoveSpeed(Mathf.Max(state.CurrentMoveSpeed, state.MoveSpeed * state.RollExitSpeedRatio));
+        return true;
+    }
+
+    private void SteerRoll()
+    {
+        Vector3 move = playerCamera.GetMoveDirection(input);
+        if (move.sqrMagnitude <= 0.01f) return;
+
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation, Quaternion.LookRotation(move.normalized), state.RollSteerSpeed * Time.deltaTime);
     }
 
     private void Backstep()

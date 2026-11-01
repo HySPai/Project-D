@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: 4985dbee0bd50304d9f5d40095abfaee, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _REVEAL_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -41,6 +42,11 @@ Material:
     - _PaintScale: 14
     - _PaintStrength: 0
     - _PaintWorld: 0
+    - _RevealEdgeWidth: 0.08
+    - _RevealNoiseScale: 22
+    - _RevealNoiseStrength: 0.06
+    - _RevealOn: 1
+    - _RevealProgress: 1
     - _RimLightMask: 0.6
     - _RimPower: 2.6
     - _RimSoftness: 0.3
@@ -60,6 +66,9 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HighlightColor: {r: 1.1, g: 1.05, b: 0.92, a: 1}
     - _MidColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RevealAxis: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealEdgeColor: {r: 2.4, g: 1.6, b: 0.6, a: 1}
+    - _RevealRange: {r: 0, g: 1, b: 0, a: 0}
     - _RimColor: {r: 1, g: 0.88, b: 0.62, a: 1}
     - _ShadowColor: {r: 0.55, g: 0.56, b: 0.72, a: 1}
     - _SpecColor: {r: 1, g: 0.96999997, b: 0.88, a: 1}

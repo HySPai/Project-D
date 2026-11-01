@@ -3307,6 +3307,7 @@ GameObject:
   - component: {fileID: 7694672649410949249}
   - component: {fileID: 1248100729388574410}
   - component: {fileID: 561877462928896521}
+  - component: {fileID: 6525368404550448825}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -3437,6 +3438,7 @@ MonoBehaviour:
   playerCamera: {fileID: 7694672649410949249}
   rumble: {fileID: 5915662762651994874}
   caster: {fileID: 561877462928896521}
+  stance: {fileID: 6525368404550448825}
 --- !u!114 &6237013157365418999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3663,6 +3665,22 @@ MonoBehaviour:
   spellHitLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &6525368404550448825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6101746182165348096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc1f2b14eefc3a54982b1555e0d466ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStance
+  config: {fileID: 11400000, guid: deb1cf5c5ab1ea046950a99b6d06e956, type: 2}
+  weapons:
+  - {fileID: 4283461865766599862}
+  - {fileID: 125539568736551408}
 --- !u!1 &6513414783242895176
 GameObject:
   m_ObjectHideFlags: 0
@@ -5585,11 +5603,41 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 1328574252373090816, guid: 830c07091a7a6c144a7cd3317cd3311b,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2aeab7d5557374e4a8135d2a1945dabd, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1328574252371098816, guid: 830c07091a7a6c144a7cd3317cd3311b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 125539568736551408}
   m_SourcePrefab: {fileID: 100100000, guid: 830c07091a7a6c144a7cd3317cd3311b, type: 3}
+--- !u!1 &6703042575076481060 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1328574252371098816, guid: 830c07091a7a6c144a7cd3317cd3311b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5725753579802715364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &125539568736551408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6703042575076481060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03a4db4b6667d084497f1bfbe7bc6f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponRevealer
+  targetRenderer: {fileID: 6703042575078672100}
+  meshFilter: {fileID: 6703042575079769124}
+  revealAxis: {x: 0, y: 1, z: 0}
 --- !u!4 &6703042575076901892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1328574252370665696, guid: 830c07091a7a6c144a7cd3317cd3311b,
@@ -5599,6 +5647,12 @@ Transform:
 --- !u!23 &6703042575078672100 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1328574252373090816, guid: 830c07091a7a6c144a7cd3317cd3311b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5725753579802715364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!33 &6703042575079769124 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: 1328574252374089920, guid: 830c07091a7a6c144a7cd3317cd3311b,
     type: 3}
   m_PrefabInstance: {fileID: 5725753579802715364}
   m_PrefabAsset: {fileID: 0}
@@ -5693,14 +5747,45 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4283461865766599862}
   m_SourcePrefab: {fileID: 100100000, guid: 23366f7fb925e7a4ea07d6bc7c76cabe, type: 3}
+--- !u!33 &5371612191655906761 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: -5754084199372789682, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
+    type: 3}
+  m_PrefabInstance: {fileID: 8840194692143162759}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &7885587021817592067 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
     type: 3}
   m_PrefabInstance: {fileID: 8840194692143162759}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8534259643209324758 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
+    type: 3}
+  m_PrefabInstance: {fileID: 8840194692143162759}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4283461865766599862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8534259643209324758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03a4db4b6667d084497f1bfbe7bc6f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponRevealer
+  targetRenderer: {fileID: 7885587021817592067}
+  meshFilter: {fileID: 5371612191655906761}
+  revealAxis: {x: 0, y: 1, z: 0}
 --- !u!4 &9017357923130655340 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,

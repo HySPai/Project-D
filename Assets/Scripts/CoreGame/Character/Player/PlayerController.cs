@@ -12,6 +12,7 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private PlayerCamera playerCamera;
     [SerializeField] private GamepadRumble rumble;
     [SerializeField] private PlayerElementCaster caster;
+    [SerializeField] private PlayerStance stance;
 
     private GamePlayView gamePlayView;
     private bool controlLocked;
@@ -29,6 +30,7 @@ public class PlayerController : CharacterControllerBase
     public PlayerInputHandler GetInput => input;
     public PlayerCombat GetPlayerCombat => combat;
     public PlayerElementCaster GetCaster => caster;
+    public PlayerStance GetStance => stance;
 
     protected override void Awake()
     {
@@ -40,6 +42,7 @@ public class PlayerController : CharacterControllerBase
         guard.Initialize(state, anim, combat);
         input.Initialize(state);
         if (caster != null) caster.Initialize(state, this, combat);
+        stance.Initialize(state, anim, combat, guard);
     }
 
     private void Start()
@@ -80,7 +83,11 @@ public class PlayerController : CharacterControllerBase
             return;
         }
 
-        guard.Tick(input.IsGuardHeld(), input.ConsumeGuardPressed());
+        bool guardHeld = input.IsGuardHeld();
+        bool guardPressed = input.ConsumeGuardPressed();
+        if (guardHeld || guardPressed) stance.RequestCombat();
+        bool weaponReady = stance.IsWeaponReady;
+        guard.Tick(guardHeld && weaponReady, guardPressed && weaponReady);
 
         // 2) Quyết định chạy/đi.
         bool canRun = input.IsRunning()
@@ -104,7 +111,12 @@ public class PlayerController : CharacterControllerBase
         }
 
         // 4) Action.
-        if (input.ConsumeFirePressed()) combat.Attack();
+        if (input.ConsumeFirePressed())
+        {
+            if (stance.IsWeaponReady) combat.Attack();
+            else stance.QueueAttack();
+        }
+        if (stance.ConsumeReadyAttack()) combat.Attack();
         if (input.IsRolling()) movement.Roll();
 
         if (caster != null)
@@ -116,6 +128,8 @@ public class PlayerController : CharacterControllerBase
         }
 
         // 5) Di chuyển (CharacterController) + cập nhật animation.
+        stance.Tick();
+
         movement.Move();
         anim.UpdateAnimation(state.AnimationMoveAmount);
     }
@@ -123,6 +137,7 @@ public class PlayerController : CharacterControllerBase
     protected override void OnReset()
     {
         guard.ResetGuard();
+        stance.ResetToExplore();
         if (caster != null) caster.RestoreMana();
         movement.SetInput(Vector2.zero);
         if (rumble != null) rumble.Stop();

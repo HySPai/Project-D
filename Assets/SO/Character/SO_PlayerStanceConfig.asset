@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944e152a862dcbf458847c8f9ab0da85, type: 3}
+  m_Name: SO_PlayerStanceConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_PlayerStanceConfig
+  combatExitDelay: 3
+  locomotionBlendTime: 0.35
+  equipLayerFadeTime: 0.12
+  drawStateName: Equip_Draw
+  drawDuration: 0.6
+  weaponReadyTime: 0.35
+  drawRevealDelay: 0.08
+  drawRevealDuration: 0.4
+  sheatheStateName: Equip_Sheathe
+  sheatheStartNormalizedTime: 1
+  sheatheDuration: 0.6
+  sheatheDissolveDelay: 0.1
+  sheatheDissolveDuration: 0.35
+  revealEdgeWidth: 0.08
+  revealEdgeColor: {r: 2.4, g: 1.6, b: 0.6, a: 1}
+  revealNoiseScale: 22
+  revealNoiseStrength: 0.06

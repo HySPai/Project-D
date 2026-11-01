@@ -22,8 +22,20 @@ public class EnemyState : CharacterStateBase
     public Transform Target => target;
     public bool HasTarget => target != null;
 
-    public void SetTarget(Transform value) => target = value;
-    public void ClearTarget() => target = null;
+    public void SetTarget(Transform value)
+    {
+        target = value;
+        if (value != null) EnemyAwarenessRegistry.Add(this);
+        else EnemyAwarenessRegistry.Remove(this);
+    }
+
+    public void ClearTarget()
+    {
+        target = null;
+        EnemyAwarenessRegistry.Remove(this);
+    }
+
+    private void OnDisable() => EnemyAwarenessRegistry.Remove(this);
     #endregion
 
     #region Vision / Chase config (đọc từ SO_EnemyStats)
@@ -149,6 +161,7 @@ public class EnemyState : CharacterStateBase
     protected override void Die()
     {
         base.Die();
+        EnemyAwarenessRegistry.Remove(this);
 
         var cc = owner != null ? owner.CharacterController : null;
         if (cc != null) cc.enabled = false;

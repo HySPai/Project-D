@@ -18,4 +18,10 @@ public class SO_PlayerStats : CharacterStats
     public float backstepStaminaCost = 10f;
     public float runStaminaDrainRate = 10f;
     public float runResumeStamina = 20f;
+
+    [Header("Roll")]
+    [Range(0f, 1f)] public float rollCancelNormalizedTime = 0.55f;
+    public float rollCancelBlendTime = 0.2f;
+    public float rollExitSpeedRatio = 1f;
+    public float rollSteerSpeed = 180f;
 }

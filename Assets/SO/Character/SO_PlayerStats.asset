@@ -16,8 +16,17 @@ MonoBehaviour:
   moveSpeed: 5
   runSpeed: 8
   rotateSpeed: 12
+  maxHearts: 4
+  pointsPerHeart: 25
+  invulnerabilityDuration: 1
   maxStamina: 100
   staminaRegenRate: 25
   staminaRegenDelay: 1.2
   rollStaminaCost: 20
+  backstepStaminaCost: 10
   runStaminaDrainRate: 20
+  runResumeStamina: 20
+  rollCancelNormalizedTime: 0.55
+  rollCancelBlendTime: 0.2
+  rollExitSpeedRatio: 1
+  rollSteerSpeed: 180

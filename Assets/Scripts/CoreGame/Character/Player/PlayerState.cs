@@ -151,6 +151,11 @@ public class PlayerState : CharacterStateBase
     public float BackstepStaminaCost => playerStats.backstepStaminaCost;
     public float RunStaminaDrainRate => playerStats.runStaminaDrainRate;
 
+    public float RollCancelNormalizedTime => playerStats.rollCancelNormalizedTime;
+    public float RollCancelBlendTime => playerStats.rollCancelBlendTime;
+    public float RollExitSpeedRatio => playerStats.rollExitSpeedRatio;
+    public float RollSteerSpeed => playerStats.rollSteerSpeed;
+
     public bool CanRun
     {
         get
@@ -182,6 +187,15 @@ public class PlayerState : CharacterStateBase
             currentStamina + playerStats.staminaRegenRate * Time.deltaTime);
         RaiseStaminaChanged();
     }
+    #endregion
+
+    #region Stance
+    private bool isCombatStance;
+
+    /// <summary>True while the sword and shield are drawn; false while exploring.</summary>
+    public bool IsCombatStance => isCombatStance;
+
+    public void SetCombatStance(bool value) => isCombatStance = value;
     #endregion
 
     #region Ground Check Extra

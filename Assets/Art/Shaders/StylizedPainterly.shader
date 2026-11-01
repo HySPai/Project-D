@@ -3,7 +3,8 @@
  Purpose: soft painterly toon look (no outline) shared by characters and environment.
  Pipeline: URP 17 (Unity 6.4), Forward and Forward+ (_CLUSTER_LIGHT_LOOP). Target: PC, mid-spec.
  Budget: 1 texture sample per pass, 2 value-noise taps (UV) or 6 (world), no dynamic branches.
- Keywords: _ALPHATEST_ON (foliage cutout) plus standard URP light, shadow and fog variants.
+ Keywords: _ALPHATEST_ON (foliage cutout), _REVEAL_ON (weapon draw/sheathe cut) plus standard URP light, shadow and fog variants.
+ Reveal: object-space cut along _RevealAxis between _RevealRange.x and .y, glowing edge, 2 value-noise taps; driven per renderer by WeaponRevealer.
  Wind: vertex sway driven by object-space height, keep _WindStrength 0 for characters and rigid props.
 */
 Shader "ProjectD/StylizedPainterly"
@@ -57,6 +58,16 @@ Shader "ProjectD/StylizedPainterly"
         _WindStrength ("Wind Strength", Range(0, 0.5)) = 0
         _WindSpeed ("Wind Speed", Range(0, 8)) = 1.6
         _WindScale ("Wind Scale", Range(0, 3)) = 0.5
+
+        [Header(Reveal)]
+        [Toggle(_REVEAL_ON)] _RevealOn ("Reveal Cut", Float) = 0
+        _RevealProgress ("Reveal Progress", Range(0, 1)) = 1
+        _RevealAxis ("Reveal Axis (Object)", Vector) = (0, 1, 0, 0)
+        _RevealRange ("Reveal Range (Min, Max)", Vector) = (0, 1, 0, 0)
+        _RevealEdgeWidth ("Reveal Edge Width", Range(0.01, 0.4)) = 0.08
+        [HDR] _RevealEdgeColor ("Reveal Edge Color", Color) = (2.4, 1.6, 0.6, 1)
+        _RevealNoiseScale ("Reveal Noise Scale", Range(1, 60)) = 22
+        _RevealNoiseStrength ("Reveal Noise Strength", Range(0, 0.3)) = 0.06
     }
 
     SubShader
@@ -108,7 +119,51 @@ Shader "ProjectD/StylizedPainterly"
             half _WindStrength;
             half _WindSpeed;
             half _WindScale;
+            half _RevealProgress;
+            float4 _RevealAxis;
+            float4 _RevealRange;
+            half _RevealEdgeWidth;
+            half4 _RevealEdgeColor;
+            half _RevealNoiseScale;
+            half _RevealNoiseStrength;
         CBUFFER_END
+
+        float Hash21(float2 p)
+        {
+            p = frac(p * float2(123.34, 456.21));
+            p += dot(p, p + 45.32);
+            return frac(p.x * p.y);
+        }
+
+        float ValueNoise(float2 p)
+        {
+            float2 i = floor(p);
+            float2 f = frac(p);
+            f = f * f * (3.0 - 2.0 * f);
+            float a = Hash21(i);
+            float b = Hash21(i + float2(1, 0));
+            float c = Hash21(i + float2(0, 1));
+            float d = Hash21(i + float2(1, 1));
+            return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
+        }
+
+        /*
+         Signed distance (in 0..1 units of the reveal range) from the reveal front to this fragment.
+         along: 0 at _RevealRange.x, 1 at _RevealRange.y. noise jitters the front by +-strength/2.
+         front sweeps from just below the lowest jittered point (progress 0, nothing visible)
+         to past the highest point plus the edge band (progress 1, fully visible with no glow).
+         Positive = visible; values below _RevealEdgeWidth fall inside the glowing edge.
+        */
+        float RevealDistance(float3 positionOS)
+        {
+            float span = max(_RevealRange.y - _RevealRange.x, 1e-4);
+            float along = (dot(positionOS, _RevealAxis.xyz) - _RevealRange.x) / span;
+            float jitter = (ValueNoise(positionOS.xy * _RevealNoiseScale) * 0.5
+                          + ValueNoise(positionOS.yz * _RevealNoiseScale + 7.1) * 0.5 - 0.5) * _RevealNoiseStrength;
+            float halfJitter = 0.5 * _RevealNoiseStrength;
+            float front = lerp(-halfJitter - 1e-3, 1.0 + halfJitter + _RevealEdgeWidth, _RevealProgress);
+            return front - (along + jitter);
+        }
 
         float3 ApplyWind(float3 positionOS)
         {
@@ -136,6 +191,7 @@ Shader "ProjectD/StylizedPainterly"
             #pragma fragment frag
 
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local _REVEAL_ON
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS
@@ -162,28 +218,12 @@ Shader "ProjectD/StylizedPainterly"
                 float3 positionWS : TEXCOORD1;
                 float3 normalWS : TEXCOORD2;
                 half fogFactor : TEXCOORD3;
+                #if defined(_REVEAL_ON)
+                    float3 positionOS : TEXCOORD4;
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-
-            float Hash21(float2 p)
-            {
-                p = frac(p * float2(123.34, 456.21));
-                p += dot(p, p + 45.32);
-                return frac(p.x * p.y);
-            }
-
-            float ValueNoise(float2 p)
-            {
-                float2 i = floor(p);
-                float2 f = frac(p);
-                f = f * f * (3.0 - 2.0 * f);
-                float a = Hash21(i);
-                float b = Hash21(i + float2(1, 0));
-                float c = Hash21(i + float2(0, 1));
-                float d = Hash21(i + float2(1, 1));
-                return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
-            }
 
             float BrushNoise(float2 p)
             {
@@ -222,6 +262,9 @@ Shader "ProjectD/StylizedPainterly"
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
                 output.fogFactor = ComputeFogFactor(vp.positionCS.z);
+                #if defined(_REVEAL_ON)
+                    output.positionOS = input.positionOS.xyz;
+                #endif
                 return output;
             }
 
@@ -243,6 +286,13 @@ Shader "ProjectD/StylizedPainterly"
                 half4 tex = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
                 #if defined(_ALPHATEST_ON)
                     clip(tex.a * _BaseColor.a - _Cutoff);
+                #endif
+
+                half revealGlow = 0;
+                #if defined(_REVEAL_ON)
+                    float reveal = RevealDistance(input.positionOS);
+                    clip(reveal);
+                    revealGlow = 1.0 - saturate(reveal / _RevealEdgeWidth);
                 #endif
 
                 float3 normalWS = normalize(input.normalWS);
@@ -306,6 +356,7 @@ Shader "ProjectD/StylizedPainterly"
                 color += _SpecColor.rgb * spec * _SpecStrength * shadowTerm * lightTint;
 
                 color += _EmissionColor.rgb;
+                color += _RevealEdgeColor.rgb * revealGlow;
                 color = MixFog(color, input.fogFactor);
                 return half4(color, 1);
             }
@@ -327,6 +378,7 @@ Shader "ProjectD/StylizedPainterly"
             #pragma vertex ShadowVert
             #pragma fragment ShadowFrag
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local _REVEAL_ON
             #pragma multi_compile_instancing
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
 
@@ -347,6 +399,9 @@ Shader "ProjectD/StylizedPainterly"
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                #if defined(_REVEAL_ON)
+                    float3 positionOS : TEXCOORD1;
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -374,12 +429,18 @@ Shader "ProjectD/StylizedPainterly"
                 #endif
                 output.positionCS = positionCS;
                 output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
+                #if defined(_REVEAL_ON)
+                    output.positionOS = input.positionOS.xyz;
+                #endif
                 return output;
             }
 
             half4 ShadowFrag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
+                #if defined(_REVEAL_ON)
+                    clip(RevealDistance(input.positionOS));
+                #endif
                 #if defined(_ALPHATEST_ON)
                     half a = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).a * _BaseColor.a;
                     clip(a - _Cutoff);
@@ -403,6 +464,7 @@ Shader "ProjectD/StylizedPainterly"
             #pragma vertex DepthVert
             #pragma fragment DepthFrag
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local _REVEAL_ON
             #pragma multi_compile_instancing
 
             struct Attributes
@@ -416,6 +478,9 @@ Shader "ProjectD/StylizedPainterly"
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                #if defined(_REVEAL_ON)
+                    float3 positionOS : TEXCOORD1;
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -426,12 +491,18 @@ Shader "ProjectD/StylizedPainterly"
                 UNITY_TRANSFER_INSTANCE_ID(input, output);
                 output.positionCS = TransformObjectToHClip(ApplyWind(input.positionOS.xyz));
                 output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
+                #if defined(_REVEAL_ON)
+                    output.positionOS = input.positionOS.xyz;
+                #endif
                 return output;
             }
 
             half DepthFrag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
+                #if defined(_REVEAL_ON)
+                    clip(RevealDistance(input.positionOS));
+                #endif
                 #if defined(_ALPHATEST_ON)
                     half a = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).a * _BaseColor.a;
                     clip(a - _Cutoff);
@@ -454,6 +525,7 @@ Shader "ProjectD/StylizedPainterly"
             #pragma vertex NormVert
             #pragma fragment NormFrag
             #pragma shader_feature_local_fragment _ALPHATEST_ON
+            #pragma shader_feature_local _REVEAL_ON
             #pragma multi_compile_instancing
 
             struct Attributes
@@ -469,6 +541,9 @@ Shader "ProjectD/StylizedPainterly"
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normalWS : TEXCOORD1;
+                #if defined(_REVEAL_ON)
+                    float3 positionOS : TEXCOORD2;
+                #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -480,12 +555,18 @@ Shader "ProjectD/StylizedPainterly"
                 output.positionCS = TransformObjectToHClip(ApplyWind(input.positionOS.xyz));
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
+                #if defined(_REVEAL_ON)
+                    output.positionOS = input.positionOS.xyz;
+                #endif
                 return output;
             }
 
             half4 NormFrag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
+                #if defined(_REVEAL_ON)
+                    clip(RevealDistance(input.positionOS));
+                #endif
                 #if defined(_ALPHATEST_ON)
                     half a = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).a * _BaseColor.a;
                     clip(a - _Cutoff);
