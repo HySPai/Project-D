@@ -2854,7 +2854,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5eb1f47fcb11f4c49ac0de95168712bd, type: 2}
+  - {fileID: 2100000, guid: 4c4d0545cb13dcf49bcd4c0349e7f522, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3460,6 +3460,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8490dc550f9d4dd478f638d4be16c216, type: 2}
     - target: {fileID: 919132149155446097, guid: 23366f7fb925e7a4ea07d6bc7c76cabe,
         type: 3}
       propertyPath: m_Name
