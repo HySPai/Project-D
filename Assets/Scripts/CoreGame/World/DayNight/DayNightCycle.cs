@@ -26,6 +26,10 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField] private Gradient moonColor;
     [SerializeField] private Gradient ambientColor;
 
+    [Header("Hour Tint")]
+    [SerializeField] private Gradient sunHourTint;
+    [SerializeField] private Gradient ambientHourTint;
+
     [Header("Clouds")]
     [SerializeField] private CloudShadows cloudShadows;
     [SerializeField] private Vector3 cloudShadowDirection = new Vector3(0.2f, -1f, 0.2f);
@@ -78,7 +82,7 @@ public class DayNightCycle : MonoBehaviour
         if (sunLight != null)
         {
             sunLight.intensity = Mathf.Lerp(0f, maxSunIntensity, intensity);
-            sunLight.color = sunColor.Evaluate(sunDot);
+            sunLight.color = sunColor.Evaluate(sunDot) * sunHourTint.Evaluate(hour / DayNightMath.HoursPerDay);
             sunLight.shadows = sunLight.intensity < 0.01f ? LightShadows.None : LightShadows.Soft;
         }
 
@@ -90,7 +94,7 @@ public class DayNightCycle : MonoBehaviour
             moonLight.shadows = moonLight.intensity < 0.01f ? LightShadows.None : LightShadows.Soft;
         }
 
-        Color ambient = ambientColor.Evaluate(sunDot);
+        Color ambient = ambientColor.Evaluate(sunDot) * ambientHourTint.Evaluate(hour / DayNightMath.HoursPerDay);
         RenderSettings.ambientLight = ambient;
         Shader.SetGlobalColor(GlobalAmbientColorId, ambient);
         Shader.SetGlobalVector(CloudLightDirectionId, cloudShadowDirection.normalized);

@@ -3256,6 +3256,86 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &86064122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 86064123}
+  - component: {fileID: 86064124}
+  m_Layer: 0
+  m_Name: TimeOfDayGrade
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &86064123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86064122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1249604755}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &86064124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86064122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a89e4cfdb336124ebea9ddf756b303f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimeOfDayGrade
+  dayNight: {fileID: 534710155}
+  morningVolume: {fileID: 1914762107}
+  afternoonVolume: {fileID: 1414035094}
+  afternoonBlendStartHour: 11
+  afternoonBlendEndHour: 15
+  fogColor:
+    serializedVersion: 2
+    key0: {r: 0.05, g: 0.09, b: 0.24, a: 1}
+    key1: {r: 0.06, g: 0.1, b: 0.26, a: 1}
+    key2: {r: 0.9, g: 0.65, b: 0.5, a: 0}
+    key3: {r: 0.72, g: 0.8, b: 0.62, a: 0}
+    key4: {r: 0.78, g: 0.85, b: 0.72, a: 0}
+    key5: {r: 0.88, g: 0.58, b: 0.55, a: 0}
+    key6: {r: 0.45, g: 0.2, b: 0.45, a: 0}
+    key7: {r: 0.05, g: 0.1, b: 0.26, a: 0}
+    ctime0: 0
+    ctime1: 13653
+    ctime2: 17749
+    ctime3: 24576
+    ctime4: 32768
+    ctime5: 45055
+    ctime6: 50517
+    ctime7: 54613
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 8
+    m_NumAlphaKeys: 2
+  fogDensity: 0.006
 --- !u!1001 &86716412
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27529,7 +27609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightCycle
   startHour: 9
-  dayDurationSeconds: 840
+  dayDurationSeconds: 30
   sunriseHour: 6
   sunsetHour: 18
   sunLight: {fileID: 2097596694}
@@ -27537,7 +27617,7 @@ MonoBehaviour:
   orbitAxisY: 198
   orbitTilt: 40
   maxSunIntensity: 1.1
-  maxMoonIntensity: 0.75
+  maxMoonIntensity: 0.55
   lightIntensityCurve:
     serializedVersion: 2
     m_Curve:
@@ -27642,7 +27722,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   ambientColor:
     serializedVersion: 2
-    key0: {r: 0.05, g: 0.11, b: 0.16, a: 1}
+    key0: {r: 0.14, g: 0.24, b: 0.46, a: 1}
     key1: {r: 0.44, g: 0.38, b: 0.56, a: 1}
     key2: {r: 0.5, g: 0.47, b: 0.66, a: 0}
     key3: {r: 0.52, g: 0.5, b: 0.68, a: 0}
@@ -27669,6 +27749,66 @@ MonoBehaviour:
     m_Mode: 0
     m_ColorSpace: -1
     m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  sunHourTint:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 0.8, b: 0.6, a: 1}
+    key2: {r: 1, g: 0.95, b: 0.8, a: 0}
+    key3: {r: 1, g: 1, b: 0.97, a: 0}
+    key4: {r: 1, g: 0.78, b: 0.55, a: 0}
+    key5: {r: 1, g: 0.55, b: 0.4, a: 0}
+    key6: {r: 1, g: 1, b: 1, a: 0}
+    key7: {r: 1, g: 1, b: 1, a: 0}
+    ctime0: 0
+    ctime1: 16384
+    ctime2: 24576
+    ctime3: 32768
+    ctime4: 43690
+    ctime5: 49151
+    ctime6: 51882
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 8
+    m_NumAlphaKeys: 2
+  ambientHourTint:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 0.9, b: 0.85, a: 1}
+    key2: {r: 1, g: 1, b: 0.95, a: 0}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 1, g: 0.82, b: 0.95, a: 0}
+    key5: {r: 0.9, g: 0.7, b: 1, a: 0}
+    key6: {r: 1, g: 1, b: 1, a: 0}
+    key7: {r: 1, g: 1, b: 1, a: 0}
+    ctime0: 0
+    ctime1: 16384
+    ctime2: 24576
+    ctime3: 32768
+    ctime4: 43690
+    ctime5: 49151
+    ctime6: 54613
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 8
     m_NumAlphaKeys: 2
   cloudShadows: {fileID: 1413009157}
   cloudShadowDirection: {x: 0.2, y: -1, z: 0.2}
@@ -41575,6 +41715,9 @@ Transform:
   m_Children:
   - {fileID: 1124303039}
   - {fileID: 872031145}
+  - {fileID: 1914762108}
+  - {fileID: 1414035095}
+  - {fileID: 86064123}
   m_Father: {fileID: 333573864}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1258731912
@@ -46268,6 +46411,55 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 333573864}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1414035093
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1414035095}
+  - component: {fileID: 1414035094}
+  m_Layer: 0
+  m_Name: AfternoonVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1414035094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414035093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0.5
+  blendDistance: 0
+  weight: 0
+  sharedProfile: {fileID: 11400000, guid: f8716074d32bf454ca43ede7ce55ce98, type: 2}
+--- !u!4 &1414035095
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414035093}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1249604755}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1419620656
 Mesh:
@@ -61133,6 +61325,55 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &1914762106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1914762108}
+  - component: {fileID: 1914762107}
+  m_Layer: 0
+  m_Name: MorningVolume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1914762107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914762106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0.5
+  blendDistance: 0
+  weight: 0
+  sharedProfile: {fileID: 11400000, guid: 79e59681e49b7e34cadb07f2eee89f08, type: 2}
+--- !u!4 &1914762108
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914762106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1249604755}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1920361108 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7944155964807398050, guid: 28e1ad3bbc1747b41ba5b2a24bbb85bc,
