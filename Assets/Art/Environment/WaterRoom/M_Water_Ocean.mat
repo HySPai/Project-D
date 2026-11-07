@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_Water_Ocean
+  m_Shader: {fileID: 4800000, guid: c13b10e54ee08634f880e63a3fcda31d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _WaterSdfTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BodyBlend: 0.28
+    - _BodyDashCount: 9
+    - _BodyDashMinLength: 0.45
+    - _BodyDashSpin: 0.25
+    - _BodyDashThreshold: 0.4
+    - _ContactBreathAmount: 0.025
+    - _ContactBreathSpeed: 1.6
+    - _ContactGap: 0.04
+    - _ContactOuterGap: 0.1
+    - _ContactOuterStrength: 0.55
+    - _ContactWidth: 0.035
+    - _CrescentBackWidth: 2.2
+    - _CrescentFrontFade: 0.85
+    - _CrescentShift: 0.07
+    - _DayLightLevel: 0.8
+    - _DeepAlpha: 1
+    - _EntryErodeStart: 0.2
+    - _EntryInnerErodeBoost: 0.15
+    - _EntryWidthScale: 1
+    - _FrontArcGap: 0.08
+    - _FrontArcSpan: 0.55
+    - _FrontArcStrength: 0.85
+    - _HeightMatch: 0.5
+    - _InnerStrength: 0.55
+    - _Line2Offset: 0.62
+    - _Line2Strength: 0.32
+    - _LineOffset: 0.26
+    - _LinePulseAmount: 0.05
+    - _LinePulseSpeed: 0.9
+    - _LineWidth: 0.05
+    - _NightDim: 0.28
+    - _RippleBreakAmount: 0.5
+    - _RippleBreakScale: 7
+    - _RippleFill: 0.3
+    - _ShallowAlpha: 1
+    - _ShallowRange: 1.8
+    - _ShoreInnerErode: 0.27
+    - _ShoreLumpAmount: 0.3
+    - _ShoreLumpScale: 6
+    - _ShoreOuterErode: 0.44
+    - _ShoreStrokeDrift: 0.08
+    - _ShoreStrokeScale: 1.6
+    - _ShoreStrokeSoftness: 0.36
+    - _SwellScale: 0.12
+    - _SwellSpeed: 0.07
+    - _SwellStrength: 0.18
+    - _TrailDashCount: 10
+    - _TrailDashMinLength: 0.4
+    - _TrailDashThreshold: 0.6
+    - _TrailErodeEnd: 0.6
+    - _TrailErodeStart: 0.25
+    - _TrailFadePower: 1.5
+    - _TrailFillStrength: 0.15
+    - _TrailLumpAmount: 0.16
+    - _TrailLumpFrequency: 9
+    - _TrailOuterGap: 0.07
+    - _TrailOuterStrength: 0.8
+    - _TrailRadiusWobble: 0.015
+    - _TrailRingBreak: 0.12
+    - _TrailRingMinLength: 0.78
+    - _TrailSideErode: 0.28
+    - _TrailStrokeFrequency: 2.7
+    - _TrailStrokeSoftness: 0.2
+    - _TrailWidthScale: 0.85
+    - _WaterSdfMax: 8
+    - _WobbleAmount: 0.09
+    - _WobbleScale: 1.1
+    - _WobbleSpeed: 0.22
+    m_Colors:
+    - _ContactColor: {r: 1.25, g: 1.55, b: 1.9, a: 1}
+    - _DeepColor: {r: 0.02, g: 0.089999996, b: 0.86, a: 1}
+    - _InnerColor: {r: 0.11999995, g: 0.41999996, b: 1, a: 1}
+    - _LineColor: {r: 0.55, g: 1.15, b: 2.1, a: 1}
+    - _ShadowTint: {r: 0.15999997, g: 0.09999997, b: 0.52, a: 1}
+    - _ShallowColor: {r: 0.049999982, g: 0.29999998, b: 0.95, a: 1}
+    - _SwellColor: {r: 0.03, g: 0.19999996, b: 0.97999996, a: 1}
+    - _WaterSdfRect: {r: 0, g: 0, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

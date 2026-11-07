@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef81b6e8a91e15e48acc0943bd37a77c, type: 3}
+  m_Name: SO_WaterConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SO_WaterConfig
+  rippleLifetime: 0.7
+  rippleWidth: 0.06
+  rippleSpread: {x: 0.22, y: 0.65}
+  gentleEntryStrength: 0.15
+  trailMinSpeed: 0.4
+  trailSpacing: 1.8
+  trailLifetime: 0.45
+  trailBehindFactor: 0.35
+  trailStartScale: 0.5
+  trailSpread: {x: 0.04, y: 0.1}
+  crescentMinSpeed: 0.2
+  crescentFullSpeed: 2.5
+  trailFullSpeed: 5
+  velocitySmoothing: 9
+  splashMinSpeed: 1.5
+  splashMaxSpeed: 9
+  wadeSpraySpeed: 3
+  wadeSpraySpacing: 1.4
+  wadeSprayCount: 2
+  wadeSprayRadius: 0.15
+  dropletCount: {x: 2, y: 14}
+  dropletSpeed: {x: 1, y: 3.4}
+  dropletSize: {x: 0.02, y: 0.06}
+  dropletLifetime: {x: 0.3, y: 0.6}
+  dropletSpread: 0.45
+  dropletGravity: 1.6
+  foamCount: {x: 0, y: 4}
+  foamSize: {x: 0.07, y: 0.22}
+  foamLifetime: {x: 0.25, y: 0.5}
+  foamSpread: 0.15
+  foamRiseSpeed: 0.25
+  waterDensity: 1000
+  displacementFactor: 1
+  linearDrag: 2.6
+  angularDrag: 2
+  bobAmount: 0.12
+  bobSpeed: 1.5
+  bakeTexelsPerMeter: 8
+  bakeMaxDistance: 6
+  bakeProbeHeight: 0.04
