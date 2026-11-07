@@ -3480,7 +3480,7 @@ MonoBehaviour:
   currentStamina: 0
   groundCheckDistance: 5
   edgeCheckForwardDistance: 0.5
-  fullSpeedInputThreshold: 0.2
+  fullSpeedInputThreshold: 0.75
   currentInput: {x: 0, y: 0}
   currentCameraInput: {x: 0, y: 0}
 --- !u!114 &4935462881444096308

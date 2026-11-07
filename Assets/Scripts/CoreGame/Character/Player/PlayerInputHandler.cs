@@ -195,7 +195,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        state.SetCurrentInput(Vector2.MoveTowards(state.CurrentInput, movementInput, state.MoveSmoothSpeed * Time.deltaTime));
+        state.SetCurrentInput(movementInput);
 
         verticalInput = state.CurrentInput.y;
         horizontalInput = state.CurrentInput.x;

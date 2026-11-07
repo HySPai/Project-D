@@ -26,6 +26,8 @@ MonoBehaviour:
   backstepStaminaCost: 10
   runStaminaDrainRate: 20
   runResumeStamina: 20
+  moveInputDeadzone: 0
+  moveAnimSpeedThreshold: 0.15
   rollCancelNormalizedTime: 0.55
   rollCancelBlendTime: 0.2
   rollExitSpeedRatio: 1

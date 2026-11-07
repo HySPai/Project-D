@@ -221,15 +221,31 @@ public class PlayerState : CharacterStateBase
     public void SetCurrentCameraInput(Vector2 value) => currentCameraInput = value;
     #endregion
 
-    #region Animation Move Amount
+    #region Locomotion
+    public float MoveInputDeadzone => playerStats.moveInputDeadzone;
+    public float MoveAnimSpeedThreshold => playerStats.moveAnimSpeedThreshold;
+
+    /// <summary>Stick magnitude with the deadzone removed and rescaled, then mapped so FullSpeedInputThreshold reaches 1.</summary>
+    public float GetMoveAmount(Vector2 input)
+    {
+        float deadzone = playerStats.moveInputDeadzone;
+        float magnitude = input.magnitude;
+        if (magnitude <= deadzone) return 0f;
+
+        float live = (magnitude - deadzone) / Mathf.Max(0.0001f, 1f - deadzone);
+        float fullSpeed = (fullSpeedInputThreshold - deadzone) / Mathf.Max(0.0001f, 1f - deadzone);
+        return Mathf.Clamp01(live / Mathf.Max(0.0001f, fullSpeed));
+    }
+
+    /// <summary>Locomotion blend value from the real speed: 0 idle, 1 at walk speed, 2 at run speed.</summary>
     public float AnimationMoveAmount
     {
         get
         {
-            float moveAmount = Mathf.Clamp01(CurrentInput.magnitude / FullSpeedInputThreshold);
-            if (moveAmount <= 0.01f) return 0f;
-            if (IsRunning) return 2f;
-            return moveAmount;
+            float speed = currentMoveSpeed;
+            if (speed <= playerStats.moveAnimSpeedThreshold) return 0f;
+            if (speed <= moveSpeed) return speed / Mathf.Max(0.0001f, moveSpeed);
+            return 1f + Mathf.Clamp01((speed - moveSpeed) / Mathf.Max(0.0001f, runSpeed - moveSpeed));
         }
     }
     #endregion

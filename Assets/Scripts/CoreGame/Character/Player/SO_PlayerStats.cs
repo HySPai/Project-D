@@ -19,6 +19,10 @@ public class SO_PlayerStats : CharacterStats
     public float runStaminaDrainRate = 10f;
     public float runResumeStamina = 20f;
 
+    [Header("Locomotion")]
+    [Range(0f, 0.5f)] public float moveInputDeadzone = 0f;
+    public float moveAnimSpeedThreshold = 0.15f;
+
     [Header("Roll")]
     [Range(0f, 1f)] public float rollCancelNormalizedTime = 0.55f;
     public float rollCancelBlendTime = 0.2f;

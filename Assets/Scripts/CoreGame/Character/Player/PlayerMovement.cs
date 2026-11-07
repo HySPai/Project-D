@@ -45,16 +45,16 @@ public class PlayerMovement : CharacterMovementBase
             return;
         }
 
-        Vector3 move = playerCamera.GetMoveDirection(input);
-        float moveAmount = Mathf.Clamp01(input.magnitude / state.FullSpeedInputThreshold);
+        float moveAmount = state.GetMoveAmount(input);
+        Vector3 move = moveAmount > 0f ? playerCamera.GetMoveDirection(input) : Vector3.zero;
 
         if (move.sqrMagnitude > 0.001f)
             move.Normalize();
 
-        anim.SetMoving(moveAmount > 0.01f);
-
         HandleRunStamina(moveAmount);
         UpdateMoveSpeed(moveAmount);
+
+        anim.SetMoving(state.CurrentMoveSpeed > state.MoveAnimSpeedThreshold);
 
         Vector3 horizontalDelta = move * (state.CurrentMoveSpeed * Time.deltaTime);
         horizontalDelta = state.ResolveEdgeGuard(horizontalDelta);
@@ -96,16 +96,7 @@ public class PlayerMovement : CharacterMovementBase
         targetSpeed *= guard != null ? guard.MoveSpeedMultiplier : 1f;
 
         state.SetTargetMoveSpeed(targetSpeed);
-
-        if (moveAmount <= 0f)
-        {
-            state.SetCurrentMoveSpeed(0f);
-            return;
-        }
-
-        float smoothSpeed = state.MoveSmoothSpeed * state.MoveSpeed;
-        state.SetCurrentMoveSpeed(Mathf.MoveTowards(
-            state.CurrentMoveSpeed, state.TargetMoveSpeed, smoothSpeed * Time.deltaTime));
+        state.SetCurrentMoveSpeed(targetSpeed);
     }
 
     public override void Roll()
@@ -116,7 +107,7 @@ public class PlayerMovement : CharacterMovementBase
         if (!state.HasStamina) return;
 
         Vector3 moveDirection = playerCamera.GetMoveDirection(input);
-        if (moveDirection.sqrMagnitude <= 0.01f)
+        if (state.GetMoveAmount(input) <= 0f || moveDirection.sqrMagnitude <= 0.0001f)
         {
             Backstep();
             return;
