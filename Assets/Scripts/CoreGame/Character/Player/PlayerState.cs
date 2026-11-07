@@ -154,12 +154,12 @@ public class PlayerState : CharacterStateBase
     public float RollCancelNormalizedTime => playerStats.rollCancelNormalizedTime;
     public float RollCancelBlendTime => playerStats.rollCancelBlendTime;
     public float RollExitSpeedRatio => playerStats.rollExitSpeedRatio;
-    public float RollSteerSpeed => playerStats.rollSteerSpeed;
 
     public bool CanRun
     {
         get
         {
+            if (!isCombatStance) return true;
             if (currentStamina <= 0f) runExhausted = true;
             else if (currentStamina >= playerStats.runResumeStamina) runExhausted = false;
             return !runExhausted;
@@ -219,6 +219,50 @@ public class PlayerState : CharacterStateBase
 
     public void SetCurrentInput(Vector2 value) => currentInput = value;
     public void SetCurrentCameraInput(Vector2 value) => currentCameraInput = value;
+    #endregion
+
+    #region Water
+    [Header("Water")]
+    [SerializeField] private LayerMask waterLayer;
+
+    private readonly Collider[] waterHits = new Collider[4];
+    private int waterSampleFrame = -1;
+    private float waterDepth;
+
+    /// <summary>True while the feet are inside a water volume (wading or deeper).</summary>
+    public bool IsInWater => WaterDepth > 0f;
+
+    /// <summary>How far the water surface sits above the feet, in metres; 0 on dry ground. Sampled once per frame.</summary>
+    public float WaterDepth
+    {
+        get
+        {
+            if (waterSampleFrame == Time.frameCount) return waterDepth;
+            waterSampleFrame = Time.frameCount;
+
+            Vector3 feet = transform.position;
+            int count = Physics.OverlapSphereNonAlloc(
+                feet + Vector3.up * playerStats.waterCheckHeight, playerStats.waterCheckRadius,
+                waterHits, waterLayer, QueryTriggerInteraction.Collide);
+
+            waterDepth = 0f;
+            for (int i = 0; i < count; i++)
+                waterDepth = Mathf.Max(waterDepth, waterHits[i].bounds.max.y - feet.y);
+            return waterDepth;
+        }
+    }
+
+    /// <summary>Speed multiplier while wading: 1 on dry ground, easing down to the minimum at full slow depth.</summary>
+    public float WadeSpeedMultiplier =>
+        GetWadeSpeedMultiplier(WaterDepth, playerStats.waterFullSlowDepth, playerStats.waterMinSpeedMultiplier);
+
+    /// <summary>Linear slow-down from 1 at depth 0 to minMultiplier at fullSlowDepth and beyond.</summary>
+    public static float GetWadeSpeedMultiplier(float depth, float fullSlowDepth, float minMultiplier)
+    {
+        if (depth <= 0f) return 1f;
+        float t = fullSlowDepth > 0f ? Mathf.Clamp01(depth / fullSlowDepth) : 1f;
+        return Mathf.Lerp(1f, minMultiplier, t);
+    }
     #endregion
 
     #region Locomotion

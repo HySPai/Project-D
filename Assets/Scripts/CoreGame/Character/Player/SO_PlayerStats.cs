@@ -27,5 +27,10 @@ public class SO_PlayerStats : CharacterStats
     [Range(0f, 1f)] public float rollCancelNormalizedTime = 0.55f;
     public float rollCancelBlendTime = 0.2f;
     public float rollExitSpeedRatio = 1f;
-    public float rollSteerSpeed = 180f;
+
+    [Header("Water")]
+    public float waterCheckHeight = 0.15f;
+    public float waterCheckRadius = 0.1f;
+    public float waterFullSlowDepth = 0.6f;
+    [Range(0.05f, 1f)] public float waterMinSpeedMultiplier = 0.45f;
 }

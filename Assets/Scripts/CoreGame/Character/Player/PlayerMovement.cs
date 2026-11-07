@@ -29,11 +29,7 @@ public class PlayerMovement : CharacterMovementBase
     {
         if (state == null || state.IsDead) return;
 
-        if (state.IsRolling && !TryCancelRoll())
-        {
-            SteerRoll();
-            return;
-        }
+        if (state.IsRolling && !TryCancelRoll()) return;
 
         // Đang diễn action có root motion → OnAnimatorMove lo di chuyển + gravity.
         if (state.ApplyRootMotion) return;
@@ -94,6 +90,7 @@ public class PlayerMovement : CharacterMovementBase
             targetSpeed = state.IsRunning ? state.RunSpeed : state.MoveSpeed * moveAmount;
 
         targetSpeed *= guard != null ? guard.MoveSpeedMultiplier : 1f;
+        targetSpeed *= state.WadeSpeedMultiplier;
 
         state.SetTargetMoveSpeed(targetSpeed);
         state.SetCurrentMoveSpeed(targetSpeed);
@@ -105,6 +102,7 @@ public class PlayerMovement : CharacterMovementBase
         if (state.IsRolling) return;
         if (state.IsAttacking) return;
         if (!state.HasStamina) return;
+        if (state.IsInWater) return;
 
         Vector3 moveDirection = playerCamera.GetMoveDirection(input);
         if (state.GetMoveAmount(input) <= 0f || moveDirection.sqrMagnitude <= 0.0001f)
@@ -137,15 +135,6 @@ public class PlayerMovement : CharacterMovementBase
         return true;
     }
 
-    private void SteerRoll()
-    {
-        Vector3 move = playerCamera.GetMoveDirection(input);
-        if (move.sqrMagnitude <= 0.01f) return;
-
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation, Quaternion.LookRotation(move.normalized), state.RollSteerSpeed * Time.deltaTime);
-    }
-
     private void Backstep()
     {
         WeaponItem weapon = combat.CurrentWeapon;
@@ -164,6 +153,7 @@ public class PlayerMovement : CharacterMovementBase
     private void HandleRunStamina(float moveAmount)
     {
         if (!state.IsRunning || moveAmount <= 0f) return;
+        if (!state.IsCombatStance) return;
         state.DrainStamina(state.RunStaminaDrainRate * Time.deltaTime);
     }
 }

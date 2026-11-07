@@ -3483,6 +3483,9 @@ MonoBehaviour:
   fullSpeedInputThreshold: 0.75
   currentInput: {x: 0, y: 0}
   currentCameraInput: {x: 0, y: 0}
+  waterLayer:
+    serializedVersion: 2
+    m_Bits: 16
 --- !u!114 &4935462881444096308
 MonoBehaviour:
   m_ObjectHideFlags: 0

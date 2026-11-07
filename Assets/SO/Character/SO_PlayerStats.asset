@@ -31,4 +31,7 @@ MonoBehaviour:
   rollCancelNormalizedTime: 0.55
   rollCancelBlendTime: 0.2
   rollExitSpeedRatio: 1
-  rollSteerSpeed: 180
+  waterCheckHeight: 0.15
+  waterCheckRadius: 0.1
+  waterFullSlowDepth: 0.6
+  waterMinSpeedMultiplier: 0.45

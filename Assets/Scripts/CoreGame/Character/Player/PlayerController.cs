@@ -93,6 +93,7 @@ public class PlayerController : CharacterControllerBase
         bool canRun = input.IsRunning()
                       && state.CurrentInput.sqrMagnitude > 0.01f
                       && state.CanRun
+                      && !state.IsInWater
                       && !guard.IsGuardActive;
         state.SetRunning(!state.IsRolling && canRun);
 
