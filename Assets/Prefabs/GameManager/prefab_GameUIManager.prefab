@@ -733,6 +733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIGame.View
   _viewStack: 1
   _canvas: {fileID: 5917021873070882417}
+  _canvasGroup: {fileID: 4976753770465771790}
   _openDuration: 0.3
   _closeDuration: 0.3
   _transitionEntities: []

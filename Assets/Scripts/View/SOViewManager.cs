@@ -1,12 +1,4 @@
-using UIGame;
-using UnityEngine;
-
+/// <summary>Scene singleton placeholder for view-related ScriptableObject data.</summary>
 public class SOViewManager : SingletonMonoBehaviour<SOViewManager>
 {
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-    }
-#endif
 }

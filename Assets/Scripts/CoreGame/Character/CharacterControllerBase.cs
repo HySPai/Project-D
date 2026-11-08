@@ -100,9 +100,4 @@ public abstract class CharacterControllerBase : MonoBehaviour, ICharacter
         for (int i = 0; i < hurtboxes.Length; i++)
             CombatTargetRegistry.Unregister(hurtboxes[i]);
     }
-
-    protected virtual void Reset()
-    {
-        characterController = GetComponent<CharacterController>();
-    }
 }

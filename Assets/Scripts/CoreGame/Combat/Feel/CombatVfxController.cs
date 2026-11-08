@@ -11,6 +11,10 @@ using UnityEngine.Rendering.Universal;
 public class CombatVfxController : MonoBehaviour
 {
     private const int CollisionEventCapacity = 64;
+    private const float InactiveSlot = -1f;
+    private const float MinSqrMagnitude = 0.0001f;
+    private const float FullTurnDegrees = 360f;
+    private const Ease DecalFadeEase = Ease.OutQuad;
 
     [SerializeField] private CombatVfxSettings settings;
     [SerializeField] private ParticleSystem bloodDroplets;
@@ -20,7 +24,10 @@ public class CombatVfxController : MonoBehaviour
     private readonly List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(CollisionEventCapacity);
 
     private DecalProjector[] decals;
-    private Sequence[] decalSequences;
+    private float[] decalFadeStart;
+    private float[] decalFadeDuration;
+    private float[] decalStartOpacity;
+    private int activeDecals;
     private int nextDecal;
 
     private HitBloodProfile lastProfile;
@@ -46,7 +53,9 @@ public class CombatVfxController : MonoBehaviour
 
         int size = settings.DecalPoolSize;
         decals = new DecalProjector[size];
-        decalSequences = new Sequence[size];
+        decalFadeStart = new float[size];
+        decalFadeDuration = new float[size];
+        decalStartOpacity = new float[size];
         Transform parent = decalRoot != null ? decalRoot : transform;
 
         for (int i = 0; i < size; i++)
@@ -54,17 +63,32 @@ public class CombatVfxController : MonoBehaviour
             DecalProjector decal = Instantiate(decalTemplate, parent);
             decal.gameObject.SetActive(false);
             decals[i] = decal;
+            decalFadeStart[i] = InactiveSlot;
         }
 
         emitParams = new ParticleSystem.EmitParams { applyShapeToPosition = false };
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        if (decalSequences == null) return;
+        if (activeDecals == 0) return;
 
-        for (int i = 0; i < decalSequences.Length; i++)
-            decalSequences[i]?.Kill();
+        float now = Time.time;
+        for (int i = 0; i < decals.Length; i++)
+        {
+            float start = decalFadeStart[i];
+            if (start < 0f || now < start) continue;
+
+            float duration = decalFadeDuration[i];
+            float t = duration > 0f ? (now - start) / duration : 1f;
+            if (t >= 1f)
+            {
+                ReleaseDecal(i);
+                continue;
+            }
+
+            decals[i].fadeFactor = DOVirtual.EasedValue(decalStartOpacity[i], 0f, t, DecalFadeEase);
+        }
     }
 
     /// <summary>
@@ -89,7 +113,7 @@ public class CombatVfxController : MonoBehaviour
 
         Vector3 direction = hitDirection;
         direction.y = 0f;
-        if (direction.sqrMagnitude < 0.0001f) return;
+        if (direction.sqrMagnitude < MinSqrMagnitude) return;
         direction.Normalize();
 
         Vector3 origin = targetPosition + Vector3.up * profile.SpawnHeight + direction * profile.SpawnBackOffset;
@@ -150,21 +174,18 @@ public class CombatVfxController : MonoBehaviour
 
     private void SpawnDecal(Vector3 point, Vector3 normal, HitBloodProfile profile, BloodBurstSettings burst)
     {
-        if (normal.sqrMagnitude < 0.0001f) normal = Vector3.up;
-
-        if (decalSequences == null || decalSequences.Length != decals.Length)
-            decalSequences = new Sequence[decals.Length];
+        if (normal.sqrMagnitude < MinSqrMagnitude) normal = Vector3.up;
 
         int index = nextDecal;
         nextDecal = (nextDecal + 1) % decals.Length;
 
         DecalProjector decal = decals[index];
-        decalSequences[index]?.Kill();
 
         float size = Random.Range(burst.decalSizeRange.x, burst.decalSizeRange.y);
         Transform decalTransform = decal.transform;
-        decalTransform.position = point + normal * settings.DecalSurfaceOffset;
-        decalTransform.rotation = Quaternion.LookRotation(-normal) * Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+        decalTransform.SetPositionAndRotation(
+            point + normal * settings.DecalSurfaceOffset,
+            Quaternion.LookRotation(-normal) * Quaternion.Euler(0f, 0f, Random.Range(0f, FullTurnDegrees)));
 
         if (profile.DecalMaterial != null)
             decal.material = profile.DecalMaterial;
@@ -175,10 +196,16 @@ public class CombatVfxController : MonoBehaviour
         decal.fadeFactor = profile.DecalOpacity;
         decal.gameObject.SetActive(true);
 
-        decalSequences[index] = DOTween.Sequence()
-            .AppendInterval(profile.DecalStayDuration)
-            .Append(DOTween.To(() => decal.fadeFactor, v => decal.fadeFactor = v, 0f, profile.DecalFadeDuration))
-            .OnComplete(() => decal.gameObject.SetActive(false))
-            .SetLink(decal.gameObject);
+        if (decalFadeStart[index] < 0f) activeDecals++;
+        decalFadeStart[index] = Time.time + profile.DecalStayDuration;
+        decalFadeDuration[index] = profile.DecalFadeDuration;
+        decalStartOpacity[index] = profile.DecalOpacity;
+    }
+
+    private void ReleaseDecal(int index)
+    {
+        decals[index].gameObject.SetActive(false);
+        decalFadeStart[index] = InactiveSlot;
+        activeDecals--;
     }
 }

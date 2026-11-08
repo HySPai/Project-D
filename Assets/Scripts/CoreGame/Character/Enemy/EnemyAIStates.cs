@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+/// <summary>One state of an enemy's behaviour machine, driven by EnemyController.</summary>
 public interface IEnemyState
 {
     void Enter();
@@ -6,7 +8,7 @@ public interface IEnemyState
     void Exit();
 }
 
-// Đứng tại home, quét tìm player. Thấy -> Chase.
+/// <summary>Stands at home and scans for the player; seeing one starts the chase.</summary>
 public class EnemyIdleState : IEnemyState
 {
     private readonly EnemyController ctx;
@@ -18,20 +20,12 @@ public class EnemyIdleState : IEnemyState
         ctx.EnemyState.ClearTarget();
     }
 
-    public void Tick()
-    {
-        var target = ctx.Vision.DetectTarget();
-        if (target != null)
-        {
-            ctx.EnemyState.SetTarget(target);
-            ctx.ChangeState(ctx.ChaseState);
-        }
-    }
+    public void Tick() => ctx.TryAcquireTarget();
 
     public void Exit() { }
 }
 
-// Đuổi target. Player vượt quá GiveUpDistance -> Return.
+/// <summary>Runs at the target; gives up beyond GiveUpDistance and attacks once in range.</summary>
 public class EnemyChaseState : IEnemyState
 {
     private readonly EnemyController ctx;
@@ -41,31 +35,21 @@ public class EnemyChaseState : IEnemyState
 
     public void Tick()
     {
-        var s = ctx.EnemyState;
-        var target = s.Target;
-
+        EnemyState s = ctx.EnemyState;
+        Transform target = s.Target;
         if (target == null) { ctx.ChangeState(ctx.ReturnState); return; }
 
-        float dist = Vector3.Distance(ctx.transform.position, target.position);
-        if (dist > s.GiveUpDistance)         // player chạy thoát
-        {
-            ctx.ChangeState(ctx.ReturnState);
-            return;
-        }
-        if (dist <= s.AttackRange)
-        {
-            ctx.ChangeState(ctx.AttackState);
-            return;
-        }
+        float sqrDist = (ctx.transform.position - target.position).sqrMagnitude;
+        if (sqrDist > s.GiveUpDistance * s.GiveUpDistance) { ctx.ChangeState(ctx.ReturnState); return; }
+        if (sqrDist <= s.AttackRange * s.AttackRange) { ctx.ChangeState(ctx.AttackState); return; }
 
-        ctx.EnemyMovement.Chase(target, s.ChaseSpeed, s.StoppingDistance);
         ctx.EnemyMovement.Chase(target, s.ChaseSpeed, s.StoppingDistance);
     }
 
     public void Exit() { }
 }
 
-// Quay về home. Trên đường về thấy player lại -> Chase. Về tới nơi -> Idle.
+/// <summary>Walks home; spotting the player on the way restarts the chase, arriving goes back to idle.</summary>
 public class EnemyReturnState : IEnemyState
 {
     private readonly EnemyController ctx;
@@ -79,13 +63,7 @@ public class EnemyReturnState : IEnemyState
 
     public void Tick()
     {
-        var target = ctx.Vision.DetectTarget();
-        if (target != null)
-        {
-            ctx.EnemyState.SetTarget(target);
-            ctx.ChangeState(ctx.ChaseState);
-            return;
-        }
+        if (ctx.TryAcquireTarget()) return;
 
         if (ctx.EnemyMovement.HasReachedDestination(ctx.EnemyState.HomeReachedThreshold))
             ctx.ChangeState(ctx.IdleState);
@@ -93,10 +71,11 @@ public class EnemyReturnState : IEnemyState
 
     public void Exit() { }
 }
-// Đứng đánh trong tầm. Player ra xa -> Chase. Mất target -> Return.
+
+/// <summary>Stands and attacks while the target stays in range, turning toward it between swings.</summary>
 public class EnemyAttackState : IEnemyState
 {
-    private const float ExitBuffer = 0.5f; // hysteresis chống rung ở ranh giới tầm đánh
+    private const float ExitBuffer = 0.5f;
 
     private readonly EnemyController ctx;
     public EnemyAttackState(EnemyController ctx) => this.ctx = ctx;
@@ -106,37 +85,20 @@ public class EnemyAttackState : IEnemyState
 
     public void Tick()
     {
-        var s = ctx.EnemyState;
-        var target = s.Target;
-
+        EnemyState s = ctx.EnemyState;
+        Transform target = s.Target;
         if (target == null) { ctx.ChangeState(ctx.ReturnState); return; }
-
-        // Đang diễn đòn -> để anim/root motion chạy, không can thiệp.
         if (s.IsAttacking) return;
 
-        float dist = Vector3.Distance(ctx.transform.position, target.position);
-
-        // Player thoát khỏi tầm đánh -> đuổi tiếp.
-        if (dist > s.AttackRange + ExitBuffer)
+        float leaveRange = s.AttackRange + ExitBuffer;
+        if ((ctx.transform.position - target.position).sqrMagnitude > leaveRange * leaveRange)
         {
             ctx.ChangeState(ctx.ChaseState);
             return;
         }
 
-        // Trong tầm: xoay theo target giữa các đòn, đủ cooldown thì tung đòn.
-        FaceTarget(target);
+        ctx.EnemyMovement.FaceTowards(target.position, s.RotateSpeed);
         if (ctx.EnemyCombat.CanAttack)
             ctx.EnemyCombat.Attack();
-    }
-
-    private void FaceTarget(Transform target)
-    {
-        Vector3 dir = target.position - ctx.transform.position;
-        dir.y = 0f;
-        if (dir.sqrMagnitude < 0.001f) return;
-
-        ctx.transform.rotation = Quaternion.Slerp(
-            ctx.transform.rotation, Quaternion.LookRotation(dir),
-            ctx.EnemyState.RotateSpeed * Time.deltaTime);
     }
 }

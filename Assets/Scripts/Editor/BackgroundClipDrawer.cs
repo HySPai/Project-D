@@ -8,16 +8,12 @@ namespace Ifreet.Core.Audio.Editor
     [CustomPropertyDrawer(typeof(BackgroundClip))]
     public class BackgroundClipDrawer : PropertyDrawer
     {
-        // PRIVATE MEMBERS: --------------------------------------------------------------------------------------------
-        
         private ReorderableList m_List;
         private bool m_Initialized;
 
-        // INITIALIZERS: -----------------------------------------------------------------------------------------------
-        
         private void Init(SerializedProperty property, GUIContent label)
         {
-            var dataProp = property.FindPropertyRelative("m_Data"); // List<BackgroundClipData>
+            var dataProp = property.FindPropertyRelative("m_Data");
             this.m_List = new ReorderableList(property.serializedObject, dataProp, true, true, true, true);
 
             this.m_List.drawHeaderCallback = rect =>
@@ -28,7 +24,7 @@ namespace Ifreet.Core.Audio.Editor
             this.m_List.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
                 var element = dataProp.GetArrayElementAtIndex(index);
-                EditorGUI.PropertyField(rect, element, GUIContent.none, true); // dùng BackgroundClipDataDrawer
+                EditorGUI.PropertyField(rect, element, GUIContent.none, true);
             };
 
             this.m_List.elementHeightCallback = index =>
@@ -40,8 +36,6 @@ namespace Ifreet.Core.Audio.Editor
             this.m_Initialized = true;
         }
 
-        // GUI DRAW METHOD: --------------------------------------------------------------------------------------------
-        
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!this.m_Initialized) this.Init(property, label);

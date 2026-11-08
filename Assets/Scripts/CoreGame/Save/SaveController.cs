@@ -85,8 +85,10 @@ public class SaveController : MonoBehaviour
         if (pressed && focus != null && !resting) TryInteract(focus);
     }
 
+    /// <summary>Marks the rest point the player stands at, so the interact button can use it.</summary>
     public void SetFocus(RestPoint point) => focus = point;
 
+    /// <summary>Forgets point if it is the one in focus.</summary>
     public void ClearFocus(RestPoint point)
     {
         if (focus == point) focus = null;
@@ -133,7 +135,7 @@ public class SaveController : MonoBehaviour
                 Debug.LogError($"Save slot {slot} is damaged and was left untouched.", this);
                 return;
             case SaveLoadStatus.RecoveredFromBackup:
-                Debug.LogWarning($"Save slot {slot} was restored from its backup; recent progress may be lost.", this);
+                GameLog.Warn($"Save slot {slot} was restored from its backup; recent progress may be lost.", this);
                 break;
         }
 
@@ -185,7 +187,7 @@ public class SaveController : MonoBehaviour
 
     private async UniTaskVoid RestAsync(RestPoint point)
     {
-        CancellationToken token = this.GetCancellationTokenOnDestroy();
+        CancellationToken token = destroyCancellationToken;
 
         resting = true;
         player.SetControlLocked(true);
@@ -195,7 +197,7 @@ public class SaveController : MonoBehaviour
         DayNightMath.PlanRest(startHour, wakeHour, out float darkenHours, out float brightenHours);
         float phaseSeconds = Mathf.Max(0f, restDurationSeconds - blackHoldSeconds) * 0.5f;
 
-        await Lapse(startHour, darkenHours, true, phaseSeconds, token);
+        if (await Lapse(startHour, darkenHours, true, phaseSeconds, token)) return;
 
         CompleteRest(point);
 
@@ -204,7 +206,7 @@ public class SaveController : MonoBehaviour
         if (canceled) return;
 
         float brightenFrom = darkenHours > 0f ? 0f : startHour;
-        await Lapse(brightenFrom, brightenHours, false, phaseSeconds, token);
+        if (await Lapse(brightenFrom, brightenHours, false, phaseSeconds, token)) return;
 
         dayNight.SetHour(wakeHour);
         dayNight.SetPaused(false);
@@ -213,7 +215,8 @@ public class SaveController : MonoBehaviour
         Save();
     }
 
-    private async UniTask Lapse(float fromHour, float hours, bool darkening, float duration, CancellationToken token)
+    /// <summary>Runs the hour and blackout over duration; returns true when cancelled before it finished.</summary>
+    private async UniTask<bool> Lapse(float fromHour, float hours, bool darkening, float duration, CancellationToken token)
     {
         float elapsed = 0f;
 
@@ -226,10 +229,11 @@ public class SaveController : MonoBehaviour
             float darkness = DayNightMath.Smooth(t);
             blackout.SetBlackness(darkening ? darkness : 1f - darkness);
 
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
+            if (await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow()) return true;
         }
 
         blackout.SetBlackness(darkening ? 1f : 0f);
+        return false;
     }
 
     private void CompleteRest(RestPoint point)
@@ -300,7 +304,7 @@ public class SaveController : MonoBehaviour
         if (writeFailureReported) return;
 
         writeFailureReported = true;
-        Debug.LogWarning($"Could not write save slot {slot}; the game will retry on the next save.", this);
+        GameLog.Warn($"Could not write save slot {slot}; the game will retry on the next save.", this);
     }
 
     private RestPoint FindRestPoint(string id)

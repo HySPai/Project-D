@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace UIGame
 {
+    /// <summary>
+    /// Tracks open stacked views and keeps the most recently opened one on top by sorting order.
+    /// </summary>
     public class ViewManager : SingletonMonoBehaviour<ViewManager>
     {
         private int _order = 0;
@@ -13,6 +16,7 @@ namespace UIGame
 
         #region OPEN
 
+        /// <summary>Pushes <paramref name="view"/> onto the stack, or brings it to the top if it is already active.</summary>
         public void Open(BaseUIView view)
         {
             if (view == null) return;
@@ -23,13 +27,7 @@ namespace UIGame
                 return;
             }
 
-            // Set order
             view.SetOrder(++_order);
-
-            // Block UI 
-            if (_viewStack.Count > 0)
-                _viewStack.Peek();
-
             _viewStack.Push(view);
         }
 
@@ -37,28 +35,24 @@ namespace UIGame
 
         #region CLOSE
 
+        /// <summary>Removes <paramref name="view"/> from the stack.</summary>
         public void Close(BaseUIView view)
         {
             if (view == null) return;
 
             RemoveFromStack(view);
-
-           /* // Reveal top
-            if (_viewStack.Count > 0)
-                _viewStack.Peek().Reveal();*/
         }
 
+        /// <summary>Closes the top view of the stack.</summary>
         public void CloseTop()
         {
             if (_viewStack.Count == 0) return;
 
             var top = _viewStack.Pop();
             top.CloseView();
-
-            /*if (_viewStack.Count > 0)
-                _viewStack.Peek().Reveal();*/
         }
 
+        /// <summary>Closes every stacked view.</summary>
         public void CloseAll()
         {
             while (_viewStack.Count > 0)

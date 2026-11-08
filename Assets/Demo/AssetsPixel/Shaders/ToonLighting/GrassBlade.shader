@@ -76,9 +76,8 @@ Shader "Custom/GrassBlade"
             #pragma fragment frag
 
             #pragma multi_compile_instancing
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-         
-            #pragma multi_compile _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl" 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl" 
@@ -111,7 +110,7 @@ Shader "Custom/GrassBlade"
             sampler2D _CloudNoise;
             float _CloudScale;
             float _CloudWorldY;
-            float _CloudSpeed;
+            float _CloudTravel;
             float _CloudContrast;
             float _CloudThreshold;
             float4 _CloudDirection;
@@ -210,8 +209,8 @@ Shader "Custom/GrassBlade"
                 float2 cloudDir1 = RotateVec2(_CloudDirection.xy, _CloudDivergeAngle);
                 float2 cloudDir2 = RotateVec2(_CloudDirection.xy, -_CloudDivergeAngle);
                 
-                float2 cloudTimeDir1 = _Time.y * _CloudSpeed * normalize(cloudDir1);
-                float2 cloudTimeDir2 = _Time.y * _CloudSpeed * normalize(cloudDir2);
+                float2 cloudTimeDir1 = _CloudTravel * normalize(cloudDir1);
+                float2 cloudTimeDir2 = _CloudTravel * normalize(cloudDir2);
                 
                 float sample1 = tex2D(_CloudNoise, hitPos.xz * invScale + cloudTimeDir1).r;
                 float sample2 = tex2D(_CloudNoise, hitPos.xz * (invScale * 0.8) + (cloudTimeDir2 * 0.89 * 1.047)).r;

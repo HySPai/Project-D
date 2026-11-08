@@ -15,15 +15,18 @@ public class BurnEffect : MonoBehaviour
     private CharacterControllerBase owner;
     private ParticleSystem burnVfx;
     private Tween flashTween;
+    private TweenCallback<float> setFlash;
     private float remaining;
     private float tickTimer;
 
     public bool IsBurning => remaining > 0f;
 
+    /// <summary>Binds the effect to the character it burns and captures the renderers' base colours.</summary>
     public void Initialize(CharacterControllerBase owner)
     {
         this.owner = owner;
         block = new MaterialPropertyBlock();
+        setFlash = SetFlash;
 
         baseColors = new Color[flashRenderers.Length];
         for (int i = 0; i < flashRenderers.Length; i++)
@@ -77,8 +80,9 @@ public class BurnEffect : MonoBehaviour
             return;
         }
 
-        remaining -= Time.deltaTime;
-        tickTimer -= Time.deltaTime;
+        float deltaTime = Time.deltaTime;
+        remaining -= deltaTime;
+        tickTimer -= deltaTime;
 
         if (tickTimer <= 0f)
         {
@@ -116,7 +120,7 @@ public class BurnEffect : MonoBehaviour
     private void Flash()
     {
         flashTween?.Kill();
-        flashTween = DOVirtual.Float(1f, 0f, data.flashDuration, SetFlash)
+        flashTween = DOVirtual.Float(1f, 0f, data.flashDuration, setFlash ??= SetFlash)
             .SetEase(Ease.OutQuad)
             .SetLink(gameObject);
     }

@@ -1,10 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class EnemyState : CharacterStateBase
 {
     private SO_EnemyStats enemyStats;
 
-    // Lazy: stats có sẵn lúc deserialize nên không phụ thuộc thứ tự Awake.
     private SO_EnemyStats EnemyStats =>
         enemyStats != null ? enemyStats : (enemyStats = stats as SO_EnemyStats);
 
@@ -64,8 +63,6 @@ public class EnemyState : CharacterStateBase
 
     private float stunEndTime;
 
-    // Trong lúc choáng, FSM "đứng im" (không đuổi/đánh) để player dễ chém liên tục.
-    // Mỗi lần trúng đòn lại gia hạn -> bị đánh dồn thì choáng kéo dài.
     public bool IsStunned => Time.time < stunEndTime;
     public void BeginStun(float duration) => stunEndTime = Mathf.Max(stunEndTime, Time.time + duration);
     #endregion
@@ -86,16 +83,12 @@ public class EnemyState : CharacterStateBase
     #endregion
 
     #region Animation
-    // Hit reaction của enemy: 1 clip cố định, rootMotion = false.
-    // Lý do: lực đẩy lùi do NavMeshAgent điều khiển, nếu để rootMotion = true thì
-    // OnAnimatorMove cũng đẩy nhân vật -> 2 hệ thống đánh nhau.
     private static readonly AnimationAction HitReaction =
         new AnimationAction("TakeDamage", true, false, false, false);
 
     protected override AnimationAction? ResolveHitReaction(Vector3 damageSourcePosition) =>
         HitReaction;
 
-    // Sau khi diễn anim trúng đòn -> kích hoạt đẩy lùi.
     protected override void PlayHitReaction(in DamageInfo info)
     {
         base.PlayHitReaction(in info);
@@ -141,7 +134,6 @@ public class EnemyState : CharacterStateBase
     public override void Initialize(CharacterControllerBase owner)
     {
         base.Initialize(owner);
-        // Ghi nhớ điểm spawn để biết đường quay về.
         homePosition = transform.position;
         homeRotation = transform.rotation;
 

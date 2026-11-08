@@ -1,9 +1,16 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Unity.Cinemachine;
 using UnityEngine;
 
+/// <summary>Shifts the follow camera's screen framing with the camera stick or the lock-on target, zooms out to keep a locked target in view and kicks the camera on hits.</summary>
 public class CameraOffsetController : MonoBehaviour
 {
+    private const float ViewportToScreenOffset = 0.5f;
+    private const float MaxViewportDistance = 1.41421356f;
+    private const float MinSqrDirection = 0.0001f;
+    private const float HalfCycle = 0.5f;
+
+    [SerializeField] private Camera outputCamera;
     [SerializeField] private CinemachineCamera virtualCamera;
     [SerializeField] private CinemachinePositionComposer composer;
     [SerializeField] private PlayerController playerController;
@@ -32,8 +39,14 @@ public class CameraOffsetController : MonoBehaviour
         _state = (PlayerState)playerController.GetState;
         _combat = playerController.GetCombat;
 
+        if (outputCamera == null)
+        {
+            Debug.LogError($"{nameof(CameraOffsetController)} on {name}: output Camera is not assigned.", this);
+            return;
+        }
+
         _currentScreenPosition = Vector2.zero;
-        _cam = Camera.main;
+        _cam = outputCamera;
 
         var lens = virtualCamera.Lens;
         lens.OrthographicSize = profile.DefaultOrthographicSize;
@@ -66,8 +79,14 @@ public class CameraOffsetController : MonoBehaviour
 
         if (isLocked)
         {
-            UpdateLockOnScreenPosition();
-            UpdateLockOnZoom();
+            Transform playerTransform = virtualCamera.Follow;
+            if (playerTransform != null)
+            {
+                Vector3 playerVP = _cam.WorldToViewportPoint(playerTransform.position);
+                Vector3 targetVP = _cam.WorldToViewportPoint(_combat.LockOnTransform.position);
+                UpdateLockOnScreenPosition(playerVP, targetVP);
+                UpdateLockOnZoom(playerVP, targetVP);
+            }
         }
         else
         {
@@ -80,17 +99,11 @@ public class CameraOffsetController : MonoBehaviour
         ApplyScreenPosition();
     }
 
-    private void UpdateLockOnScreenPosition()
+    private void UpdateLockOnScreenPosition(Vector3 playerVP, Vector3 targetVP)
     {
-        Transform playerTransform = virtualCamera.Follow;
-        if (playerTransform == null) return;
-
-        Vector3 playerVP = _cam.WorldToViewportPoint(playerTransform.position);
-        Vector3 targetVP = _cam.WorldToViewportPoint(_combat.LockOnTransform.position);
-
         Vector2 vpDelta = new Vector2(
-            (targetVP.x - playerVP.x) * -0.5f,
-            (targetVP.y - playerVP.y) * 0.5f
+            (targetVP.x - playerVP.x) * -ViewportToScreenOffset,
+            (targetVP.y - playerVP.y) * ViewportToScreenOffset
         );
 
         Vector2 targetScreenPos = new Vector2(
@@ -105,14 +118,8 @@ public class CameraOffsetController : MonoBehaviour
         );
     }
 
-    private void UpdateLockOnZoom()
+    private void UpdateLockOnZoom(Vector3 playerVP, Vector3 targetVP)
     {
-        Transform playerTransform = virtualCamera.Follow;
-        if (playerTransform == null) return;
-
-        Vector3 playerVP = _cam.WorldToViewportPoint(playerTransform.position);
-        Vector3 targetVP = _cam.WorldToViewportPoint(_combat.LockOnTransform.position);
-
         float vpDistance = new Vector2(
             targetVP.x - playerVP.x,
             targetVP.y - playerVP.y
@@ -125,7 +132,7 @@ public class CameraOffsetController : MonoBehaviour
         if (vpDistance > threshold)
         {
             float excess = vpDistance - threshold;
-            float maxExcess = Mathf.Sqrt(2f) - threshold;
+            float maxExcess = MaxViewportDistance - threshold;
             float t = Mathf.Clamp01(excess / maxExcess);
             targetSize = Mathf.Lerp(defaultSize, profile.MaxOrthographicSize, t);
         }
@@ -205,13 +212,13 @@ public class CameraOffsetController : MonoBehaviour
             direction.y = 0f;
         }
 
-        if (direction.sqrMagnitude < 0.0001f)
+        if (direction.sqrMagnitude < MinSqrDirection)
         {
             direction = playerTransform.forward;
             direction.y = 0f;
         }
 
-        if (direction.sqrMagnitude < 0.0001f) return;
+        if (direction.sqrMagnitude < MinSqrDirection) return;
 
         direction.Normalize();
 
@@ -224,7 +231,7 @@ public class CameraOffsetController : MonoBehaviour
         _kickTween?.Kill();
         kickOffset.Offset = Vector3.zero;
 
-        _kickTween = DOTween.To(() => kickOffset.Offset, v => kickOffset.Offset = v, peak, profile.HitKickDuration * 0.5f)
+        _kickTween = DOTween.To(() => kickOffset.Offset, v => kickOffset.Offset = v, peak, profile.HitKickDuration * HalfCycle)
             .SetEase(Ease.OutQuad)
             .SetLoops(2, LoopType.Yoyo)
             .SetUpdate(true)

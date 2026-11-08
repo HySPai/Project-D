@@ -1,14 +1,15 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
+/// <summary>Player animator: combat locomotion blend, the equip, guard and action override layers.</summary>
 public class PlayerAnimation : CharacterAnimationBase
 {
     private const string GuardLayerName = "Guard";
     private const string ActionLayerName = "ActionOverride";
-    private const string ActionEmptyState = "Empty";
     private const string EquipLayerName = "Equip";
 
     private static readonly int CombatBlendHash = Animator.StringToHash("CombatBlend");
+    private static readonly int ActionEmptyStateHash = Animator.StringToHash("Empty");
 
     private int guardLayerIndex = -1;
     private int actionLayerIndex = -1;
@@ -49,9 +50,16 @@ public class PlayerAnimation : CharacterAnimationBase
     /// <summary>Plays a draw or sheathe clip on the upper-body equip layer, then fades the layer back out.</summary>
     public void PlayEquip(string stateName, float normalizedStart, float fadeTime, float duration)
     {
-        if (animator == null || equipLayerIndex < 0 || string.IsNullOrEmpty(stateName)) return;
+        if (string.IsNullOrEmpty(stateName)) return;
+        PlayEquip(Animator.StringToHash(stateName), normalizedStart, fadeTime, duration);
+    }
 
-        animator.Play(stateName, equipLayerIndex, normalizedStart);
+    /// <summary>Hash overload of PlayEquip; stateHash is Animator.StringToHash of the equip state name.</summary>
+    public void PlayEquip(int stateHash, float normalizedStart, float fadeTime, float duration)
+    {
+        if (animator == null || equipLayerIndex < 0) return;
+
+        animator.Play(stateHash, equipLayerIndex, normalizedStart);
 
         equipSequence?.Kill();
         equipSequence = DOTween.Sequence()
@@ -61,6 +69,7 @@ public class PlayerAnimation : CharacterAnimationBase
             .SetLink(gameObject);
     }
 
+    /// <summary>Kills the equip fade and hides the equip layer immediately.</summary>
     public void StopEquip()
     {
         equipSequence?.Kill();
@@ -79,11 +88,12 @@ public class PlayerAnimation : CharacterAnimationBase
         if (animator != null && equipLayerIndex >= 0) animator.SetLayerWeight(equipLayerIndex, value);
     }
 
-    public void CrossFadeGuard(string stateName, float fadeDuration)
+    /// <summary>Cross-fades the Guard layer into a state given by its Animator.StringToHash value.</summary>
+    public void CrossFadeGuard(int stateHash, float fadeDuration)
     {
-        if (animator == null || guardLayerIndex < 0 || string.IsNullOrEmpty(stateName)) return;
+        if (animator == null || guardLayerIndex < 0) return;
 
-        animator.CrossFadeInFixedTime(stateName, fadeDuration, guardLayerIndex, 0f);
+        animator.CrossFadeInFixedTime(stateHash, fadeDuration, guardLayerIndex, 0f);
     }
 
     /// <summary>Normalized time of the given action state on the action layer, or -1 when that state is not playing.</summary>
@@ -106,6 +116,6 @@ public class PlayerAnimation : CharacterAnimationBase
     {
         if (animator == null || actionLayerIndex < 0) return;
 
-        animator.CrossFadeInFixedTime(ActionEmptyState, fadeDuration, actionLayerIndex, 0f);
+        animator.CrossFadeInFixedTime(ActionEmptyStateHash, fadeDuration, actionLayerIndex, 0f);
     }
 }

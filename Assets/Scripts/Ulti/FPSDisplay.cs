@@ -1,25 +1,31 @@
 using UnityEngine;
 
+/// <summary>Shows a smoothed frame rate in the top-left corner; the label text is rebuilt only a few times per second.</summary>
 public class FPSDisplay : MonoBehaviour
 {
-    private float deltaTime = 0.0f;
+    private const float Smoothing = 0.1f;
+    private const float RefreshInterval = 0.25f;
+    private const int FontSize = 30;
 
-    void Update()
+    private static readonly Rect LabelRect = new Rect(10f, 10f, 150f, 50f);
+
+    private float deltaTime;
+    private float nextRefresh;
+    private string label = string.Empty;
+    private GUIStyle style;
+
+    private void Update()
     {
-        // Tính thời gian giữa các frame
-        deltaTime += (Time.deltaTime - deltaTime) * 0.1f;
+        deltaTime += (Time.unscaledDeltaTime - deltaTime) * Smoothing;
+        if (Time.unscaledTime < nextRefresh || deltaTime <= 0f) return;
+
+        nextRefresh = Time.unscaledTime + RefreshInterval;
+        label = "FPS: " + Mathf.CeilToInt(1f / deltaTime);
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
-        // Tính toán FPS
-        float fps = 1.0f / deltaTime;
-        string text = $"FPS: {Mathf.Ceil(fps)}";
-
-        // Hiển thị FPS trên góc trái màn hình
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 30;
-        style.normal.textColor = Color.white;
-        GUI.Label(new Rect(10, 10, 150, 50), text, style);
+        style ??= new GUIStyle { fontSize = FontSize, normal = { textColor = Color.white } };
+        GUI.Label(LabelRect, label, style);
     }
 }

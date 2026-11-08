@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>Shared target gathering and damage delivery for every spell.</summary>
 public static class SpellTargeting
 {
+    private const float MinSqrDistance = 0.0001f;
+
     /// <summary>True when point lies inside the horizontal cone of arcDegrees centred on forward; a point on the origin counts as inside.</summary>
     public static bool IsWithinArc(Vector3 origin, Vector3 forward, Vector3 point, float arcDegrees)
     {
@@ -10,8 +13,8 @@ public static class SpellTargeting
         toPoint.y = 0f;
         forward.y = 0f;
 
-        if (toPoint.sqrMagnitude < 0.0001f) return true;
-        if (forward.sqrMagnitude < 0.0001f) return false;
+        if (toPoint.sqrMagnitude < MinSqrDistance) return true;
+        if (forward.sqrMagnitude < MinSqrDistance) return false;
 
         return Vector3.Angle(forward, toPoint) <= arcDegrees * 0.5f;
     }
@@ -41,5 +44,21 @@ public static class SpellTargeting
         }
 
         return results.Count;
+    }
+
+    /// <summary>Deals blockable, stagger-free spell damage to a living target; returns true when the target is still alive afterwards.</summary>
+    public static bool DealSpellDamage(
+        CharacterControllerBase target,
+        float points,
+        CharacterControllerBase attacker,
+        Vector3 sourcePosition,
+        ElementType element)
+    {
+        CharacterStateBase state = target != null ? target.GetState : null;
+        if (state == null || state.IsDead) return false;
+
+        DamageInfo info = new DamageInfo(points, attacker, sourcePosition, element, DamageSource.Spell, false, 0f);
+        state.ReceiveDamage(in info);
+        return !state.IsDead;
     }
 }

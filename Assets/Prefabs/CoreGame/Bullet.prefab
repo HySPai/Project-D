@@ -154,10 +154,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7984466e36b14542a93ffb5e2ea0807, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  _speed: 20
-  _lifeTime: 5
-  _damageCollider: {fileID: 2881921062468608312}
-  _wallLayer:
+  speed: 20
+  lifeTime: 5
+  damageCollider: {fileID: 2881921062468608312}
+  body: {fileID: 3639594373565204576}
+  wallLayer:
     serializedVersion: 2
     m_Bits: 640
 --- !u!114 &2881921062468608312

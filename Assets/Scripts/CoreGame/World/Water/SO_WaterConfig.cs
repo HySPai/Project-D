@@ -15,6 +15,7 @@ public class SO_WaterConfig : ScriptableObject
     public float trailLifetime = 0.45f;
     public float trailBehindFactor = 0.35f;
     public float trailStartScale = 0.5f;
+    [Range(0f, 1f)] public float trailPatchStrength = 0.2f;
     public Vector2 trailSpread = new Vector2(0.04f, 0.1f);
 
     [Header("Moving Crescent")]
@@ -39,6 +40,7 @@ public class SO_WaterConfig : ScriptableObject
     public Vector2 dropletSize = new Vector2(0.02f, 0.06f);
     public Vector2 dropletLifetime = new Vector2(0.3f, 0.6f);
     public float dropletSpread = 0.45f;
+    [Range(0f, 1f)] public float dropletMinSpeedRatio = 0.45f;
     public float dropletGravity = 1.6f;
 
     [Header("Splash Foam")]
@@ -47,6 +49,7 @@ public class SO_WaterConfig : ScriptableObject
     public Vector2 foamLifetime = new Vector2(0.25f, 0.5f);
     public float foamSpread = 0.15f;
     public float foamRiseSpeed = 0.25f;
+    [Range(0f, 1f)] public float foamSizeJitterMin = 0.6f;
 
     [Header("Buoyancy")]
     public float waterDensity = 1000f;

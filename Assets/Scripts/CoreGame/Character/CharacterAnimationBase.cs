@@ -1,8 +1,11 @@
-﻿using Sirenix.OdinInspector;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>Shared animator driver: locomotion parameters, action playback by state hash, and root motion with edge guard.</summary>
 public abstract class CharacterAnimationBase : MonoBehaviour
 {
+    private const float ActionCrossFade = 0.2f;
+    private const float DirectionEpsilon = 0.0001f;
+
     [SerializeField] protected Animator animator;
 
     [Header("Locomotion Parameters")]
@@ -16,6 +19,12 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
     protected int horizontalHash;
     protected int verticalHash;
+    protected int isMoveHash;
+    private bool isMoving;
+    private bool isMovingSet;
+
+    private float playbackSpeed = 1f;
+    private float playbackScale = 1f;
 
     #region Init
     public virtual void Initialize(CharacterStateBase state)
@@ -24,12 +33,12 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         cc = state.Owner.CharacterController;
 
         if (animator == null)
-            animator = GetComponentInChildren<Animator>();
-        if (animator == null)
             Debug.LogError($"{name}: thiếu Animator reference!", this);
 
         horizontalHash = Animator.StringToHash(horizontalParameter);
         verticalHash = Animator.StringToHash(verticalParameter);
+        isMoveHash = Animator.StringToHash(isMoveParameter);
+        isMovingSet = false;
     }
     #endregion
 
@@ -52,7 +61,7 @@ public abstract class CharacterAnimationBase : MonoBehaviour
             CharacterMovementBase movement = state.Owner.GetMovement;
             Vector3 worldDir = movement != null ? movement.GetMoveDirection() : Vector3.zero;
 
-            if (worldDir.sqrMagnitude > 0.0001f)
+            if (worldDir.sqrMagnitude > DirectionEpsilon)
             {
                 Vector3 local = state.Owner.transform.InverseTransformDirection(worldDir.normalized);
                 horizontal = local.x * moveAmount;
@@ -75,15 +84,31 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         return combat != null ? combat.LockOnTransform : null;
     }
 
-    public virtual void SetMoving(bool isMoving)
+    public virtual void SetMoving(bool moving)
     {
-        animator.SetBool(isMoveParameter, isMoving);
+        if (isMovingSet && moving == isMoving) return;
+
+        isMoving = moving;
+        isMovingSet = true;
+        animator.SetBool(isMoveHash, moving);
     }
     #endregion
 
     #region Play Animation
-    public virtual void PlayTargetAnimation(
+    /// <summary>Cross-fades into a state by name. Prefer the hash overload or Play(AnimationAction) on hot paths.</summary>
+    public void PlayTargetAnimation(
         string targetAnimation,
+        bool isPerformingAction,
+        bool applyRootMotion = true,
+        bool canRotate = false,
+        bool canMove = false)
+    {
+        PlayTargetAnimation(Animator.StringToHash(targetAnimation), isPerformingAction, applyRootMotion, canRotate, canMove);
+    }
+
+    /// <summary>Cross-fades into a state by its Animator.StringToHash value and applies the action flags.</summary>
+    public virtual void PlayTargetAnimation(
+        int targetAnimationHash,
         bool isPerformingAction,
         bool applyRootMotion = true,
         bool canRotate = false,
@@ -92,16 +117,14 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         if (state == null) return;
 
         SetPlaybackSpeed(1f);
-        animator.CrossFade(targetAnimation, 0.2f);
+        animator.CrossFade(targetAnimationHash, ActionCrossFade);
         state.SetAttacking(isPerformingAction);
         state.SetApplyRootMotion(applyRootMotion);
         state.SetCanRotate(canRotate);
         state.SetCanMove(canMove);
     }
 
-    private float playbackSpeed = 1f;
-    private float playbackScale = 1f;
-
+    /// <summary>Base playback speed of the current action, e.g. an attack's animationSpeed.</summary>
     public void SetPlaybackSpeed(float speed)
     {
         playbackSpeed = speed;
@@ -126,14 +149,16 @@ public abstract class CharacterAnimationBase : MonoBehaviour
         playbackSpeed = 1f;
         playbackScale = 1f;
         animator.speed = 1f;
+        isMovingSet = false;
         animator.Rebind();
         animator.Update(0f);
     }
 
+    /// <summary>Plays an AnimationAction using its precomputed state hash.</summary>
     public void Play(in AnimationAction action)
     {
         PlayTargetAnimation(
-            action.name, action.isAction, action.rootMotion,
+            action.hash, action.isAction, action.rootMotion,
             action.canRotate, action.canMove);
     }
     #endregion
@@ -145,7 +170,6 @@ public abstract class CharacterAnimationBase : MonoBehaviour
 
         Vector3 delta = ScaledRootMotionDelta();
 
-        // Tách phương ngang để chặn rơi xuống vực, giữ nguyên phương dọc cho gravity.
         Vector3 horizontal = new Vector3(delta.x, 0f, delta.z);
         horizontal = state.ResolveEdgeGuard(horizontal);
 

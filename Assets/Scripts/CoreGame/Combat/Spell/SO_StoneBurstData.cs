@@ -14,6 +14,7 @@ public class SO_StoneBurstData : ScriptableObject
     public int[] rowCounts = { 3, 5, 7 };
     public float[] rowDistances = { 0.35f, 0.68f, 1f };
     public float outwardTilt = 18f;
+    public float spikeYaw = 45f;
     [Range(0f, 1f)] public float exposedRatio = 0.7f;
 
     [Header("Visual Timing")]

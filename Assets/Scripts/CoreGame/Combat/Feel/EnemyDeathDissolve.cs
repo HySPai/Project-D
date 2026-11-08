@@ -5,11 +5,14 @@ using UnityEngine;
 /// Disintegrate and dissolve on death: swaps the enemy materials to the dissolve shader,
 /// burns them away with a glowing edge while a particle system sampled from the skinned mesh
 /// drifts upward, then hides the body.
+/// The dissolve materials are built the first time an enemy dies, so enemies that never die cost nothing.
 /// Example: deathDissolve.Prepare(profile) on spawn, deathDissolve.Play(profile) when the enemy dies.
 /// </summary>
 public class EnemyDeathDissolve : MonoBehaviour
 {
     private const string EmissionKeyword = "_EMISSION";
+    private const string DissolveNameSuffix = " (Dissolve)";
+    private const float MinParticleDuration = 0.05f;
 
     private static readonly int BaseMapId = Shader.PropertyToID("_BaseMap");
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
@@ -23,41 +26,30 @@ public class EnemyDeathDissolve : MonoBehaviour
     [SerializeField] private Renderer[] renderers;
     [SerializeField] private Shader dissolveShader;
     [SerializeField] private ParticleSystem dissolveParticles;
+    [SerializeField] private ParticleSystemRenderer dissolveParticlesRenderer;
     [SerializeField] private GameObject hideOnComplete;
+
+    private static readonly Material[] NoMaterials = new Material[0];
 
     private Material[][] dissolveMaterials;
     private Material[][] originalMaterials;
     private MaterialPropertyBlock particleBlock;
     private Sequence sequence;
-    private bool prepared;
+    private DeathDissolveProfile preparedProfile;
 
-    /// <summary>Builds the dissolve materials up front so dying allocates nothing.</summary>
+    /// <summary>Remembers the profile for this enemy; the dissolve materials themselves are built lazily on the first Play.</summary>
     public void Prepare(DeathDissolveProfile profile)
     {
-        if (prepared || profile == null || dissolveShader == null || renderers == null) return;
-        prepared = true;
-
-        dissolveMaterials = new Material[renderers.Length][];
-        originalMaterials = new Material[renderers.Length][];
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Material[] source = renderers[i] != null ? renderers[i].sharedMaterials : new Material[0];
-            originalMaterials[i] = source;
-            Material[] target = new Material[source.Length];
-            for (int j = 0; j < source.Length; j++)
-                target[j] = CreateDissolveMaterial(source[j]);
-            dissolveMaterials[i] = target;
-        }
-
-        particleBlock = new MaterialPropertyBlock();
+        if (profile != null) preparedProfile = profile;
     }
 
     /// <summary>Waits for the death pose, dissolves the body, then hides it.</summary>
     public void Play(DeathDissolveProfile profile)
     {
-        if (profile == null || dissolveShader == null) return;
+        if (profile == null) profile = preparedProfile;
+        if (profile == null || dissolveShader == null || renderers == null) return;
 
-        Prepare(profile);
+        EnsureMaterials();
         sequence?.Kill();
 
         sequence = DOTween.Sequence()
@@ -108,12 +100,31 @@ public class EnemyDeathDissolve : MonoBehaviour
         }
     }
 
+    private void EnsureMaterials()
+    {
+        if (dissolveMaterials != null) return;
+
+        dissolveMaterials = new Material[renderers.Length][];
+        originalMaterials = new Material[renderers.Length][];
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Material[] source = renderers[i] != null ? renderers[i].sharedMaterials : NoMaterials;
+            originalMaterials[i] = source;
+            Material[] target = new Material[source.Length];
+            for (int j = 0; j < source.Length; j++)
+                target[j] = CreateDissolveMaterial(source[j]);
+            dissolveMaterials[i] = target;
+        }
+
+        particleBlock = new MaterialPropertyBlock();
+    }
+
     private Material CreateDissolveMaterial(Material source)
     {
         Material material = new Material(dissolveShader);
         if (source == null) return material;
 
-        material.name = source.name + " (Dissolve)";
+        material.name = source.name + DissolveNameSuffix;
 
         if (source.HasProperty(BaseMapId))
         {
@@ -172,7 +183,7 @@ public class EnemyDeathDissolve : MonoBehaviour
 
         dissolveParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
-        float duration = Mathf.Max(0.05f, profile.DissolveDuration);
+        float duration = Mathf.Max(MinParticleDuration, profile.DissolveDuration);
         Vector2 lifetime = profile.ParticleLifetimeRange;
         Vector2 size = profile.ParticleSizeRange;
         Vector2 rise = profile.ParticleRiseSpeedRange;
@@ -195,10 +206,12 @@ public class EnemyDeathDissolve : MonoBehaviour
         ParticleSystem.NoiseModule noise = dissolveParticles.noise;
         noise.strength = profile.ParticleTurbulence;
 
-        ParticleSystemRenderer particleRenderer = dissolveParticles.GetComponent<ParticleSystemRenderer>();
-        particleRenderer.GetPropertyBlock(particleBlock);
-        particleBlock.SetColor(BaseColorId, Color.white * profile.ParticleGlow);
-        particleRenderer.SetPropertyBlock(particleBlock);
+        if (dissolveParticlesRenderer != null)
+        {
+            dissolveParticlesRenderer.GetPropertyBlock(particleBlock);
+            particleBlock.SetColor(BaseColorId, Color.white * profile.ParticleGlow);
+            dissolveParticlesRenderer.SetPropertyBlock(particleBlock);
+        }
 
         dissolveParticles.Play();
     }

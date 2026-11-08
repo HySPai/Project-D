@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Clears action flags when the animator returns to a free state. A StateMachineBehaviour cannot hold scene
+/// references, so the owner is looked up once from the Animator's GameObject and cached.
+/// </summary>
 public class ResetActionFlag : StateMachineBehaviour
 {
     private CharacterControllerBase character;

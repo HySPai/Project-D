@@ -59,7 +59,7 @@ namespace UIGame
 
             for (int i = 0; i < hearts.Count; i++)
                 if (hearts[i] != null)
-                    hearts[i].SetFilled(i < current);   // đủ thì đầy, thiếu thì rỗng → tự animate
+                    hearts[i].SetFilled(i < current);
         }
 
         public void UpdateStamina(float current, float max)
@@ -115,7 +115,5 @@ namespace UIGame
             display = default;
             return false;
         }
-
-        public override void OpenView() => base.OpenView();
     }
 }

@@ -142,6 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_lightCookieMaterial: {fileID: 2100000, guid: 188f6e596ad3a6743a973b53a1a205af,
     type: 2}
+  m_cookieTexture: {fileID: 8600000, guid: 4dad69580e1c8ce4197eaf15061436ea, type: 2}
   m_cycleDuration1UV: {x: 20, y: 25}
   m_movementPath1U:
     serializedVersion: 2

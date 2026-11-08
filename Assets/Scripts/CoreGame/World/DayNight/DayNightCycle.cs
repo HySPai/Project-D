@@ -4,8 +4,8 @@ using UnityEngine;
 public class DayNightCycle : MonoBehaviour
 {
     private static readonly int GlobalAmbientColorId = Shader.PropertyToID("_GlobalAmbientColor");
-    private static readonly int CloudLightDirectionId = Shader.PropertyToID("_CloudLightDirection");
-    private static readonly int CloudSpeedId = Shader.PropertyToID("_CloudSpeed");
+
+    private const float MinVisibleIntensity = 0.05f;
 
     [Header("Clock")]
     [SerializeField] private float startHour = 9f;
@@ -30,10 +30,6 @@ public class DayNightCycle : MonoBehaviour
     [SerializeField] private Gradient sunHourTint;
     [SerializeField] private Gradient ambientHourTint;
 
-    [Header("Clouds")]
-    [SerializeField] private CloudShadows cloudShadows;
-    [SerializeField] private Vector3 cloudShadowDirection = new Vector3(0.2f, -1f, 0.2f);
-
     private float hour;
     private bool paused;
 
@@ -54,11 +50,7 @@ public class DayNightCycle : MonoBehaviour
         SetHour(hour + Time.deltaTime * DayNightMath.HoursPerDay / dayDurationSeconds);
     }
 
-    public void SetPaused(bool value)
-    {
-        paused = value;
-        ApplyCloudSpeed();
-    }
+    public void SetPaused(bool value) => paused = value;
 
     [Button]
     public void SetHour(float value)
@@ -83,7 +75,7 @@ public class DayNightCycle : MonoBehaviour
         {
             sunLight.intensity = Mathf.Lerp(0f, maxSunIntensity, intensity);
             sunLight.color = sunColor.Evaluate(sunDot) * sunHourTint.Evaluate(hour / DayNightMath.HoursPerDay);
-            sunLight.shadows = sunLight.intensity < 0.01f ? LightShadows.None : LightShadows.Soft;
+            SetLightActive(sunLight, sunLight.intensity >= MinVisibleIntensity);
         }
 
         if (moonLight != null)
@@ -91,20 +83,16 @@ public class DayNightCycle : MonoBehaviour
             float moonDot = Mathf.Clamp01(Vector3.Dot(moonLight.transform.forward, Vector3.down));
             moonLight.intensity = Mathf.Lerp(maxMoonIntensity, 0f, intensity);
             moonLight.color = moonColor.Evaluate(moonDot);
-            moonLight.shadows = moonLight.intensity < 0.01f ? LightShadows.None : LightShadows.Soft;
+            SetLightActive(moonLight, moonLight.intensity >= MinVisibleIntensity);
         }
 
         Color ambient = ambientColor.Evaluate(sunDot) * ambientHourTint.Evaluate(hour / DayNightMath.HoursPerDay);
         RenderSettings.ambientLight = ambient;
         Shader.SetGlobalColor(GlobalAmbientColorId, ambient);
-        Shader.SetGlobalVector(CloudLightDirectionId, cloudShadowDirection.normalized);
-        ApplyCloudSpeed();
     }
 
-    private void ApplyCloudSpeed()
+    private static void SetLightActive(Light light, bool active)
     {
-        if (cloudShadows == null || dayDurationSeconds <= 0f) return;
-
-        Shader.SetGlobalFloat(CloudSpeedId, paused ? 0f : cloudShadows.CloudSpeed / dayDurationSeconds);
+        if (light.enabled != active) light.enabled = active;
     }
 }

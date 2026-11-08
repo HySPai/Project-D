@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Unity.Cinemachine;
@@ -53,11 +54,10 @@ public class AreaTransitionController : MonoBehaviour
 
     private async UniTaskVoid TransitionAsync(AreaPortal source)
     {
-        var token = this.GetCancellationTokenOnDestroy();
+        CancellationToken token = destroyCancellationToken;
         IsTransitioning = true;
 
-        await FadeTo(1f, fadeOutDuration, fadeOutEase);
-        if (token.IsCancellationRequested) return;
+        if (await FadeTo(1f, fadeOutDuration, fadeOutEase, token)) return;
 
         AreaPortal target = source.LinkedPortal;
         source.MapThrough(player.transform.position, player.transform.rotation, out Vector3 position, out Quaternion rotation);
@@ -68,7 +68,7 @@ public class AreaTransitionController : MonoBehaviour
         player.Teleport(position, rotation);
         if (virtualCamera != null) virtualCamera.OnTargetObjectWarped(player.transform, delta);
 
-        await FadeTo(0f, fadeInDuration, fadeInEase);
+        if (await FadeTo(0f, fadeInDuration, fadeInEase, token)) return;
         IsTransitioning = false;
     }
 
@@ -98,13 +98,17 @@ public class AreaTransitionController : MonoBehaviour
         sceneCamera.backgroundColor = Color.black;
     }
 
-    private async UniTask FadeTo(float weight, float duration, Ease ease)
+    /// <summary>Tweens the fade volume to weight on unscaled time; returns true when cancelled before it finished.</summary>
+    private async UniTask<bool> FadeTo(float weight, float duration, Ease ease, CancellationToken token)
     {
         fadeTween?.Kill();
-        fadeTween = DOTween.To(() => fadeVolume.weight, v => fadeVolume.weight = v, weight, duration)
+        Tween tween = DOTween.To(() => fadeVolume.weight, v => fadeVolume.weight = v, weight, duration)
             .SetEase(ease)
-            .SetUpdate(true);
+            .SetUpdate(true)
+            .SetLink(gameObject);
+        fadeTween = tween;
 
-        await fadeTween.AsyncWaitForCompletion();
+        return await UniTask.WaitWhile(() => tween.IsActive() && !tween.IsComplete(), cancellationToken: token)
+            .SuppressCancellationThrow();
     }
 }

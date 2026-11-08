@@ -41402,6 +41402,8 @@ MonoBehaviour:
   pulseTarget: {fileID: 182225098}
   pulseStrength: 0.15
   pulseDuration: 0.35
+  pulseVibrato: 6
+  pulseElasticity: 0.5
 --- !u!135 &382564269
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -52633,7 +52635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightCycle
   startHour: 9
-  dayDurationSeconds: 30
+  dayDurationSeconds: 840
   sunriseHour: 6
   sunsetHour: 18
   sunLight: {fileID: 2097596694}
@@ -52834,8 +52836,6 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
-  cloudShadows: {fileID: 1413009157}
-  cloudShadowDirection: {x: 0.2, y: -1, z: 0.2}
 --- !u!4 &534710156
 Transform:
   m_ObjectHideFlags: 0
@@ -68303,11 +68303,15 @@ MonoBehaviour:
   burnLightIntensity: 5
   burnLightRange: 8
   sparkRate: 14
+  sparkStartBurn: 0.3
   igniteDuration: 0.7
   igniteEase: 27
   flickerSpeed: 7
   flickerAmount: 0.18
   flameSwayDegrees: 6
+  swaySpeedRatio: 0.6
+  flameStretchBase: 0.9
+  flameStretchFlicker: 0.2
 --- !u!1 &785479575
 GameObject:
   m_ObjectHideFlags: 0
@@ -75189,20 +75193,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fca81e971b67aa48a7e474e080fdebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Turret
-  _range: 8
-  _targetLayer:
+  range: 8
+  targetLayer:
     serializedVersion: 2
     m_Bits: 64
-  _rotatePart: {fileID: 1870222477}
-  _firePoint: {fileID: 1565125417}
-  _rotateSpeed: 360
-  _aimThreshold: 5
-  _bulletPrefab: {fileID: 3818929943325812871, guid: 5c2fac88d646e1a4fb99970e9a3632dc,
+  scanInterval: 0.1
+  rotatePart: {fileID: 1870222477}
+  firePoint: {fileID: 1565125417}
+  rotateSpeed: 360
+  aimThreshold: 5
+  bulletPrefab: {fileID: 305680293654905064, guid: 5c2fac88d646e1a4fb99970e9a3632dc,
     type: 3}
-  _damage: 25
-  _bulletsPerBurst: 3
-  _shotCooldown: 0.2
-  _burstCooldown: 3
+  damage: 25
+  bulletsPerBurst: 3
+  shotCooldown: 0.2
+  burstCooldown: 3
 --- !u!65 &932578833
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -80840,6 +80845,18 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!114 &1030837072 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3375731783467542971, guid: ef15546637b589146ac1fbcff37dc4fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 199765671}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97f1e1944729684a892be9b3d03a7d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIGame.GamePlayView
 --- !u!1 &1032388927
 GameObject:
   m_ObjectHideFlags: 0
@@ -85122,6 +85139,8 @@ MonoBehaviour:
   pulseTarget: {fileID: 259491956}
   pulseStrength: 0.15
   pulseDuration: 0.35
+  pulseVibrato: 6
+  pulseElasticity: 0.5
 --- !u!4 &1148050866
 Transform:
   m_ObjectHideFlags: 0
@@ -96765,21 +96784,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd5047c8a1310b54dbd85e90bff9164b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CloudShadows
+  driftSpeed: 0.7
+  cloudDirection: {x: 1, y: 0}
   cloudNoise: {fileID: 2800000, guid: cee53cd6511a3eb4f92abe1a9d1e69c0, type: 3}
   cloudScale: 60
   cloudWorldY: 20
-  cloudSpeed: 10
   cloudContrast: 20
   cloudThreshold: 0.47
-  cloudDirection: {x: 1, y: 0}
   cloudShadowMin: 0.05
   cloudDivergeAngle: 10
   cloudPower: 3
+  cloudLightDirection: {x: 0.2, y: -1, z: 0.2}
   sunLight: {fileID: 2097596694}
   sunLightData: {fileID: 2097596696}
   cloudCookie: {fileID: 2800000, guid: 7148a41a601559349be920ccb1f3de98, type: 3}
   cookieSize: {x: 26, y: 26}
-  cookieDriftSpeed: 0.5
 --- !u!4 &1413009158
 Transform:
   m_ObjectHideFlags: 0
@@ -106350,6 +106369,8 @@ MonoBehaviour:
   pulseTarget: {fileID: 1453901160}
   pulseStrength: 0.15
   pulseDuration: 0.35
+  pulseVibrato: 6
+  pulseElasticity: 0.5
 --- !u!4 &1639556122
 Transform:
   m_ObjectHideFlags: 0
@@ -115411,11 +115432,15 @@ MonoBehaviour:
   burnLightIntensity: 5
   burnLightRange: 8
   sparkRate: 14
+  sparkStartBurn: 0.3
   igniteDuration: 0.7
   igniteEase: 27
   flickerSpeed: 7
   flickerAmount: 0.18
   flameSwayDegrees: 6
+  swaySpeedRatio: 0.6
+  flameStretchBase: 0.9
+  flameStretchFlicker: 0.2
 --- !u!1 &1853056475
 GameObject:
   m_ObjectHideFlags: 0
@@ -130957,11 +130982,15 @@ MonoBehaviour:
   burnLightIntensity: 5
   burnLightRange: 8
   sparkRate: 14
+  sparkStartBurn: 0.3
   igniteDuration: 0.7
   igniteEase: 27
   flickerSpeed: 7
   flickerAmount: 0.18
   flameSwayDegrees: 6
+  swaySpeedRatio: 0.6
+  flameStretchBase: 0.9
+  flameStretchFlicker: 0.2
 --- !u!4 &1962010111
 Transform:
   m_ObjectHideFlags: 0
@@ -138503,6 +138532,11 @@ PrefabInstance:
       propertyPath: debugFreeCast
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1074759447180211755, guid: 9a661e064f4cd9a4db84a02c16c942e4,
+        type: 3}
+      propertyPath: gamePlayView
+      value: 
+      objectReference: {fileID: 1030837072}
     - target: {fileID: 1987881308303024513, guid: 9a661e064f4cd9a4db84a02c16c942e4,
         type: 3}
       propertyPath: PlayCount
@@ -138544,6 +138578,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7694672649410949249, guid: 9a661e064f4cd9a4db84a02c16c942e4,
+        type: 3}
+      propertyPath: viewCamera
+      value: 
+      objectReference: {fileID: 720568043}
     - target: {fileID: 7861660919349431496, guid: 9a661e064f4cd9a4db84a02c16c942e4,
         type: 3}
       propertyPath: m_LocalPosition.x

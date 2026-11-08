@@ -17,6 +17,24 @@ public enum AttackWeight
 public class AttackData
 {
     public string animationName;
+
+    [System.NonSerialized] private string hashedAnimationName;
+    [System.NonSerialized] private int animationHash;
+
+    /// <summary>Animator.StringToHash of animationName, recomputed only when the name changes.</summary>
+    public int AnimationHash
+    {
+        get
+        {
+            if (!ReferenceEquals(hashedAnimationName, animationName))
+            {
+                hashedAnimationName = animationName;
+                animationHash = string.IsNullOrEmpty(animationName) ? 0 : Animator.StringToHash(animationName);
+            }
+            return animationHash;
+        }
+    }
+
     public float damage = 25f;
     public float stamina = 10f;
 

@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>A wind funnel that pulls, holds and periodically damages whatever stands inside it, then returns to its pool.</summary>
 public class WindVortex : MonoBehaviour
 {
     private const int HitBufferSize = 16;
+    private const float MinPullDistance = 0.05f;
+    private static readonly Color GizmoColor = new Color(0.9f, 0.95f, 0.85f, 0.8f);
 
     [SerializeField] private LayerMask hitLayer = 1 << 8;
     [SerializeField] private WindVortexView view;
@@ -41,9 +44,9 @@ public class WindVortex : MonoBehaviour
         Vector3 center = transform.position;
         SpellTargeting.CollectTargets(center, data.radius, hitLayer, caster, hitBuffer, targets);
 
-        foreach (CharacterControllerBase target in targets)
+        for (int i = 0; i < targets.Count; i++)
         {
-            if (target is EnemyController enemy)
+            if (targets[i] is EnemyController enemy)
                 enemy.HoldInVortex(data.holdRefresh, ResolvePull(center, enemy.transform.position, dt));
         }
 
@@ -63,24 +66,17 @@ public class WindVortex : MonoBehaviour
         toCenter.y = 0f;
 
         float distance = toCenter.magnitude;
-        if (distance < 0.05f) return Vector3.zero;
+        if (distance < MinPullDistance) return Vector3.zero;
 
         return toCenter / distance * Mathf.Min(distance, data.pullSpeed * dt);
     }
 
     private void DealTick(Vector3 center)
     {
-        foreach (CharacterControllerBase target in targets)
-        {
-            CharacterStateBase state = target.GetState;
-            if (state == null || state.IsDead) continue;
+        for (int i = 0; i < targets.Count; i++)
+            SpellTargeting.DealSpellDamage(targets[i], data.damagePerTick, caster, center, ElementType.Wind);
 
-            DamageInfo info = new DamageInfo(
-                data.damagePerTick, caster, center, ElementType.Wind, DamageSource.Spell, false, 0f);
-            state.ReceiveDamage(in info);
-        }
-
-        Debug.Log($"[Phép] Lốc Xoáy nhát {ticksDone}/{data.TickCount}, trúng {targets.Count} mục tiêu");
+        GameLog.Info($"[Phép] Lốc Xoáy nhát {ticksDone}/{data.TickCount}, trúng {targets.Count} mục tiêu");
     }
 
     private void Close()
@@ -94,7 +90,7 @@ public class WindVortex : MonoBehaviour
     {
         if (data == null) return;
 
-        Gizmos.color = new Color(0.9f, 0.95f, 0.85f, 0.8f);
+        Gizmos.color = GizmoColor;
         Gizmos.DrawWireSphere(transform.position, data.radius);
     }
 }

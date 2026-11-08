@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UIGame
 {
+    [System.Serializable]
     public class ViewTransitionCanvasGroup : ViewTransition
     {
         [SerializeField] private Ease _ease = Ease.Linear;
@@ -22,7 +23,7 @@ namespace UIGame
 
         public override Tween GetTween(ViewTransitionEntity entity, float duration)
         {
-            CanvasGroup canvasGroup = entity.GetComponent<CanvasGroup>();
+            CanvasGroup canvasGroup = entity.canvasGroup;
 
             if (canvasGroup == null)
                 return null;

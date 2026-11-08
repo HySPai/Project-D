@@ -53,7 +53,7 @@ public class StoneBurstView : MonoBehaviour
         Vector3 buried = ground - Vector3.up * (height * 0.5f);
         Vector3 raised = ground + Vector3.up * (height * (data.exposedRatio - 0.5f));
 
-        spike.SetPositionAndRotation(buried, Quaternion.LookRotation(flat) * Quaternion.Euler(data.outwardTilt, 0f, 0f) * Quaternion.Euler(0f, 45f, 0f));
+        spike.SetPositionAndRotation(buried, Quaternion.LookRotation(flat) * Quaternion.Euler(data.outwardTilt, 0f, 0f) * Quaternion.Euler(0f, data.spikeYaw, 0f));
 
         sequence.Insert(delay, spike.DOMove(raised, data.riseTime).SetEase(Ease.OutBack));
         sequence.Insert(delay + data.riseTime + data.holdTime, spike.DOMove(buried, data.sinkTime).SetEase(Ease.InQuad));

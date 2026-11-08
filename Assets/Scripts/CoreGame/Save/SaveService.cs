@@ -53,7 +53,7 @@ public class SaveService
         }
         catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
         {
-            Debug.LogWarning($"Save slot {slot} failed: {e.Message}");
+            GameLog.Warn($"Save slot {slot} failed: {e.Message}");
             return false;
         }
     }

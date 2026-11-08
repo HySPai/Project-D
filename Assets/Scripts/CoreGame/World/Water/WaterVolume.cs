@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>A static body of water: tracks what wades through it for ripples and spray, floats rigidbodies and bakes the shore distance field.</summary>
 [RequireComponent(typeof(BoxCollider))]
 public class WaterVolume : MonoBehaviour
 {
@@ -18,6 +19,11 @@ public class WaterVolume : MonoBehaviour
     private static readonly int SdfRectId = Shader.PropertyToID("_WaterSdfRect");
     private static readonly int SdfMaxId = Shader.PropertyToID("_WaterSdfMax");
 
+    private const float MinSurfaceRadiusSqr = 0.0025f;
+    private const float MinSubmergeHeight = 0.001f;
+    private const float FullCircle = Mathf.PI * 2f;
+    private const float ByteMax = 255f;
+
     [SerializeField] private WaterController controller;
     [SerializeField] private BoxCollider volume;
     [SerializeField] private Renderer surface;
@@ -26,13 +32,34 @@ public class WaterVolume : MonoBehaviour
 
     private readonly List<Contact> contacts = new List<Contact>();
     private Texture2D distanceTexture;
+    private float surfaceHeight;
+    private bool surfaceCached;
 
-    /// <summary>World height of the water surface.</summary>
-    public float SurfaceHeight => volume.bounds.max.y;
+    /// <summary>World height of the water surface, read once since the volume never moves.</summary>
+    public float SurfaceHeight
+    {
+        get
+        {
+            if (!surfaceCached) CacheSurface();
+            return surfaceHeight;
+        }
+    }
 
+    /// <summary>Number of colliders currently touching the water.</summary>
     public int ContactCount => contacts.Count;
 
-    private void Start() => BakeDistanceField();
+    private void Start()
+    {
+        Physics.SyncTransforms();
+        CacheSurface();
+        BakeDistanceField();
+    }
+
+    private void CacheSurface()
+    {
+        surfaceHeight = volume.bounds.max.y;
+        surfaceCached = true;
+    }
 
     private void OnDisable() => contacts.Clear();
 
@@ -49,7 +76,7 @@ public class WaterVolume : MonoBehaviour
         {
             collider = other,
             lastPosition = other.bounds.center,
-            phase = Random.value * Mathf.PI * 2f
+            phase = Random.value * FullCircle
         });
 
         PlayEntry(other);
@@ -106,7 +133,7 @@ public class WaterVolume : MonoBehaviour
             contact.velocity = Vector3.Lerp(contact.velocity, step / deltaTime, blend);
         }
 
-        float radius = RadiusAtSurface(contact.collider, surfaceHeight);
+        float radius = RadiusAtSurface(contact.collider, bounds, surfaceHeight);
         controller.AddBody(surfacePoint, radius, contact.velocity);
 
         float speed = contact.velocity.magnitude;
@@ -150,14 +177,13 @@ public class WaterVolume : MonoBehaviour
         controller.Spray(surfacePoint);
     }
 
-    private static float RadiusAtSurface(Collider collider, float surfaceHeight)
+    private static float RadiusAtSurface(Collider collider, Bounds bounds, float surfaceHeight)
     {
-        Bounds bounds = collider.bounds;
         float radius = Mathf.Max(bounds.extents.x, bounds.extents.z);
         if (!(collider is SphereCollider)) return radius;
 
         float height = surfaceHeight - bounds.center.y;
-        return Mathf.Sqrt(Mathf.Max(radius * radius - height * height, 0.0025f));
+        return Mathf.Sqrt(Mathf.Max(radius * radius - height * height, MinSurfaceRadiusSqr));
     }
 
     private void ApplyBuoyancy(Contact contact)
@@ -168,10 +194,10 @@ public class WaterVolume : MonoBehaviour
         SO_WaterConfig config = controller.Config;
         Bounds bounds = contact.collider.bounds;
         Vector3 size = bounds.size;
-        float submerged = Mathf.Clamp01((SurfaceHeight - bounds.min.y) / Mathf.Max(size.y, 0.001f));
+        float submerged = Mathf.Clamp01((SurfaceHeight - bounds.min.y) / Mathf.Max(size.y, MinSubmergeHeight));
         if (submerged <= 0f) return;
 
-        float displaced = SolidVolume(contact.collider) * submerged * config.displacementFactor;
+        float displaced = SolidVolume(contact.collider, size) * submerged * config.displacementFactor;
         float bob = 1f + Mathf.Sin(Time.time * config.bobSpeed + contact.phase) * config.bobAmount;
         float lift = config.waterDensity * displaced * -Physics.gravity.y * bob;
 
@@ -180,7 +206,7 @@ public class WaterVolume : MonoBehaviour
         body.AddTorque(-body.angularVelocity * config.angularDrag * submerged, ForceMode.Acceleration);
     }
 
-    private static float SolidVolume(Collider collider)
+    private static float SolidVolume(Collider collider, Vector3 boundsSize)
     {
         Vector3 scale = collider.transform.lossyScale;
 
@@ -193,16 +219,16 @@ public class WaterVolume : MonoBehaviour
             return 4f / 3f * Mathf.PI * radius * radius * radius;
         }
 
-        Vector3 size = collider.bounds.size;
-        return size.x * size.y * size.z;
+        return boundsSize.x * boundsSize.y * boundsSize.z;
     }
 
     private void PlayEntry(Collider other)
     {
         SO_WaterConfig config = controller.Config;
         Bounds bounds = other.bounds;
-        Vector3 point = new Vector3(bounds.center.x, SurfaceHeight, bounds.center.z);
-        float radius = RadiusAtSurface(other, SurfaceHeight);
+        float surfaceHeight = SurfaceHeight;
+        Vector3 point = new Vector3(bounds.center.x, surfaceHeight, bounds.center.z);
+        float radius = RadiusAtSurface(other, bounds, surfaceHeight);
         float speed = EntrySpeed(other);
 
         if (speed < config.splashMinSpeed)
@@ -216,7 +242,8 @@ public class WaterVolume : MonoBehaviour
 
     private static float EntrySpeed(Collider other)
     {
-        if (other.attachedRigidbody != null) return other.attachedRigidbody.linearVelocity.magnitude;
+        Rigidbody body = other.attachedRigidbody;
+        if (body != null) return body.linearVelocity.magnitude;
 
         CharacterController character = other as CharacterController;
         return character != null ? character.velocity.magnitude : 0f;
@@ -241,11 +268,9 @@ public class WaterVolume : MonoBehaviour
 
     private void BakeDistanceField()
     {
-        Physics.SyncTransforms();
-
         SO_WaterConfig config = controller.Config;
         Bounds bounds = volume.bounds;
-        float surfaceHeight = bounds.max.y;
+        float surfaceHeight = SurfaceHeight;
         int width = Mathf.Max(2, Mathf.CeilToInt(bounds.size.x * config.bakeTexelsPerMeter));
         int height = Mathf.Max(2, Mathf.CeilToInt(bounds.size.z * config.bakeTexelsPerMeter));
         float cellX = bounds.size.x / width;
@@ -274,7 +299,7 @@ public class WaterVolume : MonoBehaviour
         Color32[] pixels = new Color32[distances.Length];
         for (int i = 0; i < distances.Length; i++)
         {
-            byte value = (byte)Mathf.RoundToInt(Mathf.Clamp01(distances[i] / config.bakeMaxDistance) * 255f);
+            byte value = (byte)Mathf.RoundToInt(Mathf.Clamp01(distances[i] / config.bakeMaxDistance) * ByteMax);
             pixels[i] = new Color32(value, value, value, 255);
         }
 

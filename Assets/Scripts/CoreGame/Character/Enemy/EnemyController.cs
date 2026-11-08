@@ -2,9 +2,16 @@
 using UnityEngine.AI;
 using FIMSpace.FProceduralAnimation;
 
+/// <summary>
+/// Central hub of an enemy: holds every component reference, runs the behaviour state machine and routes combat
+/// reactions (knockback, stun, poise break, vortex) to the right parts. Subclasses swap states in BuildStates.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : CharacterControllerBase
 {
+    private const float MovingThreshold = 0.01f;
+    private const float ParryKnockbackRatio = 0.5f;
+
     [SerializeField] private EnemyState state;
     [SerializeField] private EnemyMovement movement;
     [SerializeField] private EnemyCombat combat;
@@ -14,6 +21,9 @@ public class EnemyController : CharacterControllerBase
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private EnemyDeathDissolve deathDissolve;
 
+    private IEnemyState currentState;
+    private bool deathHandled;
+
     public override CharacterStateBase GetState => state;
     public override CharacterMovementBase GetMovement => movement;
     public override CharacterCombatBase GetCombat => combat;
@@ -21,27 +31,24 @@ public class EnemyController : CharacterControllerBase
 
     public LegsAnimator GetLegsAnim => legsAnim;
     public NavMeshAgent Agent => agent;
-
-    // Typed accessor cho các state FSM.
     public EnemyState EnemyState => state;
     public EnemyMovement EnemyMovement => movement;
     public EnemyVision Vision => vision;
     public EnemyCombat EnemyCombat => combat;
 
-    // protected set: cho subclass (Spider) gắn state khác vào cùng "slot".
     public IEnemyState IdleState { get; protected set; }
     public IEnemyState ChaseState { get; protected set; }
     public IEnemyState ReturnState { get; protected set; }
     public IEnemyState AttackState { get; protected set; }
-    private IEnemyState currentState;
 
     /// <summary>True while the enemy is alive and hunting or fighting rather than idle or heading home.</summary>
     public bool IsPursuing => !state.IsDead && currentState != null && currentState != IdleState && currentState != ReturnState;
 
+    private bool IsDisabledByVortex => state.IsHeld && !state.IsBoss;
+
     protected override void Awake()
     {
         base.Awake();
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
 
         state.Initialize(this);
         movement.Initialize(state, agent);
@@ -80,6 +87,7 @@ public class EnemyController : CharacterControllerBase
 
     protected override void OnReset()
     {
+        deathHandled = false;
         if (legsAnim != null)
             legsAnim.enabled = true;
 
@@ -93,8 +101,7 @@ public class EnemyController : CharacterControllerBase
             deathDissolve.Play(state.DeathDissolve);
     }
 
-    // Hành vi mặc định = SpiderKing: tiếp cận thẳng + tấn công.
-    // Spider override để thay Chase -> Kite, Attack -> đánh tại chỗ giữ khoảng cách.
+    /// <summary>Default behaviour (Spider King): walk straight in and attack. Subclasses replace slots.</summary>
     protected virtual void BuildStates()
     {
         IdleState = new EnemyIdleState(this);
@@ -105,7 +112,15 @@ public class EnemyController : CharacterControllerBase
 
     private void Update()
     {
-        if (state.IsDead) { movement.Stop(); return; }
+        if (state.IsDead)
+        {
+            if (deathHandled) return;
+
+            deathHandled = true;
+            movement.Stop();
+            anim.SetMoving(false);
+            return;
+        }
 
         float slow = slowEffect != null ? slowEffect.SpeedMultiplier : 1f;
         movement.SetSpeedMultiplier(slow);
@@ -114,12 +129,12 @@ public class EnemyController : CharacterControllerBase
         if (!state.IsStunned && !IsDisabledByVortex)
             currentState?.Tick();
 
-        // Animation chạy theo tốc độ thực của agent.
         float moveAmount = movement.NormalizedSpeed;
-        anim.SetMoving(moveAmount > 0.01f);
+        anim.SetMoving(moveAmount > MovingThreshold);
         anim.UpdateAnimation(moveAmount);
     }
 
+    /// <summary>Exits the current state and enters newState; does nothing when it is already active.</summary>
     public void ChangeState(IEnemyState newState)
     {
         if (newState == currentState) return;
@@ -128,25 +143,30 @@ public class EnemyController : CharacterControllerBase
         currentState.Enter();
     }
 
-    // Gọi từ EnemyState.PlayHitReaction khi trúng đòn.
+    /// <summary>Locks onto a newly seen target and starts the chase; returns true when that happened.</summary>
+    public bool TryAcquireTarget()
+    {
+        Transform target = vision.DetectTarget();
+        if (target == null) return false;
+
+        state.SetTarget(target);
+        ChangeState(ChaseState);
+        return true;
+    }
+
+    /// <summary>Hit reaction: breaks the current action, stuns and pushes the enemy along the player's facing.</summary>
     public void OnKnockback(Vector3 sourcePosition, float knockbackScale, float stunScale)
     {
         if (state.IsDead) return;
 
-        // Ngắt mọi đòn/hành động đang diễn (gọi Exit của state hiện tại) rồi về slot Chase.
         ChangeState(ChaseState);
-
-        // Choáng: tạm dừng FSM trong stunDuration -> player dễ chém liên tục.
         state.BeginStun(state.StunDuration * Mathf.Max(0f, stunScale));
 
         if (state.IsHeld) return;
 
-        // Đẩy lùi theo HƯỚNG NGƯỜI CHƠI đang nhìn (không dựa vào vị trí nguồn damage).
         Vector3 pushDir = ResolveKnockbackDirection(sourcePosition);
         movement.Knockback(pushDir, state.KnockbackDistance * Mathf.Max(0f, knockbackScale), state.KnockbackDuration);
     }
-
-    private bool IsDisabledByVortex => state.IsHeld && !state.IsBoss;
 
     /// <summary>Poise reached 0: a long stun that also leaves the enemy open to a counter hit.</summary>
     public void OnPoiseBroken(float duration)
@@ -157,7 +177,6 @@ public class EnemyController : CharacterControllerBase
         state.InterruptAction();
         state.BeginStun(duration);
         state.MarkOffBalance(duration);
-        Debug.Log($"[Thế] {name} vỡ thế, choáng {duration:0.0}s");
     }
 
     /// <summary>Elemental stun, e.g. from Stone Burst: the enemy cannot act for duration seconds.</summary>
@@ -200,28 +219,28 @@ public class EnemyController : CharacterControllerBase
         movement.Pull(pull);
     }
 
+    /// <summary>The player parried this enemy: short stagger and a half-strength push back.</summary>
     public void OnParried(float staggerDuration)
     {
         if (state.IsDead) return;
 
         ChangeState(ChaseState);
         state.BeginStun(staggerDuration);
-        movement.Knockback(ResolveKnockbackDirection(transform.position), state.KnockbackDistance * 0.5f, state.KnockbackDuration);
+        movement.Knockback(ResolveKnockbackDirection(transform.position), state.KnockbackDistance * ParryKnockbackRatio, state.KnockbackDuration);
     }
 
-    // Hướng đẩy = hướng player (Target) đang nhìn. Lúc player vung đòn là đang hướng
-    // về phía địch, nên địch bị hất ngược ra sau đúng theo hướng người chơi.
     private Vector3 ResolveKnockbackDirection(Vector3 fallbackSource)
     {
         Transform player = state.Target;
         if (player != null)
         {
-            Vector3 f = player.forward; f.y = 0f;
+            Vector3 f = player.forward;
+            f.y = 0f;
             if (f.sqrMagnitude > 0.0001f) return f.normalized;
         }
 
-        // Chưa khoá được player (vd bị đánh lén lúc chưa phát hiện) -> tạm đẩy ra xa nguồn damage.
-        Vector3 away = transform.position - fallbackSource; away.y = 0f;
+        Vector3 away = transform.position - fallbackSource;
+        away.y = 0f;
         return away.sqrMagnitude > 0.0001f ? away.normalized : -transform.forward;
     }
 }

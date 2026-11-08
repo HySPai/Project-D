@@ -1,95 +1,49 @@
-using System;
-using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Scene-placed manager reachable through Instance. The instance registers itself in Awake; a duplicate destroys
+/// itself. Nothing is created on demand: a missing manager is a scene setup error and is reported once.
+/// Prefer passing references through a controller; this exists for the few cross-cutting managers.
+/// </summary>
 public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 {
-    static T instance;
+    private static T instance;
+    private static bool reportedMissing;
 
+    /// <summary>The live instance, or null outside play mode or when the scene has none.</summary>
     public static T Instance
     {
         get
         {
-#if UNITY_EDITOR
-            if (!EditorApplication.isPlaying)
-            {
-                return null;
-            }
-#endif
-            if (instance == null)
-            {
-                Type t = typeof(T);
-                instance = (T)FindObjectOfType(t);
+            if (instance != null || !Application.isPlaying) return instance;
 
-                if (instance == null)
-                {
-                    instance = new GameObject(typeof(T).Name).AddComponent<T>();
-                }
+            instance = FindAnyObjectByType<T>(FindObjectsInactive.Include);
+            if (instance == null && !reportedMissing)
+            {
+                reportedMissing = true;
+                Debug.LogError($"{typeof(T).Name} is missing from the scene.");
             }
-
             return instance;
         }
     }
 
+    /// <summary>True when an instance has registered.</summary>
+    public static bool HasInstance => instance != null;
+
     protected virtual void Awake()
-    {
-        CheckInstance();
-    }
-
-    protected virtual void OnDestroy()
-    {
-        if (instance == this)
-        {
-            instance = null;
-        }
-    }
-
-    protected bool CheckInstance()
     {
         if (instance == null)
         {
             instance = this as T;
-            return true;
+            reportedMissing = false;
+            return;
         }
-        else if (Instance == this)
-        {
-            return true;
-        }
-        Destroy(this);
-        return false;
+
+        if (instance != this) Destroy(this);
     }
 
-    public static T getInstance
+    protected virtual void OnDestroy()
     {
-        get
-        {
-            if (instance)
-            {
-                return instance;
-            }
-
-            Type t = typeof(T);
-            instance = (T)FindObjectOfType(t);
-
-            return instance;
-        }
-
-    }
-
-    public static bool HasInstance
-    {
-        get { return instance != null; }
-    }
-
-    public bool Destroy()
-    {
-        if (HasInstance && instance == this && instance.gameObject != null)
-        {
-            Destroy(instance.gameObject);
-            instance = null;
-            return true;
-        }
-        return false;
+        if (instance == this) instance = null;
     }
 }
-

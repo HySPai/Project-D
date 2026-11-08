@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-// State của Seed: kế thừa EnemyState (target/vision/home/knockback/stun)
-// + tham số đi dạo và hàm chọn điểm dạo ngẫu nhiên quanh home.
 public class SeedState : EnemyState
 {
     private SO_SeedStats seedStats;
@@ -24,7 +22,6 @@ public class SeedState : EnemyState
             Debug.LogError($"{name}: stats phải là SO_SeedStats", this);
     }
 
-    // Chọn 1 điểm ngẫu nhiên trong bán kính WanderRadius quanh home, ép về NavMesh.
     public Vector3 GetRandomWanderPoint()
     {
         for (int i = 0; i < 5; i++)
@@ -34,6 +31,6 @@ public class SeedState : EnemyState
             if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas))
                 return hit.position;
         }
-        return HomePosition; // không tìm được điểm hợp lệ -> đứng yên tại home
+        return HomePosition;
     }
 }

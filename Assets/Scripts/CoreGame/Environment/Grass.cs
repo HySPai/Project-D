@@ -16,6 +16,7 @@ public class Grass : MonoBehaviour
         originalRotation = transform.localRotation;
     }
 
+    /// <summary>Tilts the blade away from the player standing at playerPos.</summary>
     public void Bend(Vector3 playerPos)
     {
         Vector3 dir = (transform.position - playerPos).normalized;
@@ -27,13 +28,16 @@ public class Grass : MonoBehaviour
 
         currentTween?.Kill();
         currentTween = transform.DOLocalRotateQuaternion(targetRotation, duration)
-            .SetEase(Ease.OutQuad);
+            .SetEase(Ease.OutQuad)
+            .SetLink(gameObject);
     }
 
+    /// <summary>Springs the blade back to its authored rotation.</summary>
     public void ResetGrass()
     {
         currentTween?.Kill();
         currentTween = transform.DOLocalRotateQuaternion(originalRotation, returnDuration)
-            .SetEase(Ease.OutBack);
+            .SetEase(Ease.OutBack)
+            .SetLink(gameObject);
     }
 }

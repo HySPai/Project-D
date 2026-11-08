@@ -61,7 +61,7 @@ public class GamepadRumble : MonoBehaviour
         activeGamepad = gamepad;
         gamepad.SetMotorSpeeds(pulse.lowFrequency, pulse.highFrequency);
 
-        pulseCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        pulseCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
         StopAfterAsync(pulse.duration, pulseCts.Token).Forget();
     }
 

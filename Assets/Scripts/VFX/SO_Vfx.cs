@@ -1,55 +1,54 @@
-﻿using Sirenix.OdinInspector;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEditor;
-using System;
 
+/// <summary>Maps each VFXName to its prefab. Entries are stored in enum order, so lookups are a direct index.</summary>
 [CreateAssetMenu(fileName = "SO_Vfx", menuName = "Vfx/SO_vfx", order = 1)]
-[Serializable]
 public class SO_Vfx : ScriptableObject
 {
-    [SerializeField] string[] vfxNames;
+    [SerializeField] private string[] vfxNames;
+
+    [SerializeField, TableList, ShowIf("@vfxNames != null && vfxNames.Length > 0")]
+    private ItemVfx[] itemVfxs;
+
+#if UNITY_EDITOR
     [Button("Generate Enum")]
-    public void GenarateEnum()
+    private void GenerateEnum()
     {
         EnumGenerator.GenerateEnum("VFXName", "Assets/Scripts/VFX/", vfxNames);
-        // Nếu itemVfxs chưa có thì tạo mảng mới
-        if (itemVfxs == null)
-            itemVfxs = new ItemVfx[vfxNames.Length];
 
-        // Resize nếu số lượng không khớp
-        if (itemVfxs.Length != vfxNames.Length)
-        {
-            Array.Resize(ref itemVfxs, vfxNames.Length);
-        }
+        if (itemVfxs == null) itemVfxs = new ItemVfx[vfxNames.Length];
+        if (itemVfxs.Length != vfxNames.Length) Array.Resize(ref itemVfxs, vfxNames.Length);
 
-        // Update từng phần tử
         for (int i = 0; i < vfxNames.Length; i++)
         {
-            if (itemVfxs[i] == null)
-                itemVfxs[i] = new ItemVfx();
-
-            // Cập nhật enum theo index
+            if (itemVfxs[i] == null) itemVfxs[i] = new ItemVfx();
             itemVfxs[i].vfxName = (VFXName)i;
         }
     }
-    [SerializeField,TableList,ShowIf("@vfxNames != null && vfxNames.Length > 0")]
-    private ItemVfx[] itemVfxs;
+#endif
 
+    /// <summary>The prefab registered for vfxName, or null with an error when none is.</summary>
     public GameObject GetVfxPrefab(VFXName vfxName)
     {
-        foreach (var item in itemVfxs)
+        int index = (int)vfxName;
+        if (itemVfxs != null && index >= 0 && index < itemVfxs.Length && itemVfxs[index] != null && itemVfxs[index].vfxName == vfxName)
+            return itemVfxs[index].vfxPrefab;
+
+        if (itemVfxs != null)
         {
-            if (item.vfxName == vfxName)
+            foreach (ItemVfx item in itemVfxs)
             {
-                return item.vfxPrefab;
+                if (item != null && item.vfxName == vfxName) return item.vfxPrefab;
             }
         }
-        Debug.LogError("Không tìm thấy VFX: " + vfxName);
+
+        Debug.LogError($"VFX not registered: {vfxName}", this);
         return null;
     }
 }
+
+/// <summary>One VFXName and the prefab it spawns.</summary>
 [Serializable]
 public class ItemVfx
 {

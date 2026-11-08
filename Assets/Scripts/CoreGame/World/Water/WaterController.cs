@@ -1,9 +1,12 @@
 using UnityEngine;
 
+/// <summary>Feeds the water shaders their shared globals (time, ripples, bodies) and emits splash particles.</summary>
 public class WaterController : MonoBehaviour
 {
     private const int MaxRipples = 16;
     private const int MaxBodies = 8;
+    private const float UnusedRippleTime = -1000f;
+    private const float MinHeadingSpeed = 0.0001f;
 
     private static readonly int RipplesId = Shader.PropertyToID("_WaterRipples");
     private static readonly int RippleDataId = Shader.PropertyToID("_WaterRippleData");
@@ -22,6 +25,8 @@ public class WaterController : MonoBehaviour
     private readonly Vector4[] bodyMotion = new Vector4[MaxBodies];
     private int rippleCursor;
     private int bodyCount;
+    private int uploadedBodyCount;
+    private bool ripplesDirty = true;
 
     public SO_WaterConfig Config => config;
 
@@ -31,25 +36,55 @@ public class WaterController : MonoBehaviour
         main.gravityModifier = config.dropletGravity;
 
         for (int i = 0; i < MaxRipples; i++)
-            ripples[i] = new Vector4(0f, 0f, 0f, -1000f);
+            ripples[i] = new Vector4(0f, 0f, 0f, UnusedRippleTime);
+    }
+
+    private void OnEnable()
+    {
+        PushStaticParams();
+        ripplesDirty = true;
+        uploadedBodyCount = MaxBodies;
+    }
+
+    private void OnValidate()
+    {
+        if (config != null) PushStaticParams();
     }
 
     private void LateUpdate()
     {
         Shader.SetGlobalFloat(TimeId, Time.time);
-        Shader.SetGlobalVector(RippleParamsId, new Vector4(config.rippleLifetime, config.rippleWidth, config.trailLifetime, 0f));
-        Shader.SetGlobalVectorArray(RipplesId, ripples);
-        Shader.SetGlobalVectorArray(RippleDataId, rippleData);
 
-        for (int i = bodyCount; i < MaxBodies; i++)
+#if UNITY_EDITOR
+        PushStaticParams();
+#endif
+
+        if (ripplesDirty)
         {
-            bodies[i] = Vector4.zero;
-            bodyMotion[i] = Vector4.zero;
+            Shader.SetGlobalVectorArray(RipplesId, ripples);
+            Shader.SetGlobalVectorArray(RippleDataId, rippleData);
+            ripplesDirty = false;
         }
 
-        Shader.SetGlobalVectorArray(BodiesId, bodies);
-        Shader.SetGlobalVectorArray(BodyMotionId, bodyMotion);
+        if (bodyCount > 0 || uploadedBodyCount > 0)
+        {
+            for (int i = bodyCount; i < MaxBodies; i++)
+            {
+                bodies[i] = Vector4.zero;
+                bodyMotion[i] = Vector4.zero;
+            }
+
+            Shader.SetGlobalVectorArray(BodiesId, bodies);
+            Shader.SetGlobalVectorArray(BodyMotionId, bodyMotion);
+            uploadedBodyCount = bodyCount;
+        }
+
         bodyCount = 0;
+    }
+
+    private void PushStaticParams()
+    {
+        Shader.SetGlobalVector(RippleParamsId, new Vector4(config.rippleLifetime, config.rippleWidth, config.trailLifetime, 0f));
     }
 
     /// <summary>Opens one small ring around the point of contact. Strength runs 0 to 1; bodyRadius is the size of what touched the water.</summary>
@@ -68,7 +103,7 @@ public class WaterController : MonoBehaviour
         WriteRipple(
             surfacePoint,
             new Vector4(
-                0.2f,
+                config.trailPatchStrength,
                 bodyRadius * config.trailStartScale,
                 bodyRadius + Mathf.Lerp(config.trailSpread.x, config.trailSpread.y, speedRatio),
                 1f));
@@ -81,7 +116,7 @@ public class WaterController : MonoBehaviour
 
         velocity.y = 0f;
         float speed = velocity.magnitude;
-        Vector3 heading = speed > 0.0001f ? velocity / speed : Vector3.zero;
+        Vector3 heading = speed > MinHeadingSpeed ? velocity / speed : Vector3.zero;
         float moving = Mathf.InverseLerp(config.crescentMinSpeed, config.crescentFullSpeed, speed);
 
         bodies[bodyCount] = new Vector4(surfacePoint.x, surfacePoint.y, surfacePoint.z, radius);
@@ -94,6 +129,7 @@ public class WaterController : MonoBehaviour
         ripples[rippleCursor] = new Vector4(surfacePoint.x, surfacePoint.y, surfacePoint.z, Time.time);
         rippleData[rippleCursor] = data;
         rippleCursor = (rippleCursor + 1) % MaxRipples;
+        ripplesDirty = true;
     }
 
     /// <summary>A fall into the water: one ring, droplets and a little foam, all scaled by strength (0 to 1).</summary>
@@ -123,7 +159,7 @@ public class WaterController : MonoBehaviour
             ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams
             {
                 position = point + outward * radius,
-                velocity = (Vector3.up + outward * config.dropletSpread).normalized * Random.Range(topSpeed * 0.45f, topSpeed),
+                velocity = (Vector3.up + outward * config.dropletSpread).normalized * Random.Range(topSpeed * config.dropletMinSpeedRatio, topSpeed),
                 startSize = Random.Range(config.dropletSize.x, config.dropletSize.y),
                 startLifetime = Random.Range(config.dropletLifetime.x, config.dropletLifetime.y)
             };
@@ -144,7 +180,7 @@ public class WaterController : MonoBehaviour
             {
                 position = point + outward * (radius + config.foamSpread * strength),
                 velocity = Vector3.up * config.foamRiseSpeed * strength,
-                startSize = Mathf.Lerp(config.foamSize.x, config.foamSize.y, strength) * Random.Range(0.6f, 1f),
+                startSize = Mathf.Lerp(config.foamSize.x, config.foamSize.y, strength) * Random.Range(config.foamSizeJitterMin, 1f),
                 startLifetime = Random.Range(config.foamLifetime.x, config.foamLifetime.y)
             };
             foam.Emit(emit, 1);

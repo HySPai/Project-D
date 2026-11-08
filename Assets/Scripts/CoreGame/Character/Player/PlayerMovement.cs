@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+/// <summary>Camera-relative player locomotion, rotation, roll with early cancel, and backstep.</summary>
 public class PlayerMovement : CharacterMovementBase
 {
     private CharacterController cc;
@@ -31,10 +32,8 @@ public class PlayerMovement : CharacterMovementBase
 
         if (state.IsRolling && !TryCancelRoll()) return;
 
-        // Đang diễn action có root motion → OnAnimatorMove lo di chuyển + gravity.
         if (state.ApplyRootMotion) return;
 
-        // Bị khoá di chuyển nhưng vẫn phải chịu gravity (vd đang đứng diễn anim không root motion).
         if (!state.CanMove)
         {
             cc.Move(state.GetGravityDelta());
@@ -58,7 +57,6 @@ public class PlayerMovement : CharacterMovementBase
 
         HandleRotation(move);
     }
-
 
     private void HandleRotation(Vector3 move)
     {

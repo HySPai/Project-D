@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,14 +15,13 @@ public class TilemapManager : MonoBehaviour
     }
     void InitMap()
     {
-        int rows = dataMap.enumMatrix.GetLength(0); // số hàng
-        int cols = dataMap.enumMatrix.GetLength(1); // số cột
+        int rows = dataMap.enumMatrix.GetLength(0);
+        int cols = dataMap.enumMatrix.GetLength(1);
 
         for (int row = 0; row < rows; row++)
         {
             for (int col = 0; col < cols; col++)
             {
-                // Đảo chiều Z
                 int flippedY = rows - 1 - row;
 
                 Vector3Int pos = new Vector3Int(col, flippedY, 0);

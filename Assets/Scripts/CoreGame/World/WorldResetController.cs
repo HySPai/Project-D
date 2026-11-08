@@ -9,7 +9,7 @@ public class WorldResetController : MonoBehaviour
     public void ResetWorld(bool includePlayer = true)
     {
         GameTime.ResetAll();
-        SCR_Pool.DeactivateAllObject();
+        ObjectPool.DeactivateAll();
 
         for (int i = 0; i < turrets.Length; i++)
             turrets[i].ResetTurret();

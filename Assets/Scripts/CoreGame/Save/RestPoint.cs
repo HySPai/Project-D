@@ -12,6 +12,11 @@ public class RestPoint : MonoBehaviour
     [SerializeField] private Transform pulseTarget;
     [SerializeField] private float pulseStrength = 0.12f;
     [SerializeField] private float pulseDuration = 0.35f;
+    [SerializeField] private int pulseVibrato = 6;
+    [SerializeField] private float pulseElasticity = 0.5f;
+
+    private const float GizmoRadius = 0.4f;
+    private static readonly Color GizmoColor = new Color(1f, 0.7f, 0.2f, 0.9f);
 
     private Tween pulseTween;
 
@@ -48,13 +53,14 @@ public class RestPoint : MonoBehaviour
     private void Pulse()
     {
         pulseTween?.Complete();
-        pulseTween = pulseTarget.DOPunchScale(Vector3.one * pulseStrength, pulseDuration, 6, 0.5f);
+        pulseTween = pulseTarget.DOPunchScale(Vector3.one * pulseStrength, pulseDuration, pulseVibrato, pulseElasticity)
+            .SetLink(gameObject);
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(1f, 0.7f, 0.2f, 0.9f);
-        Gizmos.DrawWireSphere(transform.position, 0.4f);
+        Gizmos.color = GizmoColor;
+        Gizmos.DrawWireSphere(transform.position, GizmoRadius);
 
         if (spawnPoint == null) return;
         Gizmos.DrawLine(transform.position, spawnPoint.position);

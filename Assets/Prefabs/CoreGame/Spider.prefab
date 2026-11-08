@@ -6290,6 +6290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac16627d8f573164d90e25e397f36dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  repathInterval: 0.2
+  repathMinDistance: 0.3
 --- !u!114 &5629983921490562998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6353,6 +6355,7 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 640
+  scanInterval: 0.15
 --- !u!114 &7920236633344092192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6369,6 +6372,7 @@ MonoBehaviour:
   - {fileID: 4790376868826766701}
   dissolveShader: {fileID: 4800000, guid: f36c19641d73ec74dafdd2f569bfff9b, type: 3}
   dissolveParticles: {fileID: 8731722194781979059}
+  dissolveParticlesRenderer: {fileID: 4535244210157734428}
   hideOnComplete: {fileID: 4790376868823584877}
 --- !u!114 &5525937731289795236
 MonoBehaviour:

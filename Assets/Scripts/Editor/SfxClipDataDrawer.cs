@@ -1,33 +1,22 @@
 using System.Collections.Generic;
 using Ifreet.Core.Runtime.Audio.Data;
+using Ifreet.Core.Runtime.Audio.Enums;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace Ifreet.Core.Audio.Editor
 {
-    public enum ClipViewMode
-    {
-        Grid,
-        Scroll,
-        Reorderable
-    }
-
     [CustomPropertyDrawer(typeof(SfxClipData))]
     public class SfxClipDataDrawer : PropertyDrawer
     {
-        // PRIVATE MEMBERS: --------------------------------------------------------------------------------------------
-        
         private const float ID_WIDTH = 200;
         private const float SPACING = 4f;
         private const float CLIP_WIDTH = 60f;
 
         private Vector2 m_ScrollPos;
 
-        // Cache nhiều ReorderableList theo propertyPath
         private readonly Dictionary<string, ReorderableList> m_ReorderableLists = new();
-
-        // GUI DRAW METHOD: --------------------------------------------------------------------------------------------
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -37,16 +26,13 @@ namespace Ifreet.Core.Audio.Editor
 
             EditorGUI.BeginProperty(position, label, property);
 
-            // --- Vẽ ID ---
             var idRect = new Rect(position.x, position.y, ID_WIDTH, EditorGUIUtility.singleLineHeight);
             EditorGUI.PropertyField(idRect, idProp, GUIContent.none);
 
-            // --- Vẽ dropdown chọn mode ---
             var modeRect = new Rect(idRect.xMax + SPACING, position.y,
                 90f, EditorGUIUtility.singleLineHeight);
             EditorGUI.PropertyField(modeRect, viewModeProp, GUIContent.none);
 
-            // vùng content (phía dưới ID + mode)
             var startY = position.y + EditorGUIUtility.singleLineHeight + SPACING;
             var contentRect = new Rect(position.x, startY,
                 position.width, position.height - EditorGUIUtility.singleLineHeight - SPACING);
@@ -68,7 +54,6 @@ namespace Ifreet.Core.Audio.Editor
             EditorGUI.EndProperty();
         }
 
-        // --- GRID MODE ---
         private void DrawGrid(Rect position, SerializedProperty clipsProp)
         {
             var x = position.x;
@@ -93,7 +78,6 @@ namespace Ifreet.Core.Audio.Editor
             if (GUI.Button(addRect, "+")) clipsProp.arraySize++;
         }
 
-        // --- SCROLL MODE ---
         private void DrawScroll(Rect position, SerializedProperty clipsProp)
         {
             var viewWidth = clipsProp.arraySize * (CLIP_WIDTH + SPACING) + CLIP_WIDTH;
@@ -116,7 +100,6 @@ namespace Ifreet.Core.Audio.Editor
             GUI.EndScrollView();
         }
 
-        // --- REORDERABLE MODE ---
         private void DrawReorderable(Rect position, SerializedProperty clipsProp)
         {
             var list = this.GetReorderableList(clipsProp);
@@ -148,7 +131,6 @@ namespace Ifreet.Core.Audio.Editor
             return list;
         }
 
-        // --- HEIGHT ---
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var viewModeProp = property.FindPropertyRelative("m_ViewMode");
@@ -166,18 +148,18 @@ namespace Ifreet.Core.Audio.Editor
                     var rowCount = Mathf.CeilToInt((float)clipsProp.arraySize / itemsPerRow);
                     if (clipsProp.arraySize == 0) rowCount = 1;
 
-                    return EditorGUIUtility.singleLineHeight               // ID + mode
+                    return EditorGUIUtility.singleLineHeight
                          + SPACING
                          + rowCount * (EditorGUIUtility.singleLineHeight + SPACING);
 
                 case ClipViewMode.Scroll:
-                    return EditorGUIUtility.singleLineHeight               // ID + mode
+                    return EditorGUIUtility.singleLineHeight
                          + SPACING
-                         + (EditorGUIUtility.singleLineHeight * 2f);       // hiển thị 2 dòng scroll
+                         + (EditorGUIUtility.singleLineHeight * 2f);
 
                 case ClipViewMode.Reorderable:
                     var list = this.GetReorderableList(clipsProp);
-                    return EditorGUIUtility.singleLineHeight + SPACING     // ID + mode
+                    return EditorGUIUtility.singleLineHeight + SPACING
                          + list.GetHeight();
 
                 default:

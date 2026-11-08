@@ -1,33 +1,24 @@
 ﻿#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-using UnityEngine;
 using System.IO;
+using System.Text;
+using UnityEditor;
 
+/// <summary>Editor helper that writes a C# enum file from a list of names, spaces turned into underscores.</summary>
 public static class EnumGenerator
 {
-    public static void GenerateEnum(string enumName,string path, string[] values)
+    /// <summary>Writes path/enumName.cs containing one member per value and refreshes the asset database.</summary>
+    public static void GenerateEnum(string enumName, string path, string[] values)
     {
-        string _path = path + enumName + ".cs";
+        string filePath = path + enumName + ".cs";
+        var sb = new StringBuilder();
+        sb.AppendLine("public enum " + enumName);
+        sb.AppendLine("{");
+        foreach (string value in values)
+            sb.AppendLine("    " + value.Replace(" ", "_") + ",");
+        sb.AppendLine("}");
 
-        using (StreamWriter sw = new StreamWriter(_path))
-        {
-            sw.WriteLine("public enum " + enumName);
-            sw.WriteLine("{");
-
-            foreach (string val in values)
-            {
-                string safeVal = val.Replace(" ", "_");
-                sw.WriteLine("    " + safeVal + ",");
-            }
-
-            sw.WriteLine("}");
-        }
-
-        Debug.Log("✅ Enum generated at: " + _path);
-#if UNITY_EDITOR
+        File.WriteAllText(filePath, sb.ToString());
         AssetDatabase.Refresh();
-#endif
     }
 }
+#endif

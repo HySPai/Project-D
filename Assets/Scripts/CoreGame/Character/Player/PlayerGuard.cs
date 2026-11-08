@@ -1,11 +1,13 @@
 using DG.Tweening;
 using UnityEngine;
 
+/// <summary>Guard, block and parry for the player's current weapon, driving the Guard animator layer.</summary>
 public class PlayerGuard : MonoBehaviour
 {
     private const float GuardFade = 0.1f;
     private const float ReactionFade = 0.05f;
     private const float MinSlowScale = 0.05f;
+    private const float AbsorbEpsilon = 0.0001f;
 
     private PlayerState state;
     private PlayerAnimation anim;
@@ -16,6 +18,10 @@ public class PlayerGuard : MonoBehaviour
     private float nextParryTime;
     private float brokenUntil;
     private Tween slowMotionTween;
+
+    private GuardData hashedData;
+    private string hashedAnimationSet;
+    private GuardStateHashes hashes;
 
     public bool IsGuarding => guardIntent;
     public bool IsBroken => Time.time < brokenUntil;
@@ -93,7 +99,7 @@ public class PlayerGuard : MonoBehaviour
     private void BeginGuard(GuardData data)
     {
         guardIntent = true;
-        anim.CrossFadeGuard(StateName(data, "Up"), GuardFade);
+        anim.CrossFadeGuard(HashesFor(data).up, GuardFade);
     }
 
     private void EndGuard(GuardData data)
@@ -102,7 +108,7 @@ public class PlayerGuard : MonoBehaviour
         parryWindowEnd = float.NegativeInfinity;
 
         if (data != null)
-            anim.CrossFadeGuard(StateName(data, "Down"), GuardFade);
+            anim.CrossFadeGuard(HashesFor(data).down, GuardFade);
     }
 
     private void TryOpenParry(GuardData data)
@@ -148,10 +154,10 @@ public class PlayerGuard : MonoBehaviour
 
             case GuardOutcome.GuardBroken:
                 state.DrainStamina(verdict.staminaSpent);
-                BreakGuard(data, data.guardBreakStun, "Break");
+                BreakGuard(data.guardBreakStun, HashesFor(data).breakAction);
                 info = info.WithPoints(verdict.remainingPoints);
 
-                if (verdict.remainingPoints > 0.0001f) return false;
+                if (verdict.remainingPoints > AbsorbEpsilon) return false;
 
                 absorbed = new DamageResult(0f, true, false, false);
                 return true;
@@ -163,7 +169,7 @@ public class PlayerGuard : MonoBehaviour
 
     private bool AbsorbBlocked(GuardVerdict verdict, out DamageResult absorbed)
     {
-        if (verdict.remainingPoints <= 0.0001f)
+        if (verdict.remainingPoints <= AbsorbEpsilon)
         {
             absorbed = new DamageResult(0f, true, false, false);
             return true;
@@ -177,7 +183,7 @@ public class PlayerGuard : MonoBehaviour
     private void HandleParry(in DamageInfo info, GuardData data)
     {
         parryWindowEnd = float.NegativeInfinity;
-        anim.CrossFadeGuard(StateName(data, "Parry"), ReactionFade);
+        anim.CrossFadeGuard(HashesFor(data).parry, ReactionFade);
 
         CharacterStateBase attackerState = info.attacker != null ? info.attacker.GetState : null;
         if (attackerState != null)
@@ -190,28 +196,30 @@ public class PlayerGuard : MonoBehaviour
 
     private void HandleBlock(in DamageInfo info, GuardData data, GuardVerdict verdict)
     {
-        string tier = info.points >= data.heavyBlockPoints ? "BlockHeavy"
-            : info.points >= data.mediumBlockPoints ? "BlockMedium"
-            : "BlockLight";
+        GuardStateHashes guardSet = HashesFor(data);
+        bool heavy = info.points >= data.heavyBlockPoints;
+        int blockState = heavy ? guardSet.blockHeavy
+            : info.points >= data.mediumBlockPoints ? guardSet.blockMedium
+            : guardSet.blockLight;
 
-        anim.CrossFadeGuard(StateName(data, tier), ReactionFade);
+        anim.CrossFadeGuard(blockState, ReactionFade);
 
-        HitFeelTier feel = tier == "BlockHeavy" ? HitFeelTier.Heavy : HitFeelTier.Light;
+        HitFeelTier feel = heavy ? HitFeelTier.Heavy : HitFeelTier.Light;
         combat.PlayDefenseFeedback(feel, transform.position);
         state.GrantInvulnerability(data.blockInvulnerability, true);
 
         if (verdict.guardStunned)
-            BreakGuard(data, data.guardStunDuration, "Stun");
+            BreakGuard(data.guardStunDuration, guardSet.stunAction);
     }
 
-    private void BreakGuard(GuardData data, float duration, string stateSuffix)
+    private void BreakGuard(float duration, in AnimationAction reaction)
     {
         brokenUntil = Time.time + duration;
         parryWindowEnd = float.NegativeInfinity;
 
         combat.DisableAllDamageColliders();
 
-        anim.Play(new AnimationAction(StateName(data, stateSuffix), true, true, false, false));
+        anim.Play(reaction);
     }
 
     private void PlaySlowMotion(GuardData data)
@@ -240,5 +248,42 @@ public class PlayerGuard : MonoBehaviour
         GameTime.ClearSlowMotion();
     }
 
-    private static string StateName(GuardData data, string suffix) => $"Guard_{data.animationSet}_{suffix}";
+    private GuardStateHashes HashesFor(GuardData data)
+    {
+        if (!ReferenceEquals(data, hashedData) || !string.Equals(data.animationSet, hashedAnimationSet))
+        {
+            hashedData = data;
+            hashedAnimationSet = data.animationSet;
+            hashes = new GuardStateHashes(data.animationSet);
+        }
+        return hashes;
+    }
+}
+
+/// <summary>Animator state hashes for one guard animation set, named Guard_{set}_{suffix}.</summary>
+public readonly struct GuardStateHashes
+{
+    public readonly int up;
+    public readonly int down;
+    public readonly int parry;
+    public readonly int blockLight;
+    public readonly int blockMedium;
+    public readonly int blockHeavy;
+    public readonly AnimationAction breakAction;
+    public readonly AnimationAction stunAction;
+
+    public GuardStateHashes(string animationSet)
+    {
+        up = Animator.StringToHash(StateName(animationSet, "Up"));
+        down = Animator.StringToHash(StateName(animationSet, "Down"));
+        parry = Animator.StringToHash(StateName(animationSet, "Parry"));
+        blockLight = Animator.StringToHash(StateName(animationSet, "BlockLight"));
+        blockMedium = Animator.StringToHash(StateName(animationSet, "BlockMedium"));
+        blockHeavy = Animator.StringToHash(StateName(animationSet, "BlockHeavy"));
+        breakAction = new AnimationAction(StateName(animationSet, "Break"), true, true, false, false);
+        stunAction = new AnimationAction(StateName(animationSet, "Stun"), true, true, false, false);
+    }
+
+    /// <summary>Animator state name for a guard set and suffix, e.g. Guard_Off_Up.</summary>
+    public static string StateName(string animationSet, string suffix) => $"Guard_{animationSet}_{suffix}";
 }

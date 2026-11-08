@@ -5,10 +5,12 @@ using Sirenix.OdinInspector;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using Sirenix.Utilities;
-using System;
 
 namespace UIGame
 {
+    /// <summary>
+    /// A UI screen root that plays its transition sequence forward on open and backward on close.
+    /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
     public class View : MonoCached
     {
@@ -16,6 +18,8 @@ namespace UIGame
 
         [ShowIf(nameof(_viewStack))]
         [SerializeField] Canvas _canvas;
+
+        [SerializeField] private CanvasGroup _canvasGroup;
 
         [Title("Config")]
         [MinValue(0f)]
@@ -48,59 +52,63 @@ namespace UIGame
 
         private Sequence _sequence;
 
-        private CanvasGroup _canvasGroup;
-
+        /// <summary>The transition sequence that <see cref="ViewTransitionEntity"/> instances append their tweens to.</summary>
         public Sequence sequence { get { return _sequence; } }
 
+        /// <summary>Raised when an open transition starts.</summary>
         public UnityEvent onOpenStart { get { return _onOpenStart; } }
+        /// <summary>Raised when an open transition ends.</summary>
         public UnityEvent onOpenEnd { get { return _onOpenEnd; } }
+        /// <summary>Raised when a close transition starts.</summary>
         public UnityEvent onCloseStart { get { return _onCloseStart; } }
+        /// <summary>Raised when a close transition ends.</summary>
         public UnityEvent onCloseEnd { get { return _onCloseEnd; } }
+        /// <summary>Raised when a show transition starts.</summary>
         public UnityEvent onShowStart { get { return _onShowStart; } }
+        /// <summary>Raised when a show transition ends.</summary>
         public UnityEvent onShowEnd { get { return _onShowEnd; } }
+        /// <summary>Raised when a hide transition starts.</summary>
         public UnityEvent onHideStart { get { return _onHideStart; } }
+        /// <summary>Raised when a hide transition ends.</summary>
         public UnityEvent onHideEnd { get { return _onHideEnd; } }
 
+        /// <summary>Whether the view accepts input.</summary>
         public bool interactable { get { return _canvasGroup.interactable; } set { _canvasGroup.interactable = value; } }
 
+        /// <summary>Whether the view is tracked by the <see cref="ViewManager"/> stack.</summary>
         public bool IsViewStack => _viewStack;
+
         #region MonoBehaviour
 
         private void Awake()
         {
-            _canvasGroup = GetComponent<CanvasGroup>();
             if (_canvas)
             {
                 _canvas.overrideSorting = true;
             }
         }
 
-        public bool Interactable()
-        {
-            if(_canvasGroup == null)
-            {
-                _canvasGroup = GetComponent<CanvasGroup>();
-            }
-            if(_canvasGroup == null)
-            {
-                return true;
-            }
-            return _canvasGroup.interactable;
-        }
-
         private void OnDestroy()
         {
-            // Cancel token
-            _cancelToken?.Cancel();
-            _cancelToken?.Dispose();
-
-            // Kill tweens
+            CancelPending();
             _sequence?.Kill();
         }
 
-        #endregion
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            FillReferences();
+        }
 
-        #region Function -> Private
+        private void OnValidate()
+        {
+            FillReferences();
+        }
+
+        private void FillReferences()
+        {
+            if (_canvasGroup == null) TryGetComponent(out _canvasGroup);
+        }
 
         [FoldoutGroup("Transition")]
         [Button]
@@ -108,13 +116,33 @@ namespace UIGame
         {
             _transitionEntities = GetComponentsInChildren<ViewTransitionEntity>(true);
         }
+#endif
+
+        #endregion
+
+        #region Function -> Private
+
+        private void CancelPending()
+        {
+            if (_cancelToken == null) return;
+
+            _cancelToken.Cancel();
+            _cancelToken.Dispose();
+            _cancelToken = null;
+        }
+
+        private CancellationToken BeginTransition()
+        {
+            CancelPending();
+            _cancelToken = new CancellationTokenSource();
+            return _cancelToken.Token;
+        }
 
         private void ConstructSequence()
         {
             if (_sequence != null)
                 return;
 
-            _sequence?.Kill();
             _sequence = DOTween.Sequence();
 
             if (_transitionEntities.IsNullOrEmpty())
@@ -131,41 +159,38 @@ namespace UIGame
             _sequence.SetAutoKill(false);
         }
 
-        private async UniTask ProcessOpen(bool isShow)
+        private async UniTaskVoid ProcessOpen(bool isShow)
         {
-            // Handle cancel token
-            _cancelToken?.Cancel();
-            _cancelToken = new CancellationTokenSource();
+            CancellationToken token = BeginTransition();
 
             ConstructSequence();
 
-            // Open start callback
             if (isShow)
                 _onShowStart?.Invoke();
             else
                 _onOpenStart?.Invoke();
 
-            // Active object when open (in case it hidden before)
             gameObject.SetActive(true);
 
             _canvasGroup.interactable = false;
 
             if (_openDuration > 0.0f)
             {
-                _sequence.timeScale = _openDuration > 0.0f ? 1.0f / _openDuration : 1.0f;
+                _sequence.timeScale = 1.0f / _openDuration;
 
                 _sequence.Complete();
                 _sequence.Restart();
                 _sequence.Play();
 
-                await UniTask.WaitForSeconds(_openDuration, true, cancellationToken: _cancelToken.Token);
+                bool canceled = await UniTask.WaitForSeconds(_openDuration, true, cancellationToken: token)
+                    .SuppressCancellationThrow();
+                if (canceled) return;
             }
             else
             {
                 _sequence.Complete();
             }
 
-            // Open end callback
             if (isShow)
                 _onShowEnd?.Invoke();
             else
@@ -174,15 +199,12 @@ namespace UIGame
             _canvasGroup.interactable = true;
         }
 
-        private async UniTask ProcessClose(bool isHiding)
+        private async UniTaskVoid ProcessClose(bool isHiding)
         {
-            // Handle cancel token
-            _cancelToken?.Cancel();
-            _cancelToken = new CancellationTokenSource();
+            CancellationToken token = BeginTransition();
 
             ConstructSequence();
 
-            // Close start callback
             if (isHiding)
                 _onHideStart?.Invoke();
             else
@@ -192,12 +214,14 @@ namespace UIGame
 
             if (_closeDuration > 0.0f)
             {
-                _sequence.timeScale = _closeDuration > 0.0f ? 1.0f / _closeDuration : 1.0f;
+                _sequence.timeScale = 1.0f / _closeDuration;
 
                 _sequence.Complete();
                 _sequence.PlayBackwards();
 
-                await UniTask.WaitForSeconds(_closeDuration, true, cancellationToken: _cancelToken.Token);
+                bool canceled = await UniTask.WaitForSeconds(_closeDuration, true, cancellationToken: token)
+                    .SuppressCancellationThrow();
+                if (canceled) return;
             }
             else
             {
@@ -220,16 +244,29 @@ namespace UIGame
 
         #region Function -> Public
 
+        /// <summary>Returns whether the view accepts input; true when no canvas group is assigned.</summary>
+        public bool Interactable()
+        {
+            if (_canvasGroup == null)
+            {
+                return true;
+            }
+            return _canvasGroup.interactable;
+        }
+
+        /// <summary>Plays the open transition.</summary>
         public void Open()
-        {        
+        {
             ProcessOpen(false).Forget();
         }
 
+        /// <summary>Plays the close transition.</summary>
         public void Close()
-        {        
+        {
             ProcessClose(false).Forget();
         }
 
+        /// <summary>Makes the view accept input again.</summary>
         public void Reveal()
         {
             if (_canvasGroup)
@@ -238,6 +275,7 @@ namespace UIGame
             }
         }
 
+        /// <summary>Stops the view from accepting input.</summary>
         public void Block()
         {
             if (_canvasGroup)
@@ -246,7 +284,7 @@ namespace UIGame
             }
         }
 
-
+        /// <summary>Sets the sorting order of the view canvas, if it has one.</summary>
         public void SetOrder(int order)
         {
             if (_canvas == null) return;

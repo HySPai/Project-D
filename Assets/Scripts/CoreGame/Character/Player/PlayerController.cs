@@ -1,6 +1,7 @@
 ﻿using UIGame;
 using UnityEngine;
 
+/// <summary>Central player controller: owns every player component, wires them in Awake and runs the frame order in Update.</summary>
 public class PlayerController : CharacterControllerBase
 {
     [SerializeField] private PlayerInputHandler input;
@@ -13,8 +14,11 @@ public class PlayerController : CharacterControllerBase
     [SerializeField] private GamepadRumble rumble;
     [SerializeField] private PlayerElementCaster caster;
     [SerializeField] private PlayerStance stance;
+    [SerializeField] private GamePlayView gamePlayView;
 
-    private GamePlayView gamePlayView;
+    private const float RunInputEpsilon = 0.01f;
+
+    private bool hudBound;
     private bool controlLocked;
 
     /// <summary>While locked the character stands still and ignores every action input, e.g. during a rest.</summary>
@@ -47,8 +51,13 @@ public class PlayerController : CharacterControllerBase
 
     private void Start()
     {
-        gamePlayView = GUIViewManager.Instance.GetGamePlayView;
-        if (gamePlayView == null) return;
+        if (gamePlayView == null)
+        {
+            GameLog.Warn($"{name}: PlayerController.gamePlayView chưa gán, HUD sẽ không cập nhật", this);
+            return;
+        }
+
+        hudBound = true;
 
         state.OnHeartsChanged += gamePlayView.UpdateHearts;
         state.OnStaminaChanged += gamePlayView.UpdateStamina;
@@ -70,7 +79,6 @@ public class PlayerController : CharacterControllerBase
 
     private void Update()
     {
-        // 1) Cập nhật grounded + gravity trước mọi di chuyển.
         state.HandleGroundCheckAndGravity();
         if (state.IsDead) return;
 
@@ -89,9 +97,8 @@ public class PlayerController : CharacterControllerBase
         bool weaponReady = stance.IsWeaponReady;
         guard.Tick(guardHeld && weaponReady, guardPressed && weaponReady);
 
-        // 2) Quyết định chạy/đi.
         bool canRun = input.IsRunning()
-                      && state.CurrentInput.sqrMagnitude > 0.01f
+                      && state.CurrentInput.sqrMagnitude > RunInputEpsilon
                       && state.CanRun
                       && !state.IsInWater
                       && !guard.IsGuardActive;
@@ -99,7 +106,6 @@ public class PlayerController : CharacterControllerBase
 
         movement.SetInput(state.CurrentInput);
 
-        // 3) Lock-on / switch target.
         if (input.IsLockTarget())
         {
             combat.LockTarget();
@@ -111,7 +117,6 @@ public class PlayerController : CharacterControllerBase
                 combat.SwitchTarget(switchDir);
         }
 
-        // 4) Action.
         if (input.ConsumeFirePressed())
         {
             if (stance.IsWeaponReady) combat.Attack();
@@ -128,7 +133,6 @@ public class PlayerController : CharacterControllerBase
             if (input.ConsumeCastHold()) caster.Imbue();
         }
 
-        // 5) Di chuyển (CharacterController) + cập nhật animation.
         stance.Tick();
 
         movement.Move();
@@ -146,7 +150,7 @@ public class PlayerController : CharacterControllerBase
 
     private void OnDestroy()
     {
-        if (gamePlayView == null) return;
+        if (!hudBound) return;
 
         state.OnHeartsChanged -= gamePlayView.UpdateHearts;
         state.OnStaminaChanged -= gamePlayView.UpdateStamina;

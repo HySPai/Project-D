@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class CameraZoneExtension : CinemachineExtension
 {
+    private const float MinOrthographicSize = 0.1f;
+
     [SerializeField] private CameraZoneDirector director;
     [SerializeField] private float followSharpness = 5f;
     [SerializeField] private float zoomSharpness = 1.5f;
@@ -36,7 +38,7 @@ public class CameraZoneExtension : CinemachineExtension
         state.PositionCorrection += smoothedFocus - follow.position;
 
         LensSettings lens = state.Lens;
-        lens.OrthographicSize = Mathf.Max(0.1f, lens.OrthographicSize + smoothedZoom);
+        lens.OrthographicSize = Mathf.Max(MinOrthographicSize, lens.OrthographicSize + smoothedZoom);
         state.Lens = lens;
     }
 

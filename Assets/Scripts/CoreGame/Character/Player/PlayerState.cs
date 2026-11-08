@@ -2,22 +2,24 @@
 using System;
 using UnityEngine;
 
+/// <summary>Player state: hearts, stamina, stance, input, water depth and locomotion helpers on top of CharacterStateBase.</summary>
 public class PlayerState : CharacterStateBase
 {
+    private const float DivisionEpsilon = 0.0001f;
+
     private SO_PlayerStats playerStats;
+
+    private readonly HeartPool hearts = new HeartPool();
+    private readonly StaminaPool stamina = new StaminaPool();
 
     #region Hearts
     public event Action<int, int> OnHeartsChanged;
 
-    private int currentHearts;
-    public int CurrentHearts => currentHearts;
+    [ShowInInspector, ReadOnly]
+    public int CurrentHearts => hearts.Current;
     public int MaxHearts => playerStats.maxHearts;
 
-    private void RaiseHeartsChanged() => OnHeartsChanged?.Invoke(currentHearts, playerStats.maxHearts);
-
-    private const float MinPointsPerHeart = 0.01f;
-
-    private float damageRemainder;
+    private void RaiseHeartsChanged() => OnHeartsChanged?.Invoke(hearts.Current, playerStats.maxHearts);
 
     [Button]
     public void DebugReceiveDamage(float points = 25f)
@@ -34,14 +36,15 @@ public class PlayerState : CharacterStateBase
     public override void Initialize(CharacterControllerBase owner)
     {
         base.Initialize(owner);
-        guard = (owner as PlayerController)?.GetGuard;
-        rumble = (owner as PlayerController)?.GetRumble;
+        PlayerController player = owner as PlayerController;
+        guard = player != null ? player.GetGuard : null;
+        rumble = player != null ? player.GetRumble : null;
     }
 
     private void PlayDamageRumble()
     {
         if (rumble != null)
-            rumble.PlayDamageTaken(currentHearts <= 0);
+            rumble.PlayDamageTaken(hearts.Current <= 0);
     }
 
     protected override bool AbsorbIncoming(ref DamageInfo info, out DamageResult absorbed)
@@ -56,6 +59,7 @@ public class PlayerState : CharacterStateBase
         base.PlayHitReaction(in info);
     }
 
+    /// <summary>Damage that leaks through a block: costs hearts and plays feedback but no hit reaction. Returns true on death.</summary>
     public bool ApplyChipDamage(float points)
     {
         if (points <= 0f || isDead) return false;
@@ -64,7 +68,7 @@ public class PlayerState : CharacterStateBase
         PlayDamageFeedback();
         PlayDamageRumble();
 
-        if (currentHearts > 0) return false;
+        if (hearts.Current > 0) return false;
 
         Die();
         return true;
@@ -72,15 +76,9 @@ public class PlayerState : CharacterStateBase
 
     private void ReduceHearts(float points)
     {
-        float pointsPerHeart = Mathf.Max(MinPointsPerHeart, playerStats.pointsPerHeart);
-        damageRemainder += points;
-        int hearts = Mathf.FloorToInt(damageRemainder / pointsPerHeart);
-        damageRemainder -= hearts * pointsPerHeart;
+        if (!hearts.ApplyDamage(points, playerStats.pointsPerHeart)) return;
 
-        if (hearts <= 0) return;
-
-        currentHearts = Mathf.Max(0, currentHearts - hearts);
-        currentHp = currentHearts;
+        currentHp = hearts.Current;
         RaiseHeartsChanged();
         RaiseHpChanged();
     }
@@ -95,7 +93,7 @@ public class PlayerState : CharacterStateBase
         PlayDamageFeedback();
         PlayDamageRumble();
 
-        if (currentHearts <= 0)
+        if (hearts.Current <= 0)
         {
             Die();
             return new DamageResult(info.points, false, false, true);
@@ -108,24 +106,22 @@ public class PlayerState : CharacterStateBase
 
     private void InterruptAttack()
     {
-        var combat = owner != null ? owner.GetCombat : null;
+        CharacterCombatBase combat = owner != null ? owner.GetCombat : null;
         if (combat != null)
             combat.DisableAllDamageColliders();
     }
 
+    /// <summary>Restores up to amount hearts and returns how many were gained; does nothing while dead.</summary>
     [Button]
     public int Heal(int amount)
     {
         if (amount <= 0 || isDead) return 0;
 
-        damageRemainder = 0f;
-        int before = currentHearts;
-        currentHearts = Mathf.Min(playerStats.maxHearts, currentHearts + amount);
-        int healed = currentHearts - before;
+        int healed = hearts.Heal(amount, playerStats.maxHearts);
 
         if (healed > 0)
         {
-            currentHp = currentHearts;
+            currentHp = hearts.Current;
             RaiseHeartsChanged();
             RaiseHpChanged();
         }
@@ -135,17 +131,14 @@ public class PlayerState : CharacterStateBase
     #endregion
 
     #region Stamina
-    [Header("Stamina (runtime)")]
-    [SerializeField] protected float currentStamina;
-    protected float lastStaminaUseTime;
-    private bool runExhausted;
-
+    /// <summary>Raised with (current, max) only when stamina actually changes.</summary>
     public event Action<float, float> OnStaminaChanged;
 
     public float Stamina => playerStats.maxStamina;
-    public float CurrentStamina => currentStamina;
-    public bool HasStamina => currentStamina > 0f;
-    public bool HasEnoughStamina(float amount) => currentStamina >= amount;
+    [ShowInInspector, ReadOnly]
+    public float CurrentStamina => stamina.Current;
+    public bool HasStamina => stamina.Current > 0f;
+    public bool HasEnoughStamina(float amount) => stamina.Current >= amount;
 
     public float RollStaminaCost => playerStats.rollStaminaCost;
     public float BackstepStaminaCost => playerStats.backstepStaminaCost;
@@ -155,37 +148,25 @@ public class PlayerState : CharacterStateBase
     public float RollCancelBlendTime => playerStats.rollCancelBlendTime;
     public float RollExitSpeedRatio => playerStats.rollExitSpeedRatio;
 
-    public bool CanRun
-    {
-        get
-        {
-            if (!isCombatStance) return true;
-            if (currentStamina <= 0f) runExhausted = true;
-            else if (currentStamina >= playerStats.runResumeStamina) runExhausted = false;
-            return !runExhausted;
-        }
-    }
+    /// <summary>Always true while exploring; in combat, false from empty stamina until it refills to runResumeStamina.</summary>
+    public bool CanRun => !isCombatStance || stamina.UpdateRunGate(playerStats.runResumeStamina);
 
-    private void RaiseStaminaChanged() => OnStaminaChanged?.Invoke(currentStamina, playerStats.maxStamina);
+    private void RaiseStaminaChanged() => OnStaminaChanged?.Invoke(stamina.Current, playerStats.maxStamina);
 
     public void DrainStamina(float amount)
     {
-        if (amount <= 0f) return;
-        currentStamina = Mathf.Max(0f, currentStamina - amount);
-        lastStaminaUseTime = Time.time;
-        RaiseStaminaChanged();
+        if (stamina.Drain(amount, Time.time))
+            RaiseStaminaChanged();
     }
 
-    protected virtual void RegenerateStamina()
+    private void RegenerateStamina()
     {
         if (playerStats == null) return;
         if (guard != null && guard.IsGuardActive) return;
-        if (currentStamina >= playerStats.maxStamina) return;
-        if (Time.time - lastStaminaUseTime < playerStats.staminaRegenDelay) return;
 
-        currentStamina = Mathf.Min(playerStats.maxStamina,
-            currentStamina + playerStats.staminaRegenRate * Time.deltaTime);
-        RaiseStaminaChanged();
+        if (stamina.Regenerate(playerStats.maxStamina, playerStats.staminaRegenRate,
+                playerStats.staminaRegenDelay, Time.time, Time.deltaTime))
+            RaiseStaminaChanged();
     }
     #endregion
 
@@ -276,9 +257,9 @@ public class PlayerState : CharacterStateBase
         float magnitude = input.magnitude;
         if (magnitude <= deadzone) return 0f;
 
-        float live = (magnitude - deadzone) / Mathf.Max(0.0001f, 1f - deadzone);
-        float fullSpeed = (fullSpeedInputThreshold - deadzone) / Mathf.Max(0.0001f, 1f - deadzone);
-        return Mathf.Clamp01(live / Mathf.Max(0.0001f, fullSpeed));
+        float live = (magnitude - deadzone) / Mathf.Max(DivisionEpsilon, 1f - deadzone);
+        float fullSpeed = (fullSpeedInputThreshold - deadzone) / Mathf.Max(DivisionEpsilon, 1f - deadzone);
+        return Mathf.Clamp01(live / Mathf.Max(DivisionEpsilon, fullSpeed));
     }
 
     /// <summary>Locomotion blend value from the real speed: 0 idle, 1 at walk speed, 2 at run speed.</summary>
@@ -288,8 +269,8 @@ public class PlayerState : CharacterStateBase
         {
             float speed = currentMoveSpeed;
             if (speed <= playerStats.moveAnimSpeedThreshold) return 0f;
-            if (speed <= moveSpeed) return speed / Mathf.Max(0.0001f, moveSpeed);
-            return 1f + Mathf.Clamp01((speed - moveSpeed) / Mathf.Max(0.0001f, runSpeed - moveSpeed));
+            if (speed <= moveSpeed) return speed / Mathf.Max(DivisionEpsilon, moveSpeed);
+            return 1f + Mathf.Clamp01((speed - moveSpeed) / Mathf.Max(DivisionEpsilon, runSpeed - moveSpeed));
         }
     }
     #endregion
@@ -300,11 +281,9 @@ public class PlayerState : CharacterStateBase
     {
         if (isDead) return;
 
-        damageRemainder = 0f;
-        currentHearts = playerStats.maxHearts;
-        currentHp = currentHearts;
-        currentStamina = playerStats.maxStamina;
-        runExhausted = false;
+        hearts.Fill(playerStats.maxHearts);
+        currentHp = hearts.Current;
+        stamina.Fill(playerStats.maxStamina);
 
         RaiseHeartsChanged();
         RaiseHpChanged();
@@ -322,12 +301,12 @@ public class PlayerState : CharacterStateBase
             return;
         }
 
-        currentStamina = playerStats.maxStamina;
-        currentHearts = playerStats.maxHearts;
+        stamina.Fill(playerStats.maxStamina);
+        hearts.Fill(playerStats.maxHearts);
         maxHp = playerStats.maxHearts;
     }
 
-    protected virtual void Update()
+    private void Update()
     {
         RegenerateStamina();
     }
@@ -342,13 +321,11 @@ public class PlayerState : CharacterStateBase
     {
         base.ResetState();
 
-        damageRemainder = 0f;
-        currentHearts = playerStats.maxHearts;
-        currentHp = currentHearts;
+        hearts.Fill(playerStats.maxHearts);
+        currentHp = hearts.Current;
 
-        currentStamina = playerStats.maxStamina;
-        lastStaminaUseTime = 0f;
-        runExhausted = false;
+        stamina.Fill(playerStats.maxStamina);
+        stamina.ResetUseTime();
 
         currentInput = Vector2.zero;
         currentCameraInput = Vector2.zero;
@@ -356,19 +333,6 @@ public class PlayerState : CharacterStateBase
         RaiseHeartsChanged();
         RaiseHpChanged();
         RaiseStaminaChanged();
-    }
-    #endregion
-
-    #region Animation Test Buttons
-    private void PlayAction(in AnimationAction action)
-    {
-        var animation = owner != null ? owner.GetAnimation : null;
-        if (animation == null)
-        {
-            Debug.LogWarning($"{name}: thiếu Animation để play action", this);
-            return;
-        }
-        animation.Play(action);
     }
     #endregion
 }

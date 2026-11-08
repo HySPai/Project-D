@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 
 namespace UIGame
 {
+    /// <summary>Fades the death post-process volume in on player death and out after the world reset.</summary>
     public class DeathFadeView : MonoBehaviour
     {
         [SerializeField] private Volume deathVolume;
@@ -59,7 +60,8 @@ namespace UIGame
                     0f,
                     respawnFadeDuration)
                 .SetEase(respawnEase)
-                .SetUpdate(true);
+                .SetUpdate(true)
+                .SetLink(gameObject);
         }
 
         private void OnEnable()
@@ -100,13 +102,11 @@ namespace UIGame
                     1f,
                     fadeDuration)
                 .SetEase(ease)
-                .SetUpdate(true);
-
-            await fadeTween.AsyncWaitForCompletion();
-            if (token.IsCancellationRequested) return;
+                .SetUpdate(true)
+                .SetLink(gameObject);
 
             canceled = await UniTask.Delay(
-                    TimeSpan.FromSeconds(holdDuration),
+                    TimeSpan.FromSeconds(fadeDuration + holdDuration),
                     DelayType.UnscaledDeltaTime,
                     cancellationToken: token)
                 .SuppressCancellationThrow();

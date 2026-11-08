@@ -1,10 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Scrolls the two textures of the dappled light cookie along authored curves. At runtime it animates a private copy
+/// of the material, handed to the cookie render texture when one is assigned, so the material asset is never dirtied.
+/// </summary>
 public class LightCookieMotion : MonoBehaviour
 {
+    private static readonly int Tex1StId = Shader.PropertyToID("_Tex1_ST");
+    private static readonly int Tex2StId = Shader.PropertyToID("_Tex2_ST");
+
     [SerializeField] Material m_lightCookieMaterial;
+    [SerializeField] CustomRenderTexture m_cookieTexture;
 
     [Header("Texture 1")]
     [SerializeField] Vector2 m_cycleDuration1UV = new Vector2(20f, 20f);
@@ -24,51 +30,60 @@ public class LightCookieMotion : MonoBehaviour
     [SerializeField] Vector2 m_tex2TilingUV = new Vector2(2f, 2f);
     [SerializeField] Vector2 m_tex2OffsetUV = new Vector2();
 
-    private float m_time1U;
-    private float m_time1V;
+    private Material runtimeMaterial;
 
-    private float m_time2U;
-    private float m_time2V;
+    private Material Target => runtimeMaterial != null ? runtimeMaterial : m_lightCookieMaterial;
 
-
-    void Update()
+    private void Awake()
     {
-        m_time1U = Time.time % m_cycleDuration1UV.x;
-        m_time1U /= m_cycleDuration1UV.x;
+        if (m_lightCookieMaterial == null || m_cookieTexture == null) return;
 
-        m_time1V = Time.time % m_cycleDuration1UV.y;
-        m_time1V /= m_cycleDuration1UV.y;
-
-        m_time2U = Time.time % m_cycleDuration2UV.x;
-        m_time2U /= m_cycleDuration2UV.x;
-
-        m_time2V = Time.time % m_cycleDuration2UV.y;
-        m_time2V /= m_cycleDuration2UV.y;
-
-        UpdateMaterial(); 
+        runtimeMaterial = new Material(m_lightCookieMaterial) { name = m_lightCookieMaterial.name + " (Runtime)" };
+        m_cookieTexture.material = runtimeMaterial;
     }
 
-
-    private void UpdateMaterial()
+    private void OnDestroy()
     {
-        float newU1 = m_movementPath1U.Evaluate(m_time1U + m_movementTimeOffset1UV.x) * m_movementMagnitude1UV.x;
-        float newV1 = m_movementPath1V.Evaluate(m_time1V + m_movementTimeOffset1UV.y) * m_movementMagnitude1UV.y;
+        if (runtimeMaterial == null) return;
 
-        var newUV1 = new Vector4(m_tex1TilingUV.x, m_tex1TilingUV.y, newU1 + m_tex1OffsetUV.x, newV1 + m_tex1OffsetUV.y);
+        if (m_cookieTexture != null && m_cookieTexture.material == runtimeMaterial)
+            m_cookieTexture.material = m_lightCookieMaterial;
 
-        m_lightCookieMaterial.SetVector("_Tex1_ST", newUV1);
-
-        float newU2 = m_movementPath2U.Evaluate(m_time2U + m_movementTimeOffset2UV.x) * m_movementMagnitude2UV.x;
-        float newV2 = m_movementPath2V.Evaluate(m_time2V + m_movementTimeOffset2UV.y) * m_movementMagnitude2UV.y;
-
-        var newUV2 = new Vector4(m_tex2TilingUV.x, m_tex2TilingUV.y, newU2 + m_tex2OffsetUV.x, newV2 + m_tex2OffsetUV.y);
-
-        m_lightCookieMaterial.SetVector("_Tex2_ST", newUV2);
+        Destroy(runtimeMaterial);
+        runtimeMaterial = null;
     }
 
+    private void Update() => UpdateMaterial(Time.time);
+
+    private void UpdateMaterial(float time)
+    {
+        Material target = Target;
+        if (target == null) return;
+
+        target.SetVector(Tex1StId, Evaluate(time, m_cycleDuration1UV, m_movementPath1U, m_movementPath1V,
+            m_movementMagnitude1UV, m_movementTimeOffset1UV, m_tex1TilingUV, m_tex1OffsetUV));
+
+        target.SetVector(Tex2StId, Evaluate(time, m_cycleDuration2UV, m_movementPath2U, m_movementPath2V,
+            m_movementMagnitude2UV, m_movementTimeOffset2UV, m_tex2TilingUV, m_tex2OffsetUV));
+    }
+
+    private static Vector4 Evaluate(
+        float time, Vector2 cycleDuration, AnimationCurve pathU, AnimationCurve pathV,
+        Vector2 magnitude, Vector2 timeOffset, Vector2 tiling, Vector2 offset)
+    {
+        float u = time % cycleDuration.x / cycleDuration.x;
+        float v = time % cycleDuration.y / cycleDuration.y;
+
+        float newU = pathU.Evaluate(u + timeOffset.x) * magnitude.x;
+        float newV = pathV.Evaluate(v + timeOffset.y) * magnitude.y;
+
+        return new Vector4(tiling.x, tiling.y, newU + offset.x, newV + offset.y);
+    }
 
     private void OnValidate()
     {
-        UpdateMaterial();
+        if (m_movementPath1U == null || m_movementPath1V == null || m_movementPath2U == null || m_movementPath2V == null) return;
+
+        UpdateMaterial(Application.isPlaying ? Time.time : 0f);
     }
 }

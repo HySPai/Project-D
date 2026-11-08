@@ -1,7 +1,5 @@
 using UnityEngine;
 
-// State của Spider: kế thừa toàn bộ EnemyState (target/vision/knockback...)
-// chỉ thêm các tham số phục vụ kite.
 public class SpiderState : EnemyState
 {
     private SO_SpiderStats spiderStats;

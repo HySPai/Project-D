@@ -52,9 +52,8 @@ Shader "Custom/ToonLit"
             #pragma vertex vert
             #pragma fragment frag
 
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            #pragma multi_compile _ _SHADOWS_SOFT
-            #pragma multi_compile _ _FORWARD_PLUS
+            #pragma multi_compile_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -78,7 +77,7 @@ Shader "Custom/ToonLit"
             sampler2D _CloudNoise;
             float _CloudScale;
             float _CloudWorldY;
-            float _CloudSpeed;
+            float _CloudTravel;
             float _CloudContrast;
             float _CloudThreshold;
             float4 _CloudDirection;
@@ -138,8 +137,8 @@ Shader "Custom/ToonLit"
                 
                 float2 cloudDir1 = RotateVec2(_CloudDirection.xy, _CloudDivergeAngle);
                 float2 cloudDir2 = RotateVec2(_CloudDirection.xy, -_CloudDivergeAngle);
-                float2 cloudTimeDir1 = _Time.y * _CloudSpeed * normalize(cloudDir1);
-                float2 cloudTimeDir2 = _Time.y * _CloudSpeed * normalize(cloudDir2);
+                float2 cloudTimeDir1 = _CloudTravel * normalize(cloudDir1);
+                float2 cloudTimeDir2 = _CloudTravel * normalize(cloudDir2);
                 float sample1 = tex2D(_CloudNoise, hitPos.xz * invScale + cloudTimeDir1).r;
                 float sample2 = tex2D(_CloudNoise, hitPos.xz * (invScale * 0.8) + (cloudTimeDir2 * 0.89 * 1.047)).r;
                 float cloudSample = sample1 * sample2;
@@ -395,6 +394,7 @@ Shader "Custom/ToonLit"
         
             #pragma fragment frag
 
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             struct Attributes
@@ -440,10 +440,18 @@ Shader "Custom/ToonLit"
                 return output;
             }
 
-            half4 frag(Varyings input) : SV_Target
+            void frag(Varyings input
+                , out half4 outNormalWS : SV_Target0
+            #ifdef _WRITE_RENDERING_LAYERS
+                , out uint outRenderingLayers : SV_Target1
+            #endif
+            )
             {
-                float3 normal = normalize(input.normalWS);
-                return half4(normal * 0.5 + 0.5, 0.0);
+                outNormalWS = half4(NormalizeNormalPerPixel(input.normalWS), 0.0);
+
+            #ifdef _WRITE_RENDERING_LAYERS
+                outRenderingLayers = EncodeMeshRenderingLayer();
+            #endif
             }
             ENDHLSL
         }

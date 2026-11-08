@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -19,7 +19,6 @@ public class EnemyCombat : CharacterCombatBase
         this.character = character;
         this.enemyState = state as EnemyState;
 
-        // Cho phép đánh ngay đòn đầu (không phải chờ hết 1 cooldown khi vừa spawn).
         lastAttackTime = -enemyState.AttackCooldown;
 
         destroyToken = this.GetCancellationTokenOnDestroy();

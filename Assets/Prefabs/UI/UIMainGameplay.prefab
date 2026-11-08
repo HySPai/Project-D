@@ -891,6 +891,7 @@ MonoBehaviour:
   slider: {fileID: 8332077681744402348}
   trail: {fileID: 7678244782734716826}
   trailImage: {fileID: 1987467882440298901}
+  suddenChangeThreshold: 0.02
   decreaseColor: {r: 1, g: 0.95, b: 0.75, a: 1}
   decreaseDelay: 0.35
   decreaseDuration: 0.4
@@ -1429,6 +1430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIGame.View
   _viewStack: 1
   _canvas: {fileID: 6104672950028431230}
+  _canvasGroup: {fileID: 4973677651475888867}
   _openDuration: 0.3
   _closeDuration: 0.3
   _transitionEntities:
@@ -1495,6 +1497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIGame.ViewTransitionEntity
   _duration: 0.3
   _insertTime: 0
+  _canvasGroup: {fileID: 4973677651475888867}
   _transitions:
   - rid: 7812709933092700466
   references:
@@ -1816,6 +1819,7 @@ MonoBehaviour:
   slider: {fileID: 4389581803716415316}
   trail: {fileID: 9106332793345559310}
   trailImage: {fileID: 7868694291700945751}
+  suddenChangeThreshold: 0.02
   decreaseColor: {r: 1, g: 0.95, b: 0.75, a: 1}
   decreaseDelay: 0.35
   decreaseDuration: 0.4

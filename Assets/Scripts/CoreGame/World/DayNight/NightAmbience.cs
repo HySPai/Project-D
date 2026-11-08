@@ -17,24 +17,42 @@ public class NightAmbience : MonoBehaviour
     [SerializeField] private Color shaftColor = new Color(0.45f, 0.85f, 0.9f, 1f);
     [SerializeField] private float shaftIntensity = 0.35f;
 
+    private const float VisibleThreshold = 0.01f;
+    private const float ChangeThreshold = 0.001f;
+
     private MaterialPropertyBlock block;
+    private float appliedNight = -1f;
+    private bool appliedVisible;
+    private bool hasApplied;
 
     private void Awake() => block = new MaterialPropertyBlock();
+
+    private void OnValidate() => hasApplied = false;
 
     private void LateUpdate()
     {
         transform.position = followTarget.position;
 
         float night = dayNight.NightFactor;
+        bool visible = night > VisibleThreshold;
+        if (hasApplied && visible == appliedVisible && Mathf.Abs(night - appliedNight) <= ChangeThreshold) return;
+
+        hasApplied = true;
+        appliedNight = night;
         nightVolume.weight = night;
 
+        if (visible != appliedVisible || !visible)
+        {
+            for (int i = 0; i < shafts.Length; i++)
+                shafts[i].enabled = visible;
+        }
+        appliedVisible = visible;
+
+        if (!visible) return;
+
         Color shaft = shaftColor * (shaftIntensity * night);
-        bool visible = night > 0.01f;
         for (int i = 0; i < shafts.Length; i++)
         {
-            shafts[i].enabled = visible;
-            if (!visible) continue;
-
             shafts[i].GetPropertyBlock(block);
             block.SetColor(BaseColorId, shaft);
             shafts[i].SetPropertyBlock(block);

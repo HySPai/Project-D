@@ -8,12 +8,8 @@ namespace Ifreet.Core.Runtime.Audio
     [Serializable]
     public class BackgroundClip : TClip
     {
-        // PRIVATE MEMBERS: --------------------------------------------------------------------------------------------
-
         [SerializeField] private List<BackgroundClipData> m_Data = new();
 
-        // PROPERTIES: -------------------------------------------------------------------------------------------------
-        
         public List<BackgroundClipData> Data => this.m_Data;
     }
 }

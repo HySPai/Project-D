@@ -1,38 +1,46 @@
 ﻿using UnityEngine;
 
+/// <summary>Camera-relative movement basis for the player, and the camera used for lock-on view checks.</summary>
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
-    public Transform CameraTransform => cameraTransform;
+    [SerializeField] private Camera viewCamera;
 
-    private Vector3 _cachedForward;
-    private Vector3 _cachedRight;
+    private Vector3 cachedForward;
+    private Vector3 cachedRight;
 
-    public Vector3 Forward => _cachedForward;
-    public Vector3 Right => _cachedRight;
+    /// <summary>Movement basis transform: cameraTransform when assigned, otherwise the view camera's transform.</summary>
+    public Transform CameraTransform =>
+        cameraTransform != null ? cameraTransform : viewCamera != null ? viewCamera.transform : null;
+
+    /// <summary>Camera that decides whether a lock-on target is on screen.</summary>
+    public Camera ViewCamera => viewCamera;
+
+    public Vector3 Forward => cachedForward;
+    public Vector3 Right => cachedRight;
 
     private void Awake()
     {
-        if (cameraTransform == null && Camera.main != null)
-            cameraTransform = Camera.main.transform;
-
         CacheDirections();
     }
+
     private void CacheDirections()
     {
-        if (cameraTransform == null) return;
+        Transform basis = CameraTransform;
+        if (basis == null) return;
 
-        Vector3 f = cameraTransform.forward;
+        Vector3 f = basis.forward;
         f.y = 0f;
-        _cachedForward = f.normalized;
+        cachedForward = f.normalized;
 
-        Vector3 r = cameraTransform.right;
+        Vector3 r = basis.right;
         r.y = 0f;
-        _cachedRight = r.normalized;
+        cachedRight = r.normalized;
     }
 
+    /// <summary>World-space move direction for a stick input, on the cached camera basis.</summary>
     public Vector3 GetMoveDirection(Vector2 input)
     {
-        return _cachedRight * input.x + _cachedForward * input.y;
+        return cachedRight * input.x + cachedForward * input.y;
     }
 }

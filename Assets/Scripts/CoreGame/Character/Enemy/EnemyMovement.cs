@@ -3,147 +3,193 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// NavMesh locomotion for enemies. The agent moves the body while this component turns it at RotateSpeed, so every
+/// enemy turns the same way. Moving targets are re-pathed on an interval instead of every frame.
+/// </summary>
 public class EnemyMovement : CharacterMovementBase
 {
+    private const float DefaultRotateSpeed = 12f;
+    private const float MinSqrVelocity = 0.0001f;
+
+    [Header("Pathing")]
+    [Min(0f)]
+    [SerializeField] private float repathInterval = 0.2f;
+    [Min(0f)]
+    [SerializeField] private float repathMinDistance = 0.3f;
+
     private NavMeshAgent agent;
     private EnemyState state;
-
-    // Enemy tự xoay bằng RotateSpeed (không để agent tự xoay theo angularSpeed).
-    // true  = đang di chuyển thường -> mỗi frame xoay về hướng đi (RotateSpeed).
-    // false = state tự lo việc xoay (vd kite/đứng chờ dùng FaceTowards).
     private bool autoRotateToMovement = true;
 
+    private float baseSpeed = -1f;
+    private float speedMultiplier = 1f;
+    private Vector3 lastDestination;
+    private float nextRepathTime;
+
+    /// <summary>Hooks the agent up; position is driven by the agent and rotation by this component.</summary>
     public void Initialize(EnemyState state, NavMeshAgent agent)
     {
         this.state = state;
         this.agent = agent;
 
-        // Agent lo DI CHUYỂN; phần XOAY do EnemyMovement tự xử lý theo RotateSpeed.
         agent.updatePosition = true;
         agent.updateRotation = false;
         autoRotateToMovement = true;
     }
 
-    // Xoay enemy về hướng đang đi, dùng RotateSpeed (đồng nhất với FaceTowards).
+    private bool HasAgent => agent != null && agent.isOnNavMesh;
+
     private void Update()
     {
-        if (!autoRotateToMovement) return;
-        if (agent == null || !agent.isOnNavMesh) return;
+        if (!autoRotateToMovement || !HasAgent) return;
 
-        Vector3 v = agent.velocity; v.y = 0f;
-        if (v.sqrMagnitude < 0.0001f) return; // đứng yên -> giữ nguyên hướng
+        Vector3 v = agent.velocity;
+        v.y = 0f;
+        if (v.sqrMagnitude < MinSqrVelocity) return;
 
-        float rotSpeed = state != null ? state.RotateSpeed : 12f;
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation, Quaternion.LookRotation(v), rotSpeed * Time.deltaTime);
+        float rotSpeed = state != null ? state.RotateSpeed : DefaultRotateSpeed;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(v), rotSpeed * Time.deltaTime);
     }
 
-    // Enemy điều hướng bằng NavMesh nên không dùng input vector như Player.
     public override void SetInput(Vector2 input) { }
     public override void Move() { }
     public override void Roll() { }
 
-    #region Speed Multiplier
-    private float baseSpeed;
-    private float speedMultiplier = 1f;
-
+    #region Speed
     /// <summary>Status factor on every move speed, e.g. 0.6 while slowed; applies at once to the current path.</summary>
     public void SetSpeedMultiplier(float value)
     {
         if (Mathf.Approximately(value, speedMultiplier)) return;
 
         speedMultiplier = value;
-        if (agent != null)
+        if (agent != null && baseSpeed >= 0f)
             agent.speed = baseSpeed * speedMultiplier;
     }
 
     private void ApplySpeed(float speed)
     {
+        if (Mathf.Approximately(speed, baseSpeed)) return;
+
         baseSpeed = speed;
         agent.speed = speed * speedMultiplier;
     }
     #endregion
 
+    #region Locomotion
     /// <summary>Drags the enemy by delta along the NavMesh, e.g. toward the centre of a vortex.</summary>
     public void Pull(Vector3 delta)
     {
-        if (agent == null || !agent.isOnNavMesh) return;
+        if (!HasAgent) return;
 
         delta.y = 0f;
         agent.Move(delta);
     }
 
-    #region Locomotion cơ bản
+    /// <summary>Follows a moving target, re-pathing only when it has moved far enough and the interval has passed.</summary>
     public void Chase(Transform target, float speed, float stoppingDistance)
     {
-        if (agent == null || !agent.isOnNavMesh || target == null) return;
-        ApplySpeed(speed);
-        agent.stoppingDistance = stoppingDistance;
-        agent.isStopped = false;
-        agent.SetDestination(target.position);
+        if (target == null) return;
+        Follow(target.position, speed, stoppingDistance);
     }
 
+    /// <summary>Walks to a fixed point right away.</summary>
     public void MoveTo(Vector3 destination, float speed)
     {
-        if (agent == null || !agent.isOnNavMesh) return;
-        ApplySpeed(speed);
-        agent.stoppingDistance = 0f;
-        agent.isStopped = false;
-        agent.SetDestination(destination);
+        if (!HasAgent) return;
+
+        PrepareMove(speed, 0f);
+        SetDestinationNow(destination);
+        nextRepathTime = Time.time;
     }
 
+    /// <summary>Stops and clears the current path.</summary>
     public void Stop()
     {
-        if (agent == null || !agent.isOnNavMesh) return;
+        if (!HasAgent) return;
+
         agent.isStopped = true;
         agent.ResetPath();
     }
 
+    /// <summary>True once the agent is within threshold (or its stopping distance) of the destination.</summary>
     public bool HasReachedDestination(float threshold)
     {
-        if (agent == null || !agent.isOnNavMesh || agent.pathPending) return false;
+        if (!HasAgent || agent.pathPending) return false;
         return agent.remainingDistance <= Mathf.Max(threshold, agent.stoppingDistance);
     }
 
-    // [0..1] để blend animation đi/đứng.
-    public float NormalizedSpeed =>
-        (agent == null || agent.speed <= 0.01f)
-            ? 0f
-            : Mathf.Clamp01(agent.velocity.magnitude / agent.speed);
+    /// <summary>Actual speed over the current max speed, 0..1, for blending walk and idle.</summary>
+    public float NormalizedSpeed => agent == null || agent.speed <= 0.01f ? 0f : Mathf.Clamp01(agent.velocity.magnitude / agent.speed);
 
     public override Vector3 GetMoveDirection()
     {
         if (agent == null) return Vector3.zero;
-        Vector3 v = agent.velocity; v.y = 0f;
-        return v.sqrMagnitude > 0.0001f ? v.normalized : Vector3.zero;
+
+        Vector3 v = agent.velocity;
+        v.y = 0f;
+        return v.sqrMagnitude > MinSqrVelocity ? v.normalized : Vector3.zero;
+    }
+
+    private void Follow(Vector3 destination, float speed, float stoppingDistance)
+    {
+        if (!HasAgent) return;
+
+        PrepareMove(speed, stoppingDistance);
+
+        bool hasRoute = agent.hasPath || agent.pathPending;
+        if (hasRoute && Time.time < nextRepathTime) return;
+        if (hasRoute && (destination - lastDestination).sqrMagnitude < repathMinDistance * repathMinDistance) return;
+
+        SetDestinationNow(destination);
+    }
+
+    private void PrepareMove(float speed, float stoppingDistance)
+    {
+        ApplySpeed(speed);
+        if (!Mathf.Approximately(agent.stoppingDistance, stoppingDistance)) agent.stoppingDistance = stoppingDistance;
+        if (agent.isStopped) agent.isStopped = false;
+    }
+
+    private void SetDestinationNow(Vector3 destination)
+    {
+        agent.SetDestination(destination);
+        lastDestination = destination;
+        nextRepathTime = Time.time + repathInterval;
     }
     #endregion
 
-    #region Root Motion (đòn đánh)
+    #region Root Motion
+    /// <summary>Hands the body to the attack animation: the agent stops and no longer moves the transform.</summary>
     public void BeginRootMotion()
     {
-        if (agent == null || !agent.isOnNavMesh) return;
+        if (!HasAgent) return;
+
         agent.isStopped = true;
         agent.ResetPath();
         agent.updatePosition = false;
-        autoRotateToMovement = false; // lúc đánh không tự xoay; state tự ngoảnh nếu cần
+        autoRotateToMovement = false;
     }
 
+    /// <summary>Takes the body back from the animation and snaps the agent to where it ended up.</summary>
     public void EndRootMotion()
     {
-        if (agent == null || !agent.isOnNavMesh) return;
+        if (!HasAgent) return;
+
         agent.Warp(transform.position);
         agent.updatePosition = true;
-        autoRotateToMovement = true;  // trả lại tự xoay cho locomotion kế tiếp
+        autoRotateToMovement = true;
     }
     #endregion
 
+    /// <summary>Clears knockback, slow and path state for a respawn.</summary>
     public void ResetMovement()
     {
         CancelKnockback();
         knockbackActive = false;
         autoRotateToMovement = true;
         speedMultiplier = 1f;
+        baseSpeed = -1f;
 
         if (agent == null) return;
         agent.updatePosition = true;
@@ -152,45 +198,37 @@ public class EnemyMovement : CharacterMovementBase
         agent.ResetPath();
     }
 
-    #region Rotation thủ công
-    // Bật/tắt việc tự xoay về hướng đi. Tắt khi state muốn tự ngoảnh (kite/đứng chờ).
-    public void SetAutoRotation(bool enabled)
-    {
-        autoRotateToMovement = enabled;
-    }
+    #region Manual Rotation
+    /// <summary>Turns facing the movement direction on or off; states that aim on their own turn it off.</summary>
+    public void SetAutoRotation(bool enabled) => autoRotateToMovement = enabled;
 
+    /// <summary>Turns toward worldTarget on the ground plane at rotSpeed.</summary>
     public void FaceTowards(Vector3 worldTarget, float rotSpeed)
     {
-        Vector3 dir = worldTarget - transform.position; dir.y = 0f;
-        if (dir.sqrMagnitude < 0.0001f) return;
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
+        Vector3 dir = worldTarget - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < MinSqrVelocity) return;
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), rotSpeed * Time.deltaTime);
     }
     #endregion
 
-    #region Kite (vây quanh, giữ khoảng cách)
-    // Giữ Spider ở vành bán kính 'preferredDistance' quanh target và lượn theo tiếp tuyến.
-    // strafeDir = +1 / -1 quyết định chiều lượn (cùng/ngược chiều kim đồng hồ).
-    public void KiteAround(Transform target, float preferredDistance, float speed,
-        int strafeDir, float lookAhead)
+    #region Kite
+    /// <summary>
+    /// Keeps the enemy on a ring of preferredDistance around target and slides along it; strafeDir +1 or -1 picks the
+    /// direction. Standing too close pushes the ring point outward so the enemy backs off on its own.
+    /// </summary>
+    public void KiteAround(Transform target, float preferredDistance, float speed, int strafeDir, float lookAhead)
     {
-        if (agent == null || !agent.isOnNavMesh || target == null) return;
+        if (target == null) return;
 
         Vector3 center = target.position;
-        Vector3 toMe = transform.position - center; toMe.y = 0f;
+        Vector3 toMe = transform.position - center;
+        toMe.y = 0f;
 
-        Vector3 radial = toMe.sqrMagnitude > 0.0001f ? toMe.normalized : -target.forward;
+        Vector3 radial = toMe.sqrMagnitude > MinSqrVelocity ? toMe.normalized : -target.forward;
         Vector3 tangent = Vector3.Cross(Vector3.up, radial) * strafeDir;
-
-        // Điểm đích = trên vành lý tưởng, đẩy thêm theo tiếp tuyến để tạo vòng lượn.
-        // Nếu đang quá gần -> radial đẩy ra (ringPoint xa hơn) => tự lùi ra.
-        Vector3 ringPoint = center + radial * preferredDistance;
-        Vector3 dest = ringPoint + tangent * lookAhead;
-
-        ApplySpeed(speed);
-        agent.stoppingDistance = 0f;
-        agent.isStopped = false;
-        agent.SetDestination(dest);
+        Follow(center + radial * preferredDistance + tangent * lookAhead, speed, 0f);
     }
     #endregion
 
@@ -204,14 +242,15 @@ public class EnemyMovement : CharacterMovementBase
     {
         if (agent == null) return;
 
-        Vector3 dir = direction; dir.y = 0f;
-        if (dir.sqrMagnitude < 0.0001f) dir = -transform.forward;
+        Vector3 dir = direction;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < MinSqrVelocity) dir = -transform.forward;
         dir.Normalize();
 
         if (!knockbackActive) autoRotateBeforeKnockback = autoRotateToMovement;
 
         CancelKnockback();
-        knockbackCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        knockbackCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
         KnockbackAsync(dir, distance, Mathf.Max(0.01f, duration), knockbackCts.Token).Forget();
     }
 
@@ -231,7 +270,7 @@ public class EnemyMovement : CharacterMovementBase
         while (elapsed < duration)
         {
             float dt = Time.deltaTime;
-            float remaining = 1f - (elapsed / duration);
+            float remaining = 1f - elapsed / duration;
             float step = distance * (dt / duration) * (remaining * 2f);
 
             if (agent.isOnNavMesh)
@@ -241,8 +280,7 @@ public class EnemyMovement : CharacterMovementBase
 
             elapsed += dt;
 
-            bool canceled = await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow();
-            if (canceled) return;
+            if (await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow()) return;
         }
 
         EndKnockback();
@@ -252,8 +290,7 @@ public class EnemyMovement : CharacterMovementBase
     {
         if (!knockbackActive) return;
 
-        if (agent != null && agent.isOnNavMesh)
-            agent.isStopped = false;
+        if (HasAgent) agent.isStopped = false;
         autoRotateToMovement = autoRotateBeforeKnockback;
         knockbackActive = false;
     }

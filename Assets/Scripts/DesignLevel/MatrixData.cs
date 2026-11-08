@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 
@@ -17,7 +17,8 @@ public class EnumMatrixData : ScriptableObject
     [SerializeField] private int cols = 5;
 
     [SerializeField]
-    private CellType[] data; // Unity serialize được
+    /// <summary>Unity serialize được</summary>
+    private CellType[] data;
 
     [TableMatrix(HorizontalTitle = "Enum Matrix", DrawElementMethod = "DrawEnumCell", ResizableColumns = false, RowHeight = 20)]
     public CellType[,] enumMatrix
@@ -54,14 +55,11 @@ public class EnumMatrixData : ScriptableObject
         set { enumMatrix = value; }
     }
 
-    // Vẽ từng ô trong grid
     private static CellType DrawEnumCell(Rect rect, CellType value)
     {
 #if UNITY_EDITOR
-        // Vẽ dropdown enum thay cho click chuột
         value = (CellType)UnityEditor.EditorGUI.EnumFlagsField(rect, value);
 
-        // Hiển thị màu: nếu có nhiều flag thì mix màu
         Color color = Color.white;
         if (value.HasFlag(CellType.None)) color = Color.black;
         if (value.HasFlag(CellType.Wall)) color = Color.gray;

@@ -1,168 +1,178 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
+/// <summary>
+/// Stationary gun: scans for a target a few times per second, turns its head toward it and fires bursts of pooled
+/// bullets while the target stays in range.
+/// </summary>
 public class Turret : MonoBehaviour
 {
     private enum State { Idle, Aiming, Firing }
 
+    private const float MinSqrAimDistance = 0.001f;
+
     [Header("Detection")]
-    [SerializeField] private float _range = 10f;
-    [SerializeField] private LayerMask _targetLayer;
+    [FormerlySerializedAs("_range")]
+    [SerializeField] private float range = 10f;
+    [FormerlySerializedAs("_targetLayer")]
+    [SerializeField] private LayerMask targetLayer;
+    [Min(0f)]
+    [SerializeField] private float scanInterval = 0.1f;
 
     [Header("Aiming")]
-    [SerializeField] private Transform _rotatePart;   // phần xoay của trụ
-    [SerializeField] private Transform _firePoint;    // điểm bắn ra
-    [SerializeField] private float _rotateSpeed = 360f;
-    [SerializeField] private float _aimThreshold = 5f;
+    [FormerlySerializedAs("_rotatePart")]
+    [SerializeField] private Transform rotatePart;
+    [FormerlySerializedAs("_firePoint")]
+    [SerializeField] private Transform firePoint;
+    [FormerlySerializedAs("_rotateSpeed")]
+    [SerializeField] private float rotateSpeed = 360f;
+    [FormerlySerializedAs("_aimThreshold")]
+    [SerializeField] private float aimThreshold = 5f;
 
     [Header("Firing")]
-    [SerializeField] private GameObject _bulletPrefab;
-    [SerializeField] private float _damage = 10f;
-    [SerializeField] private int _bulletsPerBurst = 3;
-    [SerializeField] private float _shotCooldown = 0.3f;   // giữa từng viên
-    [SerializeField] private float _burstCooldown = 3f;    // chờ trước loạt đầu & giữa các loạt
+    [SerializeField] private Bullet bulletPrefab;
+    [FormerlySerializedAs("_damage")]
+    [SerializeField] private float damage = 10f;
+    [FormerlySerializedAs("_bulletsPerBurst")]
+    [SerializeField] private int bulletsPerBurst = 3;
+    [FormerlySerializedAs("_shotCooldown")]
+    [SerializeField] private float shotCooldown = 0.3f;
+    [FormerlySerializedAs("_burstCooldown")]
+    [SerializeField] private float burstCooldown = 3f;
 
-    private State _state = State.Idle;
-    private Transform _target;
-    private bool _isBursting;
-    private CancellationTokenSource _fireCts;
+    private readonly Collider[] scanBuffer = new Collider[4];
+
+    private State state = State.Idle;
+    private Transform target;
+    private bool isBursting;
+    private float nextScanTime;
+    private CancellationTokenSource fireCts;
 
     private void Update()
     {
-        DetectTarget();
-
-        switch (_state)
+        if (Time.time >= nextScanTime)
         {
-            case State.Idle: break;
-            case State.Aiming: HandleAiming(); break;
-            case State.Firing: HandleFiring(); break;
+            nextScanTime = Time.time + scanInterval;
+            DetectTarget();
+        }
+
+        switch (state)
+        {
+            case State.Aiming:
+                if (RotateTowardsTarget()) state = State.Firing;
+                break;
+            case State.Firing:
+                HandleFiring();
+                break;
         }
     }
 
     private void DetectTarget()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _range, _targetLayer);
-        if (hits.Length > 0)
+        int count = Physics.OverlapSphereNonAlloc(transform.position, range, scanBuffer, targetLayer, QueryTriggerInteraction.Ignore);
+        if (count > 0)
         {
-            _target = hits[0].transform;
-            if (_state == State.Idle) _state = State.Aiming;
+            target = scanBuffer[0].transform;
+            if (state == State.Idle) state = State.Aiming;
+            return;
         }
-        else
-        {
-            _target = null;
-            if (_state != State.Idle)
-            {
-                _state = State.Idle;
-                CancelFiring();
-            }
-        }
-    }
 
-    private void HandleAiming()
-    {
-        if (RotateTowardsTarget()) // đã ngắm đủ gần
-            _state = State.Firing;
+        target = null;
+        if (state == State.Idle) return;
+
+        state = State.Idle;
+        CancelFiring();
     }
 
     private void HandleFiring()
     {
-        if (_target == null) return;
+        if (target == null) return;
 
-        RotateTowardsTarget(); // vẫn bám theo trong lúc bắn
-
-        if (!_isBursting)
-            FireLoop(GetFireToken()).Forget();
+        RotateTowardsTarget();
+        if (!isBursting)
+            FireLoop(NewFireToken()).Forget();
     }
 
     private bool RotateTowardsTarget()
     {
-        if (_target == null) return false;
+        if (target == null) return false;
 
-        Vector3 dir = _target.position - _rotatePart.position;
-        dir.y = 0f; // chỉ xoay quanh trục Y, bỏ nếu muốn xoay tự do
-        if (dir.sqrMagnitude < 0.001f) return true;
+        Vector3 dir = target.position - rotatePart.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < MinSqrAimDistance) return true;
 
         Quaternion look = Quaternion.LookRotation(dir);
-        _rotatePart.rotation = Quaternion.RotateTowards(
-            _rotatePart.rotation, look, _rotateSpeed * Time.deltaTime);
-
-        return Quaternion.Angle(_rotatePart.rotation, look) <= _aimThreshold;
+        rotatePart.rotation = Quaternion.RotateTowards(rotatePart.rotation, look, rotateSpeed * Time.deltaTime);
+        return Quaternion.Angle(rotatePart.rotation, look) <= aimThreshold;
     }
 
     private async UniTaskVoid FireLoop(CancellationToken token)
     {
-        _isBursting = true;
+        isBursting = true;
         try
         {
-            // Chờ 3s trước loạt đầu, sau đó lặp lại mỗi loạt
             while (!token.IsCancellationRequested)
             {
-                await UniTask.Delay(
-                    System.TimeSpan.FromSeconds(_burstCooldown),
-                    cancellationToken: token);
+                await UniTask.Delay(TimeSpan.FromSeconds(burstCooldown), cancellationToken: token);
 
-                for (int i = 0; i < _bulletsPerBurst; i++)
+                for (int i = 0; i < bulletsPerBurst; i++)
                 {
                     token.ThrowIfCancellationRequested();
                     SpawnBullet();
 
-                    if (i < _bulletsPerBurst - 1)
-                        await UniTask.Delay(
-                            System.TimeSpan.FromSeconds(_shotCooldown),
-                            cancellationToken: token);
+                    if (i < bulletsPerBurst - 1)
+                        await UniTask.Delay(TimeSpan.FromSeconds(shotCooldown), cancellationToken: token);
                 }
             }
         }
-        catch (System.OperationCanceledException)
+        catch (OperationCanceledException)
         {
-            // Bị hủy khi player rời tầm — bỏ qua
         }
         finally
         {
-            _isBursting = false;
+            isBursting = false;
         }
     }
 
     private void SpawnBullet()
     {
-        GameObject obj = SCR_Pool.GetFreeObject(_bulletPrefab);
-        Bullet bullet = obj.GetComponent<Bullet>();
-        bullet.Fire(_firePoint.position, _firePoint.rotation, _damage);
+        if (bulletPrefab == null) return;
+
+        Bullet bullet = ObjectPool.Get(bulletPrefab);
+        bullet.Fire(firePoint.position, firePoint.rotation, damage);
     }
 
-    private CancellationToken GetFireToken()
+    private CancellationToken NewFireToken()
     {
-        _fireCts?.Cancel();
-        _fireCts?.Dispose();
-        _fireCts = CancellationTokenSource.CreateLinkedTokenSource(
-            this.GetCancellationTokenOnDestroy());
-        return _fireCts.Token;
+        CancelFiring();
+        fireCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        return fireCts.Token;
     }
 
     private void CancelFiring()
     {
-        _fireCts?.Cancel();
-        _fireCts?.Dispose();
-        _fireCts = null;
-        _isBursting = false;
+        fireCts?.Cancel();
+        fireCts?.Dispose();
+        fireCts = null;
+        isBursting = false;
     }
 
+    /// <summary>Stops firing and forgets the target, e.g. on a world reset.</summary>
     public void ResetTurret()
     {
         CancelFiring();
-        _state = State.Idle;
-        _target = null;
+        state = State.Idle;
+        target = null;
     }
 
-    private void OnDestroy()
-    {
-        CancelFiring();
-    }
+    private void OnDestroy() => CancelFiring();
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _range);
+        Gizmos.DrawWireSphere(transform.position, range);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>Reads Input System actions into polled values and one-shot requests that PlayerController consumes each frame.</summary>
 public class PlayerInputHandler : MonoBehaviour
 {
     [Header("Input Actions")]
@@ -16,32 +17,27 @@ public class PlayerInputHandler : MonoBehaviour
     public InputActionReference elementPrev;
     public InputActionReference elementNext;
 
-    [Header("Movement Input")]
-    [SerializeField] private Vector2 movementInput;
-    [SerializeField] private Vector2 cameraInput;
-
-    [SerializeField] private float horizontalInput;
-    [SerializeField] private float verticalInput;
-    [SerializeField] private float moveAmount;
-
-    [Header("Action Input")]
-    [SerializeField] private bool isFire;
-    [SerializeField] private bool isGuardHeld;
-    [SerializeField] private bool isGuardPressed;
-    [SerializeField] private bool isInteractPressed;
-    [SerializeField] private bool isRunPressed;
-    [SerializeField] private bool isWalkPressed;
-    [SerializeField] private bool isDash;
-
-    [SerializeField] private bool isRunHeld;
-    [SerializeField] private bool rollRequested;
-    [SerializeField] private bool isLockTargetRequested;
-
     [Header("Cast")]
     [SerializeField] private float castHoldThreshold = 0.35f;
-    [SerializeField] private bool castTapRequested;
-    [SerializeField] private bool castHoldRequested;
-    [SerializeField] private int elementSwitchStep;
+
+    private Vector2 movementInput;
+    private Vector2 cameraInput;
+    private float horizontalInput;
+    private float verticalInput;
+    private float moveAmount;
+
+    private bool isFire;
+    private bool isGuardHeld;
+    private bool isGuardPressed;
+    private bool isInteractPressed;
+    private bool isWalkPressed;
+    private bool isRunHeld;
+    private bool rollRequested;
+    private bool isLockTargetRequested;
+
+    private bool castTapRequested;
+    private bool castHoldRequested;
+    private int elementSwitchStep;
     private float castStartTime;
     private bool castHeld;
 
@@ -380,6 +376,7 @@ public class PlayerInputHandler : MonoBehaviour
         return true;
     }
 
+    /// <summary>Consumes a pending roll request from the run/roll button press.</summary>
     public bool IsRolling()
     {
         if (!rollRequested)
@@ -388,6 +385,7 @@ public class PlayerInputHandler : MonoBehaviour
         rollRequested = false;
         return true;
     }
+    /// <summary>Consumes a pending lock-on toggle request.</summary>
     public bool IsLockTarget()
     {
         if (!isLockTargetRequested)
@@ -396,9 +394,10 @@ public class PlayerInputHandler : MonoBehaviour
         isLockTargetRequested = false;
         return true;
     }
+    /// <summary>Normalized raw camera stick once per flick past lockSwitchThreshold; zero until it returns under lockSwitchReleaseThreshold.</summary>
     public Vector2 GetLockSwitchInput()
     {
-        Vector2 raw = cameraInput; // raw, chưa smooth
+        Vector2 raw = cameraInput;
         float magnitude = raw.magnitude;
 
         if (magnitude < lockSwitchReleaseThreshold)
@@ -407,7 +406,7 @@ public class PlayerInputHandler : MonoBehaviour
         if (lockSwitchReady && magnitude >= lockSwitchThreshold)
         {
             lockSwitchReady = false;
-            return raw / magnitude; // normalized
+            return raw / magnitude;
         }
 
         return Vector2.zero;

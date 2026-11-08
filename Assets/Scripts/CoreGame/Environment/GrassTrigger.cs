@@ -2,16 +2,13 @@ using UnityEngine;
 
 public class GrassTrigger : MonoBehaviour
 {
-    private Grass grass;
+    private const string PlayerTag = "Player";
 
-    private void Awake()
-    {
-        grass = GetComponentInParent<Grass>();
-    }
+    [SerializeField] private Grass grass;
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(PlayerTag))
         {
             grass.Bend(other.transform.position);
         }
@@ -19,7 +16,7 @@ public class GrassTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(PlayerTag))
         {
             grass.ResetGrass();
         }

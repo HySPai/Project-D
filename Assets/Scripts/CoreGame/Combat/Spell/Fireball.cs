@@ -17,7 +17,7 @@ public class Fireball : MonoBehaviour
     [SerializeField] private ParticleSystem[] streakParticles;
 
     private readonly Collider[] hitBuffer = new Collider[HitBufferSize];
-    private readonly HashSet<CharacterStateBase> hitStates = new HashSet<CharacterStateBase>();
+    private readonly List<CharacterControllerBase> targets = new List<CharacterControllerBase>();
 
     private SO_FireballData data;
     private CharacterControllerBase caster;
@@ -80,36 +80,34 @@ public class Fireball : MonoBehaviour
     private void Explode()
     {
         Vector3 center = transform.position;
-        int count = Physics.OverlapSphereNonAlloc(
-            center, data.explosionRadius, hitBuffer, hitLayer, QueryTriggerInteraction.Ignore);
+        SpellTargeting.CollectTargets(center, data.explosionRadius, hitLayer, caster, hitBuffer, targets);
 
-        hitStates.Clear();
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < targets.Count; i++)
         {
-            if (!CombatTargetRegistry.TryGet(hitBuffer[i], out CharacterControllerBase target)) continue;
-            if (target == null || target == caster) continue;
-
-            CharacterStateBase targetState = target.GetState;
-            if (targetState == null || targetState.IsDead) continue;
-            if (!hitStates.Add(targetState)) continue;
-
-            DamageInfo info = new DamageInfo(
-                data.damage, caster, center, ElementType.Fire, DamageSource.Spell, false, 0f);
-            targetState.ReceiveDamage(in info);
+            CharacterControllerBase target = targets[i];
+            SpellTargeting.DealSpellDamage(target, data.damage, caster, center, ElementType.Fire);
 
             if (target.GetBurn != null)
                 target.GetBurn.Apply();
         }
 
-        if (explosionVfxPrefab != null)
-            Instantiate(explosionVfxPrefab, center, Quaternion.identity);
+        PlayExplosionVfx(center);
+        GameLog.Info($"[Phép] Cầu Lửa nổ tại {center}, trúng {targets.Count} mục tiêu");
 
-        Debug.Log($"[Phép] Cầu Lửa nổ tại {center}, trúng {hitStates.Count} mục tiêu");
-
+        targets.Clear();
         DetachStreak(data.streakFadeTime);
         data = null;
         gameObject.SetActive(false);
+    }
+
+    private void PlayExplosionVfx(Vector3 center)
+    {
+        if (explosionVfxPrefab == null) return;
+
+        ParticleSystem vfx = ObjectPool.Get(explosionVfxPrefab);
+        vfx.transform.SetPositionAndRotation(center, Quaternion.identity);
+        vfx.Clear(true);
+        vfx.Play(true);
     }
 
     private void StartStreak()
@@ -164,7 +162,7 @@ public class Fireball : MonoBehaviour
     private async UniTaskVoid ReattachStreakAsync(int version, float fadeTime)
     {
         bool canceled = await UniTask.Delay(TimeSpan.FromSeconds(fadeTime),
-                cancellationToken: this.GetCancellationTokenOnDestroy())
+                cancellationToken: destroyCancellationToken)
             .SuppressCancellationThrow();
         if (canceled || version != streakVersion) return;
 

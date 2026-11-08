@@ -2,8 +2,11 @@
 using UnityEngine;
 using MMF_Player = MoreMountains.Feedbacks.MMF_Player;
 
+/// <summary>Shared character state: stats, action flags, permissions, ground and gravity, and the damage pipeline.</summary>
 public abstract class CharacterStateBase : MonoBehaviour, IDamageable
 {
+    private const float DirectionEpsilon = 0.0001f;
+
     #region Stats
     [Header("Stats")]
     [SerializeField] protected CharacterStats stats;
@@ -94,21 +97,21 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     [Header("Ground & Gravity")]
     [SerializeField] protected float gravityForce = -5.55f;
     [SerializeField] protected float groundCheckSphereRadius = 0.3f;
-    [SerializeField] protected float groundedYVelocity = -20f;  // lực ghim xuống đất khi grounded
-    [SerializeField] protected float fallStartYVelocity = -5f;  // lực rơi ban đầu khi vừa rời đất
-    [SerializeField] protected float maxStepDownHeight = 1f;    // bước xuống tối đa (dùng cho edge guard)
-    [SerializeField] protected float edgeCheckDistance = 1.5f;  // tầm raycast kiểm tra mép vực
+    [SerializeField] protected float groundedYVelocity = -20f;
+    [SerializeField] protected float fallStartYVelocity = -5f;
+    [SerializeField] protected float maxStepDownHeight = 1f;
+    [SerializeField] protected float edgeCheckDistance = 1.5f;
+
+    private readonly CharacterGroundProbe groundProbe = new CharacterGroundProbe();
 
     public float MaxStepDownHeight => maxStepDownHeight;
+    public bool IsGrounded => groundProbe.IsGrounded;
+    public Vector3 YVelocity => groundProbe.YVelocity;
+    public float InAirTimer => groundProbe.InAirTimer;
 
-    protected Vector3 yVelocity;
-    protected bool fallingVelocityHasBeenSet;
-    protected float inAirTimer;
-    protected bool isGrounded = true;
-
-    public bool IsGrounded => isGrounded;
-    public Vector3 YVelocity => yVelocity;
-    public float InAirTimer => inAirTimer;
+    private GroundProbeSettings GroundSettings => new GroundProbeSettings(
+        groundLayer, groundCheckSphereRadius, gravityForce, groundedYVelocity,
+        fallStartYVelocity, maxStepDownHeight, edgeCheckDistance);
     #endregion
 
     #region Owner / Animations
@@ -148,76 +151,23 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     #endregion
 
     #region Ground Check & Gravity
-    // Gọi mỗi frame từ controller (đầu Update) để cập nhật grounded + vận tốc dọc.
+    /// <summary>Updates grounded state and vertical velocity; the controller calls it first thing every frame.</summary>
     public virtual void HandleGroundCheckAndGravity()
     {
-        isGrounded = Physics.CheckSphere(
-            transform.position, groundCheckSphereRadius, groundLayer,
-            QueryTriggerInteraction.Ignore);
-
-        if (isGrounded)
-        {
-            if (yVelocity.y < 0f)
-            {
-                inAirTimer = 0f;
-                fallingVelocityHasBeenSet = false;
-                yVelocity.y = groundedYVelocity;
-            }
-        }
-        else
-        {
-            if (!fallingVelocityHasBeenSet)
-            {
-                fallingVelocityHasBeenSet = true;
-                yVelocity.y = fallStartYVelocity;
-            }
-            inAirTimer += Time.deltaTime;
-            yVelocity.y += gravityForce * Time.deltaTime;
-        }
+        GroundProbeSettings settings = GroundSettings;
+        groundProbe.Tick(transform.position, Time.deltaTime, in settings);
     }
 
-    // Vận tốc dọc theo frame, để controller/animation đưa vào CharacterController.Move().
-    public Vector3 GetGravityDelta() => yVelocity * Time.deltaTime;
+    /// <summary>Vertical displacement for this frame, to add to CharacterController.Move.</summary>
+    public Vector3 GetGravityDelta() => groundProbe.GetGravityDelta(Time.deltaTime);
 
-    // Chặn bước ra mép vực: kiểm tra từng trục ngang, trục nào không có đất hợp lệ thì bỏ.
-    // Dùng chung cho cả di chuyển thường (PlayerMovement) lẫn root motion (OnAnimatorMove).
+    /// <summary>Drops each horizontal axis of the delta that would step off a ledge; used by locomotion and root motion.</summary>
     public virtual Vector3 ResolveEdgeGuard(Vector3 horizontalDelta)
     {
-        // Đang ở trên không thì không chặn (đang rơi sẵn).
-        if (!isGrounded) return horizontalDelta;
+        if (!groundProbe.IsGrounded) return horizontalDelta;
 
-        Vector3 origin = transform.position;
-
-        if (Mathf.Abs(horizontalDelta.x) > 0.0001f)
-        {
-            Vector3 xTarget = origin + new Vector3(horizontalDelta.x, 0f, 0f);
-            if (!HasGroundBelow(xTarget))
-                horizontalDelta.x = 0f;
-        }
-
-        if (Mathf.Abs(horizontalDelta.z) > 0.0001f)
-        {
-            Vector3 zTarget = origin + new Vector3(0f, 0f, horizontalDelta.z);
-            if (!HasGroundBelow(zTarget))
-                horizontalDelta.z = 0f;
-        }
-
-        return horizontalDelta;
-    }
-
-    protected bool HasGroundBelow(Vector3 position)
-    {
-        Vector3 rayOrigin = position + Vector3.up * 0.2f;
-
-        if (!Physics.Raycast(
-                rayOrigin, Vector3.down, out RaycastHit hit,
-                edgeCheckDistance, groundLayer, QueryTriggerInteraction.Ignore))
-        {
-            return false;
-        }
-
-        float heightDiff = transform.position.y - hit.point.y;
-        return heightDiff <= maxStepDownHeight;
+        GroundProbeSettings settings = GroundSettings;
+        return groundProbe.ResolveEdgeGuard(transform.position, horizontalDelta, in settings);
     }
     #endregion
 
@@ -343,10 +293,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         currentMoveSpeed = 0f;
         targetMoveSpeed = 0f;
 
-        yVelocity = Vector3.zero;
-        fallingVelocityHasBeenSet = false;
-        inAirTimer = 0f;
-        isGrounded = true;
+        groundProbe.Reset();
 
         currentHp = maxHp;
         ClearOffBalance();
@@ -374,7 +321,6 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
     {
         isDead = true;
 
-        // Chết thì tắt mọi DamageCollider để xác không còn gây sát thương.
         var combat = owner != null ? owner.GetCombat : null;
         if (combat != null)
             combat.DisableAllDamageColliders();
@@ -383,7 +329,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         if (animation != null)
             animation.Play(DeathAnimation);
         else
-            Debug.LogWarning($"{name}: Die() nhưng thiếu owner/Animation để play death anim", this);
+            GameLog.Warn($"{name}: Die() nhưng thiếu owner/Animation để play death anim", this);
 
         OnDied?.Invoke();
     }
@@ -397,28 +343,23 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
         var animation = owner != null ? owner.GetAnimation : null;
         if (animation == null) return;
 
-        // null = character này không có hit reaction -> bỏ qua.
         AnimationAction? hit = ResolveHitReaction(info.sourcePosition);
         if (hit.HasValue)
             animation.Play(hit.Value);
     }
 
-    // HOOK chính để override:
-    // - Mặc định: hit theo 4 hướng (Player).
-    // - Override trả 1 clip cố định nếu character chỉ có 1 anim.
-    // - Override trả null nếu character không có hit reaction.
+    /// <summary>Hit clip for a hit from damageSourcePosition: four directions by default, one fixed clip, or null for none.</summary>
     protected virtual AnimationAction? ResolveHitReaction(Vector3 damageSourcePosition)
     {
         return GetHitAnimation(ComputeHitDirection(damageSourcePosition));
     }
 
-    // Tính hướng bị đánh dựa trên vị trí nguồn damage.
     protected HitDirection ComputeHitDirection(Vector3 damageSourcePosition)
     {
         Vector3 toSource = damageSourcePosition - transform.position;
         toSource.y = 0f;
 
-        if (toSource.sqrMagnitude < 0.0001f)
+        if (toSource.sqrMagnitude < DirectionEpsilon)
             return HitDirection.Forward;
 
         Vector3 local = transform.InverseTransformDirection(toSource.normalized);
@@ -445,7 +386,7 @@ public abstract class CharacterStateBase : MonoBehaviour, IDamageable
 #if UNITY_EDITOR
     protected virtual void OnDrawGizmosSelected()
     {
-        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.color = IsGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position, groundCheckSphereRadius);
     }
 #endif

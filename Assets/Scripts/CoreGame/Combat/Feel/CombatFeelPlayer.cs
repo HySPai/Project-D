@@ -104,9 +104,9 @@ public class CombatFeelPlayer : MonoBehaviour
         impulse = player.GetFeedbackOfType<MMF_CinemachineImpulse>(CameraShakeLabel);
 
         if (freeze == null)
-            Debug.LogWarning($"[CombatFeelPlayer] '{HitStopLabel}' MMF_FreezeFrame not found on {player.name}", this);
+            GameLog.Warn($"[CombatFeelPlayer] '{HitStopLabel}' MMF_FreezeFrame not found on {player.name}", this);
         if (impulse == null)
-            Debug.LogWarning($"[CombatFeelPlayer] '{CameraShakeLabel}' MMF_CinemachineImpulse not found on {player.name}", this);
+            GameLog.Warn($"[CombatFeelPlayer] '{CameraShakeLabel}' MMF_CinemachineImpulse not found on {player.name}", this);
     }
 
     private SoundSlot CacheSound(MMF_Player player)
@@ -116,7 +116,7 @@ public class CombatFeelPlayer : MonoBehaviour
         MMF_Sound sound = player.GetFeedbackOfType<MMF_Sound>();
         if (sound == null)
         {
-            Debug.LogWarning($"[CombatFeelPlayer] MMF_Sound not found on {player.name}", this);
+            GameLog.Warn($"[CombatFeelPlayer] MMF_Sound not found on {player.name}", this);
             return null;
         }
 

@@ -22,6 +22,8 @@ public class PlayerStance : MonoBehaviour
     private float lastThreatTime = float.NegativeInfinity;
     private float weaponReadyTime;
     private bool attackQueued;
+    private int drawStateHash;
+    private int sheatheStateHash;
 
     public event Action<PlayerStanceMode> OnStanceChanged;
 
@@ -35,6 +37,9 @@ public class PlayerStance : MonoBehaviour
         this.anim = animation;
         this.combat = combat;
         this.guard = guard;
+
+        drawStateHash = string.IsNullOrEmpty(config.drawStateName) ? 0 : Animator.StringToHash(config.drawStateName);
+        sheatheStateHash = string.IsNullOrEmpty(config.sheatheStateName) ? 0 : Animator.StringToHash(config.sheatheStateName);
 
         for (int i = 0; i < weapons.Length; i++)
             weapons[i].Initialize(config);
@@ -112,7 +117,8 @@ public class PlayerStance : MonoBehaviour
         weaponReadyTime = Time.time + config.weaponReadyTime;
 
         anim.SetCombatBlend(1f, config.locomotionBlendTime);
-        anim.PlayEquip(config.drawStateName, 0f, config.equipLayerFadeTime, config.drawDuration);
+        if (!string.IsNullOrEmpty(config.drawStateName))
+            anim.PlayEquip(drawStateHash, 0f, config.equipLayerFadeTime, config.drawDuration);
 
         for (int i = 0; i < weapons.Length; i++)
             weapons[i].Reveal(config.drawRevealDelay, config.drawRevealDuration);
@@ -127,7 +133,8 @@ public class PlayerStance : MonoBehaviour
         attackQueued = false;
 
         anim.SetCombatBlend(0f, config.locomotionBlendTime);
-        anim.PlayEquip(config.sheatheStateName, config.sheatheStartNormalizedTime, config.equipLayerFadeTime, config.sheatheDuration);
+        if (!string.IsNullOrEmpty(config.sheatheStateName))
+            anim.PlayEquip(sheatheStateHash, config.sheatheStartNormalizedTime, config.equipLayerFadeTime, config.sheatheDuration);
 
         for (int i = 0; i < weapons.Length; i++)
             weapons[i].Dissolve(config.sheatheDissolveDelay, config.sheatheDissolveDuration);

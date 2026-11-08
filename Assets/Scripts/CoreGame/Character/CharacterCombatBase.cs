@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>Shared combat state: damage colliders, combo index, attack flags and the lock-on target.</summary>
 public abstract class CharacterCombatBase : MonoBehaviour
 {
     protected CharacterStateBase state;
@@ -30,70 +31,24 @@ public abstract class CharacterCombatBase : MonoBehaviour
     [Header("Lock On")]
     [SerializeField] protected LayerMask lockOnLayer;
 
-    // Broadphase nội bộ chỉ để lấy candidate từ physics — KHÔNG phải lock/unlock radius.
-    // Điều kiện lock/unlock thực sự là viewport (IsInView).
+    /// <summary>Physics radius used only to gather lock-on candidates; the real lock limit is the camera view.</summary>
     protected const float BroadphaseRange = 50f;
 
-    private CharacterStateBase _lockedTargetState;
-    protected Camera viewCamera;
+    private CharacterStateBase lockedTargetState;
 
     public Transform LockOnTransform => lockOnTransform;
-    protected CharacterStateBase LockedTargetState => _lockedTargetState;
+    protected CharacterStateBase LockedTargetState => lockedTargetState;
     public bool CanDoCombo => canDoCombo;
-
-    protected virtual void Awake()
-    {
-        viewCamera = Camera.main;
-    }
-
-    protected virtual void Update()
-    {
-        CheckAutoUnlock();
-    }
 
     public virtual void Initialize(CharacterStateBase state)
     {
         this.state = state;
 
-        // Khởi tạo TẤT CẢ damage collider (gán state để biết ai là chủ đòn đánh).
-        if (damageColliders != null)
-        {
-            for (int i = 0; i < damageColliders.Length; i++)
-                if (damageColliders[i] != null)
-                    damageColliders[i].Initialize(state);
-        }
-    }
+        if (damageColliders == null) return;
 
-    private void CheckAutoUnlock()
-    {
-        if (lockOnTransform == null) return;
-
-        if (_lockedTargetState != null && _lockedTargetState.IsDead)
-        {
-            ClearLockTarget();
-            return;
-        }
-
-        if (!IsInView(lockOnTransform.position))
-        {
-            ClearLockTarget();
-        }
-    }
-
-    // Kiểm tra một điểm world có nằm trong khung nhìn camera không
-    protected bool IsInView(Vector3 worldPos)
-    {
-        if (viewCamera == null)
-        {
-            viewCamera = Camera.main;
-            if (viewCamera == null) return false;
-        }
-
-        Vector3 vp = viewCamera.WorldToViewportPoint(worldPos);
-
-        return vp.z > 0f
-            && vp.x >= 0f && vp.x <= 1f
-            && vp.y >= 0f && vp.y <= 1f;
+        for (int i = 0; i < damageColliders.Length; i++)
+            if (damageColliders[i] != null)
+                damageColliders[i].Initialize(state);
     }
 
     public abstract void Attack();
@@ -111,7 +66,6 @@ public abstract class CharacterCombatBase : MonoBehaviour
     public virtual void DisableCanRotate() => state?.SetCanRotate(false);
 
     #region Damage Colliders
-    // Lấy collider theo chỉ số (null nếu chỉ số không hợp lệ).
     protected DamageCollider GetDamageCollider(int index)
     {
         if (damageColliders == null || index < 0 || index >= damageColliders.Length)
@@ -136,11 +90,13 @@ public abstract class CharacterCombatBase : MonoBehaviour
         OnHitLanded?.Invoke(target, result);
     }
 
-    // ---- Animation event (giữ nguyên cho đòn đánh đơn: collider [0]) ----
+    /// <summary>Animation event for single-collider attacks: opens collider 0.</summary>
     public virtual void OpenDamageCollider() => OpenDamageColliderAt(0);
+
+    /// <summary>Animation event for single-collider attacks: closes collider 0.</summary>
     public virtual void CloseDamageCollider() => CloseDamageColliderAt(0);
 
-    // ---- Animation event có chỉ số (cho đòn đánh nhiều collider) ----
+    /// <summary>Animation event for multi-collider attacks.</summary>
     public virtual void OpenDamageColliderAt(int index)
     {
         DamageCollider dc = GetDamageCollider(index);
@@ -148,6 +104,7 @@ public abstract class CharacterCombatBase : MonoBehaviour
             dc.GetCollider.enabled = true;
     }
 
+    /// <summary>Animation event for multi-collider attacks.</summary>
     public virtual void CloseDamageColliderAt(int index)
     {
         DamageCollider dc = GetDamageCollider(index);
@@ -155,7 +112,7 @@ public abstract class CharacterCombatBase : MonoBehaviour
             dc.GetCollider.enabled = false;
     }
 
-    // Tắt hết collider — gọi khi chết, hoặc khi cần dập đòn khẩn cấp.
+    /// <summary>Closes every damage collider, e.g. on death or when an attack is interrupted.</summary>
     public virtual void DisableAllDamageColliders()
     {
         if (damageColliders == null) return;
@@ -188,7 +145,7 @@ public abstract class CharacterCombatBase : MonoBehaviour
         if (attack == null || string.IsNullOrEmpty(attack.animationName)) return;
 
         SetDamage(0, attack.damage, DamageSource.Weapon);
-        PlayAttackAnimation(attack.animationName, character);
+        PlayAttackAnimation(attack.animationName, attack.AnimationHash, character);
     }
 
     public virtual void ResetCombo() => comboIndex = 0;
@@ -206,25 +163,29 @@ public abstract class CharacterCombatBase : MonoBehaviour
 
     protected void PlayAttackAnimation(string animationName, CharacterControllerBase character)
     {
+        PlayAttackAnimation(animationName, Animator.StringToHash(animationName), character);
+    }
+
+    protected void PlayAttackAnimation(string animationName, int animationHash, CharacterControllerBase character)
+    {
         state.SetAttacking(true);
         state.SetCanMove(false);
         state.SetCanRotate(false);
         state.SetApplyRootMotion(true);
         lastAttackAnimationPerformed = animationName;
-        character.GetAnimation.PlayTargetAnimation(animationName, true);
+        character.GetAnimation.PlayTargetAnimation(animationHash, true);
     }
 
-    public virtual void SetLockTarget(Transform target)
+    /// <summary>Locks onto target; targetState lets the lock drop itself when that character dies.</summary>
+    public virtual void SetLockTarget(Transform target, CharacterStateBase targetState)
     {
         lockOnTransform = target;
-        _lockedTargetState = target != null
-            ? target.GetComponentInParent<CharacterStateBase>()
-            : null;
+        lockedTargetState = target != null ? targetState : null;
     }
 
     public virtual void ClearLockTarget()
     {
         lockOnTransform = null;
-        _lockedTargetState = null;
+        lockedTargetState = null;
     }
 }

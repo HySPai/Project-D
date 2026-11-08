@@ -11,6 +11,7 @@ public class SO_WindVortexData : ScriptableObject
     public float radius = 2f;
     public float castDistance = 3f;
     public float lifetime = 3f;
+    public float navMeshSampleDistance = 2f;
 
     [Header("Pull")]
     public float pullSpeed = 2f;

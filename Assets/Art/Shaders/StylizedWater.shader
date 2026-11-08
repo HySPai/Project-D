@@ -1,7 +1,7 @@
 /*
  Project-D StylizedWater
  Purpose: flat saturated water surface with glowing contour lines around everything that stands in it.
- Pipeline: URP 17 (Unity 6.4), Forward and Forward+. Target: PC, mid-spec.
+ Pipeline: URP 17 (Unity 6.4), Forward. Target: PC, mid-spec.
  Budget: 1 texture sample, 6 value-noise taps outside loops (swell, wobble, 4 shore strokes), loop over 16 ripples (2 brush rings x 3 taps each) and 8 bodies per pixel (no texture reads in the loops).
  Keywords: standard URP main light shadow variants only.
  Inputs: _WaterSdfTex is the distance to the nearest solid on the water plane, baked per pool by WaterVolume (0..1 maps to 0.._WaterSdfMax metres).
@@ -133,6 +133,10 @@ Shader "ProjectD/StylizedWater"
 
             #define WATER_MAX_RIPPLES 16
             #define WATER_MAX_BODIES 8
+            #define RIPPLE_STRENGTH_MIN 0.001
+            #define RIPPLE_FLAG_MIN 0.001
+            #define RIPPLE_INNER_GATE_MIN 0.35
+            #define RIPPLE_INNER_GATE_MAX 0.7
 
             TEXTURE2D(_WaterSdfTex);
             SAMPLER(sampler_WaterSdfTex);
@@ -321,6 +325,7 @@ Shader "ProjectD/StylizedWater"
                 float trailLife = lerp(entryLife, max(_WaterRippleParams.z, 0.001), step(0.001, _WaterRippleParams.z));
                 float rippleWidth = _WaterRippleParams.y;
 
+                [loop]
                 for (int r = 0; r < WATER_MAX_RIPPLES; r++)
                 {
                     float4 ripple = _WaterRipples[r];
@@ -328,18 +333,23 @@ Shader "ProjectD/StylizedWater"
                     float strength = data.x;
 
                     // data.w > 0 marks a trail patch: thin ring, broken outer dashes, faint fill, shorter life.
-                    float isTrail = step(0.001, data.w);
+                    float isTrail = step(RIPPLE_FLAG_MIN, data.w);
                     float life = lerp(entryLife, trailLife, isTrail);
                     float age = time - ripple.w;
+
+                    // Unused, expired, not yet born or on another surface height: contributes nothing, so skip the noise work.
+                    [branch]
+                    if (age < 0.0 || age > life || abs(positionWS.y - ripple.y) > _HeightMatch || strength < RIPPLE_STRENGTH_MIN)
+                        continue;
+
                     float k = saturate(age / life);
-                    float alive = step(0.0, age) * step(age, life) * step(abs(positionWS.y - ripple.y), _HeightMatch) * step(0.001, strength);
 
                     // Cubic ease-out: the ring pops open, then settles and fades at its small final radius.
                     float ease = 1.0 - (1.0 - k) * (1.0 - k) * (1.0 - k);
                     float radius = lerp(data.y, data.z, ease);
                     float2 rippleOffset = p - ripple.xz;
                     float width = rippleWidth * (1.0 - 0.55 * k);
-                    float fade = pow(1.0 - k, lerp(1.0, _TrailFadePower, isTrail)) * alive;
+                    float fade = pow(1.0 - k, lerp(1.0, _TrailFadePower, isTrail));
 
                     // Per-patch random seed: xy noise offset, z erosion side (0..1 turns), w erosion threshold jitter.
                     float4 ringSeed = float4(frac(ripple.w * 1.37 + ripple.x * 3.71) * 37.0, frac(ripple.w * 2.11 + ripple.z * 5.13) * 37.0,
@@ -352,19 +362,30 @@ Shader "ProjectD/StylizedWater"
                     float mainRing = BrushRing(rippleOffset, radius, ringWidth, k, ringSeed, ringErodeStart, _TrailErodeEnd, aa);
 
                     // Faint inner ring of strong entry splashes: thinner, more eroded, own seed.
-                    float innerGate = smoothstep(0.35, 0.7, strength);
-                    float innerRadius = lerp(data.y, radius, 0.55);
-                    float innerRing = BrushRing(rippleOffset, innerRadius, ringWidth * 0.7, k, innerSeed,
-                        _EntryErodeStart + _EntryInnerErodeBoost, _TrailErodeEnd + _EntryInnerErodeBoost, aa) * 0.6 * innerGate * (1.0 - isTrail);
+                    float innerRing = 0.0;
+                    [branch]
+                    if (isTrail < 0.5 && strength > RIPPLE_INNER_GATE_MIN)
+                    {
+                        float innerGate = smoothstep(RIPPLE_INNER_GATE_MIN, RIPPLE_INNER_GATE_MAX, strength);
+                        float innerRadius = lerp(data.y, radius, 0.55);
+                        innerRing = BrushRing(rippleOffset, innerRadius, ringWidth * 0.7, k, innerSeed,
+                            _EntryErodeStart + _EntryInnerErodeBoost, _TrailErodeEnd + _EntryInnerErodeBoost, aa) * 0.6 * innerGate;
+                    }
 
                     float rings = max(mainRing, innerRing);
                     contactMask = max(contactMask, rings * fade);
                 }
 
+                [loop]
                 for (int b = 0; b < WATER_MAX_BODIES; b++)
                 {
                     float4 body = _WaterBodies[b];
-                    float active = step(0.001, body.w) * step(abs(positionWS.y - body.y), _HeightMatch);
+
+                    // Empty slot (radius zeroed by WaterController) or a body standing on another surface height.
+                    [branch]
+                    if (body.w < RIPPLE_STRENGTH_MIN || abs(positionWS.y - body.y) > _HeightMatch)
+                        continue;
+
                     // motion = (direction x, direction z, speed 0..1). Standing still gives a plain ring; walking
                     // slides the ring behind the body and turns it into a crescent: thick behind, fading out in front.
                     float4 motion = _WaterBodyMotion[b];
@@ -388,7 +409,7 @@ Shader "ProjectD/StylizedWater"
                     float arcTaper = saturate((front - _FrontArcSpan) / max(1.0 - _FrontArcSpan, 0.001));
                     float frontArc = TaperedBand(bodyDistance - (_ContactGap + _FrontArcGap), _ContactWidth * bodyLump, aa, arcTaper) * _FrontArcStrength * moving;
 
-                    contactMask = max(contactMask, max(ring, frontArc) * active);
+                    contactMask = max(contactMask, max(ring, frontArc));
                 }
 
                 contactMask = saturate(contactMask);

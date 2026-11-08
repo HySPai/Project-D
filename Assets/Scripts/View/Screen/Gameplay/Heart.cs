@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using DG.Tweening;
 
+/// <summary>One heart icon of the health bar; pops when filled and shrinks away when emptied.</summary>
 public class Heart : MonoBehaviour
 {
     [SerializeField] private Image fullHeart;
@@ -13,8 +14,9 @@ public class Heart : MonoBehaviour
 
     private bool isFilled = true;
     private Tween tween;
+    private TweenCallback hideFullHeart;
 
-    // set trạng thái ban đầu, không chạy animation
+    /// <summary>Sets the initial state without animating.</summary>
     public void Init(bool filled)
     {
         isFilled = filled;
@@ -27,9 +29,10 @@ public class Heart : MonoBehaviour
         }
     }
 
+    /// <summary>Animates to filled or empty when the state changes.</summary>
     public void SetFilled(bool filled)
     {
-        if (isFilled == filled) return;   // không đổi thì khỏi replay anim
+        if (isFilled == filled) return;
         isFilled = filled;
 
         if (filled) Fill();
@@ -42,12 +45,14 @@ public class Heart : MonoBehaviour
 
         tween?.Kill();
         Transform t = fullHeart.transform;
-        fullHeart.enabled = true;                 // còn hiện để thấy nó co lại
+        fullHeart.enabled = true;
         tween = t.DOScale(0f, shrinkDuration)
             .SetEase(Ease.InBack)
             .SetLink(gameObject)
-            .OnComplete(() => fullHeart.enabled = false);
+            .OnComplete(hideFullHeart ??= HideFullHeart);
     }
+
+    private void HideFullHeart() => fullHeart.enabled = false;
 
     private void Fill()
     {
@@ -59,8 +64,8 @@ public class Heart : MonoBehaviour
         t.localScale = Vector3.one;
 
         tween = DOTween.Sequence()
-            .Append(t.DOScale(popScale, popDuration * 0.5f).SetEase(Ease.OutQuad)) // phóng to
-            .Append(t.DOScale(1f, popDuration * 0.5f).SetEase(Ease.InQuad))        // về 1
+            .Append(t.DOScale(popScale, popDuration * 0.5f).SetEase(Ease.OutQuad))
+            .Append(t.DOScale(1f, popDuration * 0.5f).SetEase(Ease.InQuad))
             .SetLink(gameObject);
     }
 }
